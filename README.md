@@ -7,6 +7,12 @@ Enthaltene Dateien (alle zusammen in einen Ordner legen!)
 `modul-3-statik-einfeldtraeger.html` – Schnittgrößen-Tool "SchnittGrip Pro" (inkl. erweitertem PNG-Export)
 `modul-4-diagramme-zuordnen.html` – Quiz: Diagramme zuordnen (Teil A: System→Linie, Teil B: M↔Q direkt; unterstützt Kragarme ein-/beidseitig, mehrere Einzellasten, kombinierte Streckenlast+Einzellast)
 `tailwind.min.css` – lokal gebautes Stylesheet (offline-fähig, keine CDN-Abhängigkeit)
+`labor.css` – gemeinsames Stylesheet aller Module (Modulfarbe, Kopfzeile, Umschalter, Zeichenflächen, Eingabefelder)
+`labor.js` – gemeinsame Hilfsfunktionen aller Module (Zahlen mit Dezimalkomma, Tiefstellung im Canvas, Auflagersymbole, Protokoll-Export)
+Einheitliche Konventionen
+Kräfte in kN, Momente in kNm, Streckenlasten in kN/m, Längen in m (Modul 2: Massen in kg, Umrechnung F = m · g im Rechenweg).
+Zahlen mit Dezimalkomma, Einheit mit Leerzeichen (z. B. „2,5 kN“), Indizes tiefgestellt (z. B. F₁, q₁, M<sub>max</sub>).
+Jedes Modul: Kopfzeile mit „Zurück zum Menü“ + Modul-Badge in der Modulfarbe (1 Indigo, 2 Sky, 3 Teal, 4 Amber), Abschnitt „Rechenweg – …“, einheitliches Protokollformat.
 Wichtig
 Alle Dateien müssen im selben Ordner liegen, sonst funktionieren Navigation und Styling nicht.
 Am besten im mobilen/Desktop-Browser direkt aus dem Ordner öffnen (nicht nur die Chat-Vorschau einzelner Dateien) – siehe frühere Hinweise zur Chat-Vorschau.

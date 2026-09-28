@@ -3,16 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modul 4: Diagramme zuordnen</title>
+    <title>Modul 4: Diagramme zuordnen | Bautechnik-Labor</title>
     <link rel="stylesheet" href="tailwind.min.css">
+    <link rel="stylesheet" href="labor.css">
     <style>
-        canvas {
-            border: 1px solid #e2e8f0;
-            background: #f8fafc;
-            width: 100%;
-            height: auto;
-            border-radius: 0.75rem;
-        }
         .option-card {
             transition: all 0.2s ease;
         }
@@ -21,17 +15,17 @@
         }
     </style>
 </head>
-<body class="bg-slate-50 min-h-screen p-4 md:p-6 font-sans text-slate-800">
-    <div class="max-w-5xl mx-auto bg-white p-6 rounded-2xl shadow-xl border border-slate-100">
+<body data-modul="4" class="bg-slate-50 min-h-screen p-4 md:p-6 font-sans text-slate-800">
+    <div class="max-w-7xl mx-auto bg-white p-6 rounded-2xl shadow-xl border border-slate-100">
 
-        <!-- Header -->
+        <!-- Header inkl. Navigation -->
         <header class="mb-6 border-b pb-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
                 <div class="flex items-center gap-3 mb-1">
-                    <a href="index.html" class="text-sky-600 hover:text-sky-800 font-semibold text-sm flex items-center gap-1 bg-sky-50 px-2 py-1 rounded">
+                    <a href="index.html" class="lab-back">
                         <span>&larr;</span> Zurück zum Menü
                     </a>
-                    <span class="text-xs font-bold bg-sky-100 text-sky-700 px-2 py-0.5 rounded uppercase tracking-wide">Modul 4</span>
+                    <span class="lab-badge">Modul 4</span>
                 </div>
                 <h1 class="text-3xl font-extrabold text-slate-800">Diagramme zuordnen</h1>
                 <p class="text-sm text-slate-500 mt-1">Ordne dem gezeigten System bzw. der gezeigten Linie den passenden Momenten- oder Querkraftverlauf zu.</p>
@@ -50,16 +44,16 @@
 
         <!-- Umschalter Teil A / Teil B -->
         <div class="flex gap-2 mb-3">
-            <button id="btnPartA" class="flex-1 text-sm font-bold px-4 py-3 rounded-lg transition-colors bg-indigo-600 text-white">
+            <button id="btnPartA" class="lab-tab is-active">
                 🅰️ Teil A: System → Linie
             </button>
-            <button id="btnPartB" class="flex-1 text-sm font-bold px-4 py-3 rounded-lg transition-colors bg-slate-100 text-slate-600 hover:bg-slate-200">
+            <button id="btnPartB" class="lab-tab">
                 🅱️ Teil B: M ↔ Q direkt
             </button>
         </div>
 
         <label class="flex items-center gap-2 mb-6 text-xs font-semibold text-slate-500 cursor-pointer w-fit">
-            <input type="checkbox" id="qFlipToggle" class="w-4 h-4 rounded accent-sky-600">
+            <input type="checkbox" id="qFlipToggle" class="w-4 h-4 rounded">
             🔄 Andere Q-Vorzeichenkonvention (positive Querkraft nach unten statt nach oben)
         </label>
 
@@ -163,6 +157,7 @@
         </div>
     </div>
 
+    <script src="labor.js"></script>
     <script>
         // ================= Physik: geschlossene Formeln pro Systemtyp =================
         // Konvention wie in Modul 3: Q positiv nach oben, M positiv nach unten (Zugseite) aufgetragen.
@@ -303,17 +298,17 @@
         // Menschenlesbare Kurzbeschreibung eines Systems (für Aufgabentext/Protokoll)
         function describeSystem(task) {
             const parts = [];
-            if (task.L_kl > 0 && task.L_kr > 0) parts.push(`Kragarm beidseitig (li ${task.L_kl}m / re ${task.L_kr}m)`);
-            else if (task.L_kl > 0) parts.push(`Kragarm links (${task.L_kl}m)`);
-            else if (task.L_kr > 0) parts.push(`Kragarm rechts (${task.L_kr}m)`);
+            if (task.L_kl > 0 && task.L_kr > 0) parts.push(`Kragarm beidseitig (links ${fmt(task.L_kl)} m / rechts ${fmt(task.L_kr)} m)`);
+            else if (task.L_kl > 0) parts.push(`Kragarm links (${fmt(task.L_kl)} m)`);
+            else if (task.L_kr > 0) parts.push(`Kragarm rechts (${fmt(task.L_kr)} m)`);
 
             const feldLasten = task.pointLoads.filter(p => p.x >= -1e-6 && p.x <= task.L + 1e-6);
             const kragLasten = task.pointLoads.filter(p => p.x < -1e-6 || p.x > task.L + 1e-6);
 
-            if (feldLasten.length === 1) parts.push(`1 Einzellast im Feld (F=${feldLasten[0].F}kN)`);
+            if (feldLasten.length === 1) parts.push(`1 Einzellast im Feld (F = ${fmt(feldLasten[0].F)} kN)`);
             if (feldLasten.length >= 2) parts.push(`${feldLasten.length} Einzellasten im Feld`);
-            if (task.udls.length > 0) parts.push(`Streckenlast q=${task.udls[0].q}kN/m`);
-            if (kragLasten.length > 0) parts.push(`Kragarm-Spitzenlast: ${kragLasten.map(p => p.F + 'kN').join(' / ')}`);
+            if (task.udls.length > 0) parts.push(`Streckenlast q = ${fmt(task.udls[0].q)} kN/m`);
+            if (kragLasten.length > 0) parts.push(`Kragarm-Spitzenlast: ${kragLasten.map(p => fmt(p.F) + ' kN').join(' / ')}`);
 
             return parts.length ? parts.join(' + ') : 'Unbelasteter Einfeldträger';
         }
@@ -399,47 +394,18 @@
             });
             ctx.setLineDash([]);
 
-            // Balken
-            ctx.strokeStyle = '#1e293b';
-            ctx.lineWidth = 5;
+            // Balken (gleiche Darstellung wie in Modul 3)
+            ctx.strokeStyle = '#334155';
+            ctx.lineWidth = 6;
+            ctx.lineCap = 'round';
             ctx.beginPath();
             ctx.moveTo(px(xmin), beamY);
             ctx.lineTo(px(xmax), beamY);
             ctx.stroke();
+            ctx.lineCap = 'butt';
 
-            function drawSupport(x, isRoller) {
-                const cx = px(x);
-                ctx.fillStyle = '#334155';
-                ctx.beginPath();
-                ctx.moveTo(cx, beamY);
-                ctx.lineTo(cx - 14, beamY + 26);
-                ctx.lineTo(cx + 14, beamY + 26);
-                ctx.closePath();
-                ctx.fill();
-                // Schraffur (Boden)
-                ctx.strokeStyle = '#94a3b8';
-                ctx.lineWidth = 2;
-                ctx.beginPath();
-                ctx.moveTo(cx - 20, beamY + 26);
-                ctx.lineTo(cx + 20, beamY + 26);
-                ctx.stroke();
-                for (let i = -18; i <= 18; i += 6) {
-                    ctx.beginPath();
-                    ctx.moveTo(cx + i, beamY + 26);
-                    ctx.lineTo(cx + i - 6, beamY + 34);
-                    ctx.stroke();
-                }
-                if (isRoller) {
-                    ctx.fillStyle = '#ffffff';
-                    ctx.strokeStyle = '#334155';
-                    ctx.beginPath();
-                    ctx.arc(cx, beamY + 22, 4, 0, Math.PI * 2);
-                    ctx.fill();
-                    ctx.stroke();
-                }
-            }
-            drawSupport(0, false);
-            drawSupport(task.L, true);
+            drawSupport(ctx, px(0), beamY + 3, 'fest');
+            drawSupport(ctx, px(task.L), beamY + 3, 'los');
 
             function drawLoadArrow(x, label, raised) {
                 const cx = px(x);
@@ -488,22 +454,22 @@
                 }
                 ctx.font = 'bold 13px sans-serif';
                 ctx.textAlign = 'left';
-                ctx.fillText(`q = ${u.q} kN/m`, px(u.start), beamY - 48);
+                ctx.fillText(`q = ${fmt(u.q)} kN/m`, px(u.start), beamY - 48);
             });
 
             // Einzellasten (ggf. angehoben, falls sie mit einer Streckenlast überlappen)
             task.pointLoads.forEach(p => {
                 const onUdl = task.udls.some(u => p.x >= u.start - 1e-6 && p.x <= u.end + 1e-6);
-                drawLoadArrow(p.x, `F = ${p.F} kN`, onUdl);
+                drawLoadArrow(p.x, `F = ${fmt(p.F)} kN`, onUdl);
             });
 
             // Beschriftung Spannweite(n)
             ctx.fillStyle = '#475569';
             ctx.font = '12px sans-serif';
             ctx.textAlign = 'center';
-            ctx.fillText(`L = ${task.L} m`, px(task.L / 2), beamY + 55);
-            if (task.L_kl > 0) ctx.fillText(`Lc = ${task.L_kl} m`, px(-task.L_kl / 2), beamY + 55);
-            if (task.L_kr > 0) ctx.fillText(`Lc = ${task.L_kr} m`, px(task.L + task.L_kr / 2), beamY + 55);
+            ctx.fillText(`L = ${fmt(task.L)} m`, px(task.L / 2), beamY + 55);
+            if (task.L_kl > 0) ctx.fillText(`Kragarm ${fmt(task.L_kl)} m`, px(-task.L_kl / 2), beamY + 55);
+            if (task.L_kr > 0) ctx.fillText(`Kragarm ${fmt(task.L_kr)} m`, px(task.L + task.L_kr / 2), beamY + 55);
         }
 
         // ================= Zeichnen: Antwort-Diagramme =================
@@ -578,8 +544,8 @@
                 ctx.fill();
             });
 
-            // Kurvenlinie (durchgehend, in der übergebenen Grundfarbe)
-            ctx.strokeStyle = highlightColor || '#0f172a';
+            // Kurvenlinie (durchgehend; Standardfarben wie in Modul 3: Q blau, M orange)
+            ctx.strokeStyle = highlightColor || (isM ? '#ea580c' : '#0284c7');
             ctx.lineWidth = 2.5;
             ctx.beginPath();
             curve.forEach((p, i) => {
@@ -621,7 +587,10 @@
             document.getElementById('taskPrompt').innerText = `Welches Diagramm zeigt den korrekten ${label} für dieses System?`;
             document.getElementById('feedbackBox').classList.add('hidden');
             document.getElementById('btnNext').classList.add('hidden');
-            answered = false;
+            // Wurde die Aufgabe schon beantwortet (z. B. Neuzeichnen nach Umschalten der Q-Konvention),
+            // bleibt die Auswertung sichtbar und die Aufgabe kann nicht ein zweites Mal gewertet werden.
+            answered = task.selectedIdx !== undefined;
+            if (answered) showAnswer(task.selectedIdx);
         }
 
         function newTask() {
@@ -636,9 +605,8 @@
             return '';
         }
 
-        function selectOption(idx) {
-            if (answered || !currentTask) return;
-            answered = true;
+        // Markiert die gewählte und die richtige Karte und zeigt die Rückmeldung an
+        function showAnswer(idx) {
             const isCorrect = idx === currentTask.correctIndex;
 
             currentTask.options.forEach((opt, i) => {
@@ -657,17 +625,27 @@
             feedback.classList.remove('hidden', 'bg-emerald-50', 'text-emerald-800', 'bg-rose-50', 'text-rose-800');
             feedback.classList.add(isCorrect ? 'bg-emerald-50' : 'bg-rose-50', isCorrect ? 'text-emerald-800' : 'text-rose-800');
             feedback.innerText = isCorrect ? '🎉 Richtig!' : '❌ Leider falsch – die richtige Lösung ist grün markiert.';
+            document.getElementById('btnNext').classList.remove('hidden');
+        }
+
+        function selectOption(idx) {
+            if (answered || !currentTask) return;
+            answered = true;
+            currentTask.selectedIdx = idx;
+            const isCorrect = idx === currentTask.correctIndex;
+            showAnswer(idx);
 
             document.getElementById('scoreTotalA').innerText = parseInt(document.getElementById('scoreTotalA').innerText) + 1;
             if (isCorrect) {
                 document.getElementById('scoreCorrectA').innerText = parseInt(document.getElementById('scoreCorrectA').innerText) + 1;
             }
-            document.getElementById('btnNext').classList.remove('hidden');
 
             sessionLog4.push({
                 zeit: new Date().toLocaleTimeString('de-DE'),
-                aufgabe: `[Teil A] ${describeSystem(currentTask)}, L=${currentTask.L}m, gesucht: ${currentTask.diagramType}(x)`,
-                korrekt: isCorrect
+                aufgabe: `[Teil A] L = ${fmt(currentTask.L)} m, ${describeSystem(currentTask)} → gesucht: ${currentTask.diagramType}(x)`,
+                details: [`Gewählt: ${explainKind(currentTask.options[idx].kind)}`],
+                richtig: isCorrect ? 1 : 0,
+                gesamt: 1
             });
             document.getElementById('logCount4').innerText = sessionLog4.length;
             document.getElementById('btnExportLog4').disabled = false;
@@ -680,27 +658,7 @@
         document.getElementById('btnNext').addEventListener('click', newTask);
 
         document.getElementById('btnExportLog4').addEventListener('click', () => {
-            if (sessionLog4.length === 0) return;
-            const name = document.getElementById('studentName4').value.trim() || '—';
-            let text = `Erfolgskontrolle – Modul 4: Diagramme zuordnen\n`;
-            text += `Name: ${name}\n`;
-            text += `Exportiert am: ${new Date().toLocaleString('de-DE')}\n`;
-            text += `${'='.repeat(50)}\n\n`;
-            sessionLog4.forEach((entry, i) => {
-                text += `Aufgabe ${i + 1} (${entry.zeit}): ${entry.aufgabe} → ${entry.korrekt ? '✅ richtig' : '❌ falsch'}\n`;
-            });
-            const gesamtRichtig = sessionLog4.filter(e => e.korrekt).length;
-            text += `\n${'='.repeat(50)}\n`;
-            text += `Gesamt: ${sessionLog4.length} Aufgabe(n), ${gesamtRichtig}/${sessionLog4.length} richtig (${Math.round(100 * gesamtRichtig / sessionLog4.length)}%)\n`;
-
-            const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            const safeName = name !== '—' ? name.replace(/[^a-zA-Z0-9äöüÄÖÜß_-]/g, '_') : 'protokoll';
-            link.download = `erfolgskontrolle_modul4_${safeName}.txt`;
-            link.href = url;
-            link.click();
-            URL.revokeObjectURL(url);
+            exportProtocol(4, 'Diagramme zuordnen', document.getElementById('studentName4').value, sessionLog4);
         });
 
         // ================= TEIL B: M ↔ Q direkt (ohne System) =================
@@ -740,7 +698,8 @@
             document.getElementById('taskPromptB').innerText = `Welcher ${label} passt zur oben gezeigten Linie (gleiches System)?`;
             document.getElementById('feedbackBoxB').classList.add('hidden');
             document.getElementById('btnNextB').classList.add('hidden');
-            answeredB = false;
+            answeredB = task.selectedIdx !== undefined;
+            if (answeredB) showAnswerB(task.selectedIdx);
         }
 
         function newTaskB() {
@@ -748,9 +707,8 @@
             renderTaskB(currentTaskB);
         }
 
-        function selectOptionB(idx) {
-            if (answeredB || !currentTaskB) return;
-            answeredB = true;
+        // Markiert die gewählte und die richtige Karte und zeigt die Rückmeldung an
+        function showAnswerB(idx) {
             const isCorrect = idx === currentTaskB.correctIndex;
 
             currentTaskB.options.forEach((opt, i) => {
@@ -770,18 +728,29 @@
             feedback.classList.add(isCorrect ? 'bg-emerald-50' : 'bg-rose-50', isCorrect ? 'text-emerald-800' : 'text-rose-800');
             const sysDetail = describeSystem(currentTaskB.params);
             feedback.innerHTML = (isCorrect ? '🎉 Richtig!' : '❌ Leider falsch – die richtige Lösung ist grün markiert.') +
-                `<div class="text-xs font-normal mt-2 opacity-80">Das zugrunde liegende System: L=${currentTaskB.params.L} m, ${sysDetail}</div>`;
+                `<div class="text-xs font-normal mt-2 opacity-80">Das zugrunde liegende System: L = ${fmt(currentTaskB.params.L)} m, ${sysDetail}</div>`;
+            document.getElementById('btnNextB').classList.remove('hidden');
+        }
+
+        function selectOptionB(idx) {
+            if (answeredB || !currentTaskB) return;
+            answeredB = true;
+            currentTaskB.selectedIdx = idx;
+            const isCorrect = idx === currentTaskB.correctIndex;
+            showAnswerB(idx);
+            const sysDetail = describeSystem(currentTaskB.params);
 
             document.getElementById('scoreTotalB').innerText = parseInt(document.getElementById('scoreTotalB').innerText) + 1;
             if (isCorrect) {
                 document.getElementById('scoreCorrectB').innerText = parseInt(document.getElementById('scoreCorrectB').innerText) + 1;
             }
-            document.getElementById('btnNextB').classList.remove('hidden');
 
             sessionLog4.push({
                 zeit: new Date().toLocaleTimeString('de-DE'),
-                aufgabe: `[Teil B] ${sysDetail}, L=${currentTaskB.params.L}m, gegeben ${currentTaskB.givenType}(x), gesucht ${currentTaskB.answerType}(x)`,
-                korrekt: isCorrect
+                aufgabe: `[Teil B] L = ${fmt(currentTaskB.params.L)} m, ${sysDetail} → gegeben: ${currentTaskB.givenType}(x), gesucht: ${currentTaskB.answerType}(x)`,
+                details: [`Gewählt: ${explainKind(currentTaskB.options[idx].kind)}`],
+                richtig: isCorrect ? 1 : 0,
+                gesamt: 1
             });
             document.getElementById('logCount4').innerText = sessionLog4.length;
             document.getElementById('btnExportLog4').disabled = false;
@@ -797,14 +766,14 @@
         document.getElementById('btnPartA').addEventListener('click', () => {
             document.getElementById('partA').classList.remove('hidden');
             document.getElementById('partB').classList.add('hidden');
-            document.getElementById('btnPartA').className = 'flex-1 text-sm font-bold px-4 py-3 rounded-lg transition-colors bg-indigo-600 text-white';
-            document.getElementById('btnPartB').className = 'flex-1 text-sm font-bold px-4 py-3 rounded-lg transition-colors bg-slate-100 text-slate-600 hover:bg-slate-200';
+            document.getElementById('btnPartA').classList.add('is-active');
+            document.getElementById('btnPartB').classList.remove('is-active');
         });
         document.getElementById('btnPartB').addEventListener('click', () => {
             document.getElementById('partB').classList.remove('hidden');
             document.getElementById('partA').classList.add('hidden');
-            document.getElementById('btnPartB').className = 'flex-1 text-sm font-bold px-4 py-3 rounded-lg transition-colors bg-amber-500 text-white';
-            document.getElementById('btnPartA').className = 'flex-1 text-sm font-bold px-4 py-3 rounded-lg transition-colors bg-slate-100 text-slate-600 hover:bg-slate-200';
+            document.getElementById('btnPartB').classList.add('is-active');
+            document.getElementById('btnPartA').classList.remove('is-active');
             if (!currentTaskB) newTaskB();
         });
 

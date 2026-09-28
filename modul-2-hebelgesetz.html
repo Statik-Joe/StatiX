@@ -3,44 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modul 2: Hebelgesetz & Wippe</title>
+    <title>Modul 2: Hebelgesetz & Drehmoment | Bautechnik-Labor</title>
     <link rel="stylesheet" href="tailwind.min.css">
+    <link rel="stylesheet" href="labor.css">
     <style>
-        canvas { 
-            border: 1px solid #e2e8f0; 
-            background: #f8fafc; 
-            width: 100%; 
-            height: auto; 
-            border-radius: 0.75rem;
-            box-shadow: inset 0 2px 4px 0 rgb(0 0 0 / 0.05);
-            user-select: none;
-            -webkit-user-select: none;
-        }
-        input[type="number"], select, input[type="range"] {
-            transition: all 0.2s ease-in-out;
-        }
-        input[type="number"]:focus, select:focus {
-            outline: none;
-            border-color: #0ea5e9;
-            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15);
-        }
         .success-glow {
             box-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
             border-color: #10b981 !important;
         }
     </style>
 </head>
-<body class="bg-slate-50 min-h-screen p-4 md:p-6 font-sans text-slate-800">
+<body data-modul="2" class="bg-slate-50 min-h-screen p-4 md:p-6 font-sans text-slate-800">
     <div class="max-w-7xl mx-auto bg-white p-6 rounded-2xl shadow-xl border border-slate-100">
         
         <!-- Header inkl. Navigation -->
         <header class="mb-6 border-b pb-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
                 <div class="flex items-center gap-3 mb-1">
-                    <a href="index.html" class="text-sky-600 hover:text-sky-800 font-semibold text-sm flex items-center gap-1 bg-sky-50 px-2 py-1 rounded">
+                    <a href="index.html" class="lab-back">
                         <span>&larr;</span> Zurück zum Menü
                     </a>
-                    <span class="text-xs font-bold bg-sky-100 text-sky-700 px-2 py-0.5 rounded uppercase tracking-wide">Modul 2</span>
+                    <span class="lab-badge">Modul 2</span>
                 </div>
                 <h1 class="text-3xl font-extrabold text-slate-800">Hebelgesetz & Drehmoment</h1>
                 <p class="text-sm text-slate-500 mt-1">Verschiebe die Massen, um die Wippe ins Gleichgewicht (ΣM = 0) zu bringen.</p>
@@ -71,10 +54,10 @@
                 <div class="p-4 bg-gradient-to-r from-sky-50 to-blue-50 rounded-xl border border-sky-100 shadow-sm">
                     <h2 class="text-sm font-bold text-slate-700 mb-3 uppercase tracking-wider">Art des Hebels</h2>
                     <div class="flex gap-2">
-                        <button id="btnTwoSided" class="flex-1 bg-sky-600 text-white font-bold py-2 rounded-lg shadow-sm border-2 border-sky-700 transition-all">
+                        <button id="btnTwoSided" class="lab-tab is-active">
                             Zweiseitig (Wippe)
                         </button>
-                        <button id="btnOneSided" class="flex-1 bg-white text-slate-600 font-bold py-2 rounded-lg border-2 border-slate-200 hover:border-sky-300 transition-all">
+                        <button id="btnOneSided" class="lab-tab">
                             Einseitig (Schubkarre)
                         </button>
                     </div>
@@ -82,22 +65,22 @@
 
                 <!-- Masse 1 (Links/Last) -->
                 <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 shadow-sm space-y-4">
-                    <h3 class="text-lg font-bold text-indigo-700 flex items-center gap-2">
-                        <span class="w-4 h-4 bg-indigo-500 rounded-sm"></span>
+                    <h3 class="text-base font-bold text-indigo-800 flex items-center gap-2">
+                        <span class="w-3.5 h-3.5 bg-indigo-500 rounded-full"></span>
                         Masse 1 (Blau)
                     </h3>
                     <div class="space-y-3">
                         <div>
-                            <label class="flex justify-between text-xs font-bold text-slate-500 mb-1 uppercase">
+                            <label class="flex justify-between text-xs font-bold text-slate-500 mb-1">
                                 <span>Masse m₁ [kg]</span>
                                 <span id="val_m1" class="text-indigo-700">50 kg</span>
                             </label>
                             <input type="range" id="m1" min="5" max="100" step="5" value="50" class="w-full accent-indigo-500">
                         </div>
                         <div>
-                            <label class="flex justify-between text-xs font-bold text-slate-500 mb-1 uppercase">
+                            <label class="flex justify-between text-xs font-bold text-slate-500 mb-1">
                                 <span>Hebelarm l₁ [m]</span>
-                                <span id="val_x1" class="text-indigo-700">3.0 m</span>
+                                <span id="val_x1" class="text-indigo-700">3,0 m</span>
                             </label>
                             <input type="range" id="x1" min="0.5" max="5" step="0.1" value="3" class="w-full accent-indigo-500">
                         </div>
@@ -106,22 +89,22 @@
 
                 <!-- Masse 2 (Rechts/Kraft) -->
                 <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 shadow-sm space-y-4">
-                    <h3 class="text-lg font-bold text-rose-600 flex items-center gap-2">
-                        <span class="w-4 h-4 bg-rose-500 rounded-sm"></span>
+                    <h3 class="text-base font-bold text-rose-800 flex items-center gap-2">
+                        <span class="w-3.5 h-3.5 bg-rose-500 rounded-full"></span>
                         Masse 2 (Rot)
                     </h3>
                     <div class="space-y-3">
                         <div>
-                            <label class="flex justify-between text-xs font-bold text-slate-500 mb-1 uppercase">
+                            <label class="flex justify-between text-xs font-bold text-slate-500 mb-1">
                                 <span>Masse m₂ [kg]</span>
                                 <span id="val_m2" class="text-rose-600">30 kg</span>
                             </label>
                             <input type="range" id="m2" min="5" max="100" step="5" value="30" class="w-full accent-rose-500">
                         </div>
                         <div>
-                            <label class="flex justify-between text-xs font-bold text-slate-500 mb-1 uppercase">
+                            <label class="flex justify-between text-xs font-bold text-slate-500 mb-1">
                                 <span>Hebelarm l₂ [m]</span>
-                                <span id="val_x2" class="text-rose-600">5.0 m</span>
+                                <span id="val_x2" class="text-rose-600">5,0 m</span>
                             </label>
                             <input type="range" id="x2" min="0.5" max="5" step="0.1" value="5" class="w-full accent-rose-500">
                         </div>
@@ -150,9 +133,9 @@
 
                 <!-- Didaktischer Rechenweg -->
                 <div id="rechenwegBox" class="bg-slate-50 p-6 rounded-2xl border border-slate-200 shadow-sm transition-all duration-500">
-                    <h3 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
-                        <span class="w-2.5 h-6 bg-sky-500 rounded-full"></span>
-                        Physikalische Überprüfung (Σ M = 0)
+                    <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                        <span class="lab-bar"></span>
+                        Rechenweg – Momentengleichgewicht (ΣM = 0)
                     </h3>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 font-mono text-sm">
@@ -161,10 +144,10 @@
                             <p class="font-bold text-indigo-800 mb-2 border-b border-indigo-200 pb-1">Linksdrehendes Moment (M₁)</p>
                             <div class="space-y-1.5 text-indigo-900">
                                 <p>1. Kraft: F₁ = m₁ · g</p>
-                                <p class="pl-4 text-xs text-indigo-700">F₁ = <span id="rw_m1">50</span> kg · 9,81 m/s² = <strong id="rw_f1">490.5</strong> N</p>
+                                <p class="pl-4 text-xs text-indigo-700">F₁ = <span id="rw_m1">50</span> kg · 9,81 m/s² = <span id="rw_f1n">490,5</span> N = <strong id="rw_f1">0,491</strong> kN</p>
                                 <p class="pt-2">2. Moment: M₁ = F₁ · l₁</p>
-                                <p class="pl-4 text-xs text-indigo-700">M₁ = <span id="rw_f1_copy">490.5</span> N · <span id="rw_x1">3.0</span> m</p>
-                                <p class="font-bold text-lg text-indigo-600 pt-1">M₁ = <span id="rw_mom1">1471.5</span> Nm</p>
+                                <p class="pl-4 text-xs text-indigo-700">M₁ = <span id="rw_f1_copy">0,491</span> kN · <span id="rw_x1">3,0</span> m</p>
+                                <p class="font-bold text-lg text-indigo-600 pt-1">M₁ = <span id="rw_mom1">1,472</span> kNm</p>
                             </div>
                         </div>
 
@@ -173,10 +156,10 @@
                             <p class="font-bold text-rose-800 mb-2 border-b border-rose-200 pb-1">Rechtsdrehendes Moment (M₂)</p>
                             <div class="space-y-1.5 text-rose-900">
                                 <p>1. Kraft: F₂ = m₂ · g</p>
-                                <p class="pl-4 text-xs text-rose-700">F₂ = <span id="rw_m2">30</span> kg · 9,81 m/s² = <strong id="rw_f2">294.3</strong> N</p>
+                                <p class="pl-4 text-xs text-rose-700">F₂ = <span id="rw_m2">30</span> kg · 9,81 m/s² = <span id="rw_f2n">294,3</span> N = <strong id="rw_f2">0,294</strong> kN</p>
                                 <p class="pt-2">2. Moment: M₂ = F₂ · l₂</p>
-                                <p class="pl-4 text-xs text-rose-700">M₂ = <span id="rw_f2_copy">294.3</span> N · <span id="rw_x2">5.0</span> m</p>
-                                <p class="font-bold text-lg text-rose-600 pt-1">M₂ = <span id="rw_mom2">1471.5</span> Nm</p>
+                                <p class="pl-4 text-xs text-rose-700">M₂ = <span id="rw_f2_copy">0,294</span> kN · <span id="rw_x2">5,0</span> m</p>
+                                <p class="font-bold text-lg text-rose-600 pt-1">M₂ = <span id="rw_mom2">1,472</span> kNm</p>
                             </div>
                         </div>
                     </div>
@@ -191,8 +174,8 @@
 
                 <!-- Kompensationsrechner -->
                 <div id="kompensationBox" class="bg-sky-50/60 p-5 rounded-2xl border border-sky-100 shadow-sm">
-                    <h3 class="text-md font-bold text-sky-800 mb-2 flex items-center gap-2">
-                        <span class="w-2 h-5 bg-sky-500 rounded-full"></span>
+                    <h3 class="text-base font-bold text-sky-800 mb-2 flex items-center gap-2">
+                        <span class="lab-bar"></span>
                         Kompensationsprinzip: Kraft × Hebelarm
                     </h3>
                     <p class="text-xs text-slate-600 mb-3">Für Gleichgewicht muss <strong>m₁ · l₁ = m₂ · l₂</strong> gelten. Verkürzt sich ein Hebelarm, muss die Masse auf derselben Seite im gleichen Verhältnis zunehmen — und umgekehrt.</p>
@@ -208,7 +191,7 @@
                         </h3>
                         <div class="flex gap-2 flex-wrap">
                             <button id="btnNewTask2" class="text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-lg transition-colors">
-                                🎲 Neue Zufallsaufgabe
+                                🎲 Neue Aufgabe
                             </button>
                             <button id="btnPracticeMode2" class="text-xs font-bold bg-amber-500 hover:bg-amber-600 text-white px-3 py-2 rounded-lg transition-colors">
                                 ✏️ Selbst berechnen
@@ -238,6 +221,7 @@
         </div>
     </div>
 
+    <script src="labor.js"></script>
     <script>
         // System Status
         const G = 9.81;
@@ -299,7 +283,7 @@
         let sessionLog2 = [];
         let taskAnswer = null;
         let dragLocked = false;
-        const rechenwegMaskIds = ['rw_f1', 'rw_f1_copy', 'rw_mom1', 'rw_f2', 'rw_f2_copy', 'rw_x2', 'rw_mom2'];
+        const rechenwegMaskIds = ['rw_f1n', 'rw_f1', 'rw_f1_copy', 'rw_mom1', 'rw_f2n', 'rw_f2', 'rw_f2_copy', 'rw_x2', 'rw_mom2'];
 
         function setSlidersLocked(locked) {
             dragLocked = locked;
@@ -365,14 +349,14 @@
             in_m1.value = m1; in_x1.value = x1; in_m2.value = m2;
             x2 = 2.5; in_x2.value = x2; // neutrale Ausgangsposition, verrät die Lösung nicht
             document.getElementById('val_m1').innerText = m1 + " kg";
-            document.getElementById('val_x1').innerText = x1.toFixed(1) + " m";
+            document.getElementById('val_x1').innerText = fmt(x1, 1) + " m";
             document.getElementById('val_m2').innerText = m2 + " kg";
-            document.getElementById('val_x2').innerText = x2.toFixed(1) + " m";
+            document.getElementById('val_x2').innerText = fmt(x2, 1) + " m";
             updateMath();
 
             taskAnswer = Math.round(x2req * 10) / 10;
             document.getElementById('taskText2').innerHTML =
-                `<strong>Aufgabe:</strong> Gegeben sind m₁ = ${m1} kg, l₁ = ${x1.toFixed(1)} m und m₂ = ${m2} kg. Wie groß muss der Hebelarm l₂ sein, damit Gleichgewicht herrscht?`;
+                `<strong>Aufgabe:</strong> Gegeben sind m₁ = ${m1} kg, l₁ = ${fmt(x1, 1)} m und m₂ = ${m2} kg. Wie groß muss der Hebelarm l₂ sein, damit Gleichgewicht herrscht?`;
             document.getElementById('practiceForm2').classList.remove('hidden');
             document.getElementById('check_x2').value = '';
             document.getElementById('checkResult2').classList.add('hidden');
@@ -389,10 +373,10 @@
             // Sitzungsprotokoll für Export (vor dem Verändern von x1/m1/m2 durch die nächste Aufgabe)
             sessionLog2.push({
                 zeit: new Date().toLocaleTimeString('de-DE'),
-                aufgabe: `m1=${m1}kg, l1=${x1.toFixed(1)}m, m2=${m2}kg → gesucht l2`,
-                eingegeben: isNaN(userVal) ? '—' : userVal,
-                richtig: taskAnswer,
-                korrekt: isCorrect
+                aufgabe: `m₁ = ${m1} kg, l₁ = ${fmt(x1, 1)} m, m₂ = ${m2} kg → gesucht l₂`,
+                details: [`l₂: eingegeben ${isNaN(userVal) ? '—' : fmt(userVal) + ' m'} / richtig ${fmt(taskAnswer, 1)} m ${isCorrect ? '✅' : '❌'}`],
+                richtig: isCorrect ? 1 : 0,
+                gesamt: 1
             });
             document.getElementById('logCount2').innerText = sessionLog2.length;
             document.getElementById('btnExportLog2').disabled = false;
@@ -400,7 +384,7 @@
             // Lösung sichtbar machen: x2-Slider auf den korrekten Wert setzen, damit die Wippe sichtbar ins Gleichgewicht geht
             x2 = Math.max(0.5, Math.min(5.0, taskAnswer));
             in_x2.value = x2;
-            document.getElementById('val_x2').innerText = x2.toFixed(1) + " m";
+            document.getElementById('val_x2').innerText = fmt(x2, 1) + " m";
             updateMath();
             setRechenwegVisible(true);
             setSlidersLocked(false);
@@ -409,48 +393,21 @@
             resultBox.classList.remove('hidden', 'bg-emerald-50', 'text-emerald-800', 'bg-amber-50', 'text-amber-800');
             if (isCorrect) {
                 resultBox.classList.add('bg-emerald-50', 'text-emerald-800');
-                resultBox.innerText = `🎉 Richtig! l₂ = ${taskAnswer} m. Rechenweg und Wippe zeigen jetzt die Lösung.`;
+                resultBox.innerText = `🎉 Richtig! l₂ = ${fmt(taskAnswer, 1)} m. Rechenweg und Wippe zeigen jetzt die Lösung.`;
             } else {
                 resultBox.classList.add('bg-amber-50', 'text-amber-800');
-                resultBox.innerText = `Leider nicht ganz — richtig wäre l₂ = ${taskAnswer} m. Vergleiche mit dem jetzt sichtbaren Rechenweg oben.`;
+                resultBox.innerText = `Leider nicht ganz — richtig wäre l₂ = ${fmt(taskAnswer, 1)} m. Vergleiche mit dem jetzt sichtbaren Rechenweg oben.`;
             }
         }
 
         document.getElementById('btnExportLog2').addEventListener('click', () => {
-            if (sessionLog2.length === 0) return;
-            const name = document.getElementById('studentName2').value.trim() || '—';
-            let text = `Erfolgskontrolle – Modul 2: Hebelgesetz & Drehmoment\n`;
-            text += `Name: ${name}\n`;
-            text += `Exportiert am: ${new Date().toLocaleString('de-DE')}\n`;
-            text += `${'='.repeat(50)}\n\n`;
-            sessionLog2.forEach((entry, i) => {
-                text += `Versuch ${i + 1} (${entry.zeit})\n`;
-                text += `  Aufgabe: ${entry.aufgabe}\n`;
-                text += `  Eingegeben: ${entry.eingegeben} m / Richtig: ${entry.richtig} m ${entry.korrekt ? '✅' : '❌'}\n\n`;
-            });
-            const gesamtRichtig = sessionLog2.filter(e => e.korrekt).length;
-            text += `${'='.repeat(50)}\n`;
-            text += `Gesamt: ${sessionLog2.length} Versuch(e), ${gesamtRichtig}/${sessionLog2.length} richtig (${Math.round(100 * gesamtRichtig / sessionLog2.length)}%)\n`;
-
-            const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            const safeName = name !== '—' ? name.replace(/[^a-zA-Z0-9äöüÄÖÜß_-]/g, '_') : 'protokoll';
-            link.download = `erfolgskontrolle_modul2_${safeName}.txt`;
-            link.href = url;
-            link.click();
-            URL.revokeObjectURL(url);
+            exportProtocol(2, 'Hebelgesetz & Drehmoment', document.getElementById('studentName2').value, sessionLog2);
         });
 
         function setMode(newMode) {
             mode = newMode;
-            if(mode === 'two-sided') {
-                btnTwo.className = "flex-1 bg-sky-600 text-white font-bold py-2 rounded-lg shadow-sm border-2 border-sky-700 transition-all";
-                btnOne.className = "flex-1 bg-white text-slate-600 font-bold py-2 rounded-lg border-2 border-slate-200 hover:border-sky-300 transition-all";
-            } else {
-                btnOne.className = "flex-1 bg-sky-600 text-white font-bold py-2 rounded-lg shadow-sm border-2 border-sky-700 transition-all";
-                btnTwo.className = "flex-1 bg-white text-slate-600 font-bold py-2 rounded-lg border-2 border-slate-200 hover:border-sky-300 transition-all";
-            }
+            btnTwo.classList.toggle('is-active', mode === 'two-sided');
+            btnOne.classList.toggle('is-active', mode === 'one-sided');
             updateFromInputs(); // Recalculate
         }
 
@@ -461,9 +418,9 @@
             x2 = parseFloat(in_x2.value);
 
             document.getElementById('val_m1').innerText = m1 + " kg";
-            document.getElementById('val_x1').innerText = x1.toFixed(1) + " m";
+            document.getElementById('val_x1').innerText = fmt(x1, 1) + " m";
             document.getElementById('val_m2').innerText = m2 + " kg";
-            document.getElementById('val_x2').innerText = x2.toFixed(1) + " m";
+            document.getElementById('val_x2').innerText = fmt(x2, 1) + " m";
 
             updateMath();
         }
@@ -471,16 +428,17 @@
         function updateInputsFromDrag() {
             in_x1.value = x1;
             in_x2.value = x2;
-            document.getElementById('val_x1').innerText = x1.toFixed(1) + " m";
-            document.getElementById('val_x2').innerText = x2.toFixed(1) + " m";
+            document.getElementById('val_x1').innerText = fmt(x1, 1) + " m";
+            document.getElementById('val_x2').innerText = fmt(x2, 1) + " m";
             updateMath();
         }
 
         function updateMath() {
-            const F1 = m1 * G;
-            const F2 = m2 * G;
+            // Gewichtskräfte in kN (Masse in kg · g ergibt N, geteilt durch 1000 ergibt kN)
+            const F1 = m1 * G / 1000;
+            const F2 = m2 * G / 1000;
             
-            // Drehmomente (immer Beträge für die Anzeige)
+            // Drehmomente in kNm (immer Beträge für die Anzeige)
             const M1 = F1 * x1;
             const M2 = F2 * x2;
 
@@ -496,7 +454,7 @@
 
             // Zielwinkel berechnen (Kippen der Wippe)
             const maxAngle = 18 * (Math.PI / 180); // max 18 Grad
-            const momentTolerance = 5; // Toleranz in Nm für "Im Gleichgewicht"
+            const momentTolerance = 0.005; // Toleranz in kNm für "Im Gleichgewicht"
 
             if (Math.abs(netM) <= momentTolerance) {
                 targetAngle = 0; // Waagerecht
@@ -507,31 +465,33 @@
 
             // UI Texte updaten
             document.getElementById('rw_m1').innerText = m1;
-            document.getElementById('rw_f1').innerText = F1.toFixed(1);
-            document.getElementById('rw_f1_copy').innerText = F1.toFixed(1);
-            document.getElementById('rw_x1').innerText = x1.toFixed(1);
-            document.getElementById('rw_mom1').innerText = M1.toFixed(1);
+            document.getElementById('rw_f1n').innerText = fmt(F1 * 1000, 1);
+            document.getElementById('rw_f1').innerText = fmt(F1, 3);
+            document.getElementById('rw_f1_copy').innerText = fmt(F1, 3);
+            document.getElementById('rw_x1').innerText = fmt(x1, 1);
+            document.getElementById('rw_mom1').innerText = fmt(M1, 3);
 
             document.getElementById('rw_m2').innerText = m2;
-            document.getElementById('rw_f2').innerText = F2.toFixed(1);
-            document.getElementById('rw_f2_copy').innerText = F2.toFixed(1);
-            document.getElementById('rw_x2').innerText = x2.toFixed(1);
-            document.getElementById('rw_mom2').innerText = M2.toFixed(1);
+            document.getElementById('rw_f2n').innerText = fmt(F2 * 1000, 1);
+            document.getElementById('rw_f2').innerText = fmt(F2, 3);
+            document.getElementById('rw_f2_copy').innerText = fmt(F2, 3);
+            document.getElementById('rw_x2').innerText = fmt(x2, 1);
+            document.getElementById('rw_mom2').innerText = fmt(M2, 3);
 
             // Balkenvergleich M1 vs M2
             const maxBarHeight = 50;
-            const maxM = Math.max(M1, M2, 1);
+            const maxM = Math.max(M1, M2, 0.001);
             document.getElementById('barM1').style.height = Math.max(4, (M1 / maxM) * maxBarHeight) + 'px';
             document.getElementById('barM2').style.height = Math.max(4, (M2 / maxM) * maxBarHeight) + 'px';
 
             // Kompensationsrechner: was müsste sich auf der anderen Seite ändern?
             const kompText = document.getElementById('kompensationText');
             if (Math.abs(M1 - M2) <= momentTolerance) {
-                kompText.innerHTML = `✅ Aktuell im Gleichgewicht (M₁ ≈ M₂ ≈ ${M1.toFixed(0)} Nm). Verkürzt du jetzt z.B. l₂, müsstest du m₂ im gleichen Verhältnis vergrößern, damit es so bleibt.`;
+                kompText.innerHTML = `✅ Aktuell im Gleichgewicht (M₁ ≈ M₂ ≈ ${fmt(M1, 2)} kNm). Verkürzt du jetzt z. B. l₂, müsstest du m₂ im gleichen Verhältnis vergrößern, damit es so bleibt.`;
             } else {
                 const m2Needed = (m1 * x1) / x2;
                 const x2Needed = (m1 * x1) / m2;
-                kompText.innerHTML = `Für Gleichgewicht (m₁·l₁ = ${(m1 * x1).toFixed(1)} kg·m) bräuchtest du: bei l₂ = ${x2.toFixed(1)}m → <strong>m₂ = ${m2Needed.toFixed(1)}kg</strong> (aktuell ${m2}kg) — oder bei m₂ = ${m2}kg → <strong>l₂ = ${x2Needed.toFixed(2)}m</strong> (aktuell ${x2.toFixed(1)}m).`;
+                kompText.innerHTML = `Für Gleichgewicht (m₁ · l₁ = ${fmt(m1 * x1, 1)} kg·m) bräuchtest du: bei l₂ = ${fmt(x2, 1)} m → <strong>m₂ = ${fmt(m2Needed, 1)} kg</strong> (aktuell ${m2} kg) — oder bei m₂ = ${m2} kg → <strong>l₂ = ${fmt(x2Needed, 2)} m</strong> (aktuell ${fmt(x2, 1)} m).`;
             }
 
             // Badge und Kasten aktualisieren
@@ -638,14 +598,14 @@
             ctx.font = 'bold 12px sans-serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.fillText(m1 + 'kg', px1, -5 - s1/2);
+            ctx.fillText(m1 + ' kg', px1, -5 - s1/2);
 
             // Momenten-Label M1 (während offener Erfolgskontrolle-Aufgabe ausgeblendet)
             if (!dragLocked) {
                 ctx.fillStyle = '#4338ca';
                 ctx.font = 'bold 13px sans-serif';
                 ctx.textBaseline = 'alphabetic';
-                ctx.fillText(`M₁ = ${(m1 * G * x1).toFixed(0)} Nm`, px1, -5 - s1 - 26);
+                ctx.fillText(`M₁ = ${fmt(m1 * G / 1000 * x1, 2)} kNm`, px1, -5 - s1 - 26);
             }
 
             // Kiste 2
@@ -658,13 +618,13 @@
                 ctx.fillRect(px2 - s2/2, -5 - s2, s2, s2);
                 ctx.fillStyle = 'white';
                 ctx.textBaseline = 'middle';
-                ctx.fillText(m2 + 'kg', px2, -5 - s2/2);
+                ctx.fillText(m2 + ' kg', px2, -5 - s2/2);
 
                 if (!dragLocked) {
                     ctx.fillStyle = '#be123c';
                     ctx.font = 'bold 13px sans-serif';
                     ctx.textBaseline = 'alphabetic';
-                    ctx.fillText(`M₂ = ${(m2 * G * x2).toFixed(0)} Nm`, px2, -5 - s2 - 26);
+                    ctx.fillText(`M₂ = ${fmt(m2 * G / 1000 * x2, 2)} kNm`, px2, -5 - s2 - 26);
                 }
             } else {
                 ctx.fillStyle = '#f43f5e'; 
@@ -688,13 +648,13 @@
                 
                 ctx.fillStyle = '#f43f5e';
                 ctx.textBaseline = 'middle';
-                ctx.fillText(m2 + 'kg (Zug)', px2, -75);
+                ctx.fillText(m2 + ' kg (Zug)', px2, -75);
 
                 if (!dragLocked) {
                     ctx.fillStyle = '#be123c';
                     ctx.font = 'bold 13px sans-serif';
                     ctx.textBaseline = 'alphabetic';
-                    ctx.fillText(`M₂ = ${(m2 * G * x2).toFixed(0)} Nm`, px2, -90);
+                    ctx.fillText(`M₂ = ${fmt(m2 * G / 1000 * x2, 2)} kNm`, px2, -90);
                 }
             }
 
@@ -718,14 +678,14 @@
             if (mode === 'two-sided') {
                 const absPx1 = pivotX - getCanvasX(x1);
                 const absPx2 = pivotX + getCanvasX(x2);
-                drawDimensionLine(ctx, pivotX, absPx1, dimY, `l₁ = ${x1.toFixed(1)}m`, '#4f46e5');
-                drawDimensionLine(ctx, pivotX, absPx2, dimY, `l₂ = ${x2.toFixed(1)}m`, '#e11d48');
+                drawDimensionLine(ctx, pivotX, absPx1, dimY, `l₁ = ${fmt(x1, 1)} m`, '#4f46e5');
+                drawDimensionLine(ctx, pivotX, absPx2, dimY, `l₂ = ${fmt(x2, 1)} m`, '#e11d48');
             } else {
                 const startX = pivotX - getCanvasX(4.5);
                 const absPx1 = startX + getCanvasX(x1);
                 const absPx2 = startX + getCanvasX(x2);
-                drawDimensionLine(ctx, startX, absPx1, dimY, `l₁ = ${x1.toFixed(1)}m`, '#4f46e5');
-                drawDimensionLine(ctx, startX, absPx2, dimY + 30, `l₂ = ${x2.toFixed(1)}m`, '#e11d48');
+                drawDimensionLine(ctx, startX, absPx1, dimY, `l₁ = ${fmt(x1, 1)} m`, '#4f46e5');
+                drawDimensionLine(ctx, startX, absPx2, dimY + 30, `l₂ = ${fmt(x2, 1)} m`, '#e11d48');
             }
         }
 
