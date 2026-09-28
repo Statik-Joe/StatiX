@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modul 5: Spannungsnachweis | Bautechnik-Labor</title>
-    <link rel="stylesheet" href="tailwind.min.css">
-    <link rel="stylesheet" href="labor.css">
+    <link rel="stylesheet" href="tailwind.min.css?v=2026-09-28">
+    <link rel="stylesheet" href="labor.css?v=2026-09-28">
 </head>
 <body data-modul="5" class="bg-slate-50 min-h-screen p-4 md:p-6 font-sans text-slate-800">
     <div class="max-w-7xl mx-auto bg-white p-6 rounded-2xl shadow-xl border border-slate-100">
@@ -119,7 +119,8 @@
                         </label>
                         <input type="range" id="qs_m" min="0" max="100" step="0.5" value="10" class="w-full accent-indigo-600">
                     </div>
-                    <p class="text-xs text-slate-400">Tipp: M<sub>max</sub> für einen Träger liefert Modul 3 (Schnittgrößen).</p>
+                    <p id="importNote" class="hidden text-xs font-semibold text-violet-700 bg-violet-50 border border-violet-100 rounded-lg px-2 py-1.5"></p>
+                    <p class="text-xs text-slate-400">Tipp: M<sub>max</sub> für einen Träger liefert Modul 3 (Schnittgrößen) – dort über „M<sub>max</sub> nachweisen“ direkt übernehmen.</p>
                 </div>
 
                 <div class="p-4 bg-rose-50/70 rounded-xl border border-rose-100 shadow-sm space-y-4">
@@ -182,7 +183,7 @@
                 </div>
 
                 <!-- Ausnutzungsgrad-Balken -->
-                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                <div id="ausnutzungCard" class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
                     <div class="flex justify-between text-xs font-bold text-slate-500 mb-1">
                         <span>Ausnutzungsgrad</span>
                         <span id="ausnutzungLabel">0 %</span>
@@ -192,11 +193,73 @@
                     </div>
                 </div>
 
+                <!-- Erfolgskontrolle -->
+                <div class="bg-white p-6 rounded-2xl border-2 border-dashed border-amber-300 shadow-sm">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-1">
+                        <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                            <span class="w-2 h-5 bg-amber-500 rounded-full"></span>
+                            Erfolgskontrolle
+                        </h3>
+                        <div class="flex gap-2 flex-wrap">
+                            <button id="btnNewTask5" class="text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-lg transition-colors">
+                                🎲 Neue Aufgabe
+                            </button>
+                            <button id="btnPracticeMode5" class="text-xs font-bold bg-amber-500 hover:bg-amber-600 text-white px-3 py-2 rounded-lg transition-colors">
+                                ✏️ Selbst berechnen
+                            </button>
+                        </div>
+                    </div>
+                    <p id="taskText5" class="text-sm text-slate-600 mt-2 mb-4">Aktiviere „Selbst berechnen“ für eine Aufgabe: Querschnitt, Moment und Werkstoff werden zufällig gewählt, der Rechenweg oben wird ausgeblendet. Berechne I, W und σ<sub>vorh</sub> von Hand und entscheide, ob der Nachweis erfüllt ist.</p>
+
+                    <div id="practiceForm5" class="hidden space-y-4">
+                        <div class="bg-amber-50/60 p-3 rounded-lg border border-amber-100 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div class="flex items-center gap-2">
+                                <label for="check_i" class="text-xs font-mono w-24">I =</label>
+                                <input type="number" id="check_i" step="0.1" class="w-28 border border-slate-300 rounded px-2 py-1 text-sm">
+                                <span class="text-xs">cm⁴</span>
+                                <span id="fb_i" class="text-lg"></span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <label for="check_w" class="text-xs font-mono w-24">W =</label>
+                                <input type="number" id="check_w" step="0.1" class="w-28 border border-slate-300 rounded px-2 py-1 text-sm">
+                                <span class="text-xs">cm³</span>
+                                <span id="fb_w" class="text-lg"></span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <label for="check_sigma" class="text-xs font-mono w-24">σ<sub>vorh</sub> =</label>
+                                <input type="number" id="check_sigma" step="0.01" class="w-28 border border-slate-300 rounded px-2 py-1 text-sm">
+                                <span class="text-xs">N/mm²</span>
+                                <span id="fb_sigma" class="text-lg"></span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <label for="check_nachweis" class="text-xs font-mono w-24">Nachweis</label>
+                                <select id="check_nachweis" class="w-28 border border-slate-300 rounded px-2 py-1 text-sm bg-white">
+                                    <option value="">– wählen –</option>
+                                    <option value="ja">erfüllt</option>
+                                    <option value="nein">nicht erfüllt</option>
+                                </select>
+                                <span id="fb_nachweis" class="text-lg"></span>
+                            </div>
+                        </div>
+                        <button id="btnCheck5" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-lg transition-colors">
+                            Prüfen
+                        </button>
+                        <div id="checkResult5" class="hidden text-center font-bold text-sm p-3 rounded-lg"></div>
+                    </div>
+
+                    <div class="border-t border-slate-200 mt-4 pt-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                        <input type="text" id="studentName5" placeholder="Name (optional)" class="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm">
+                        <button id="btnExportLog5" class="text-sm font-bold bg-slate-700 hover:bg-slate-800 text-white px-4 py-2 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed" disabled>
+                            📄 Protokoll exportieren (<span id="logCount5">0</span>)
+                        </button>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
 
-    <script src="labor.js"></script>
+    <script src="labor.js?v=2026-09-28"></script>
     <script>
         const canvas = document.getElementById('qsCanvas');
         const ctx = canvas.getContext('2d');
@@ -321,6 +384,9 @@
             document.getElementById('nachweisText').className = 'text-2xl font-extrabold ' + (erfuellt ? 'text-emerald-700' : 'text-rose-700');
             document.getElementById('nachweisText').innerText = erfuellt ? '✅ Erfüllt' : '❌ Nicht erfüllt';
             document.getElementById('nachweisSub').innerText = `${fmt(sigma, 2)} N/mm² ${erfuellt ? '≤' : '>'} ${sigZul} N/mm² (zulässig)`;
+
+            currentResult = { I: qv.I, W: qv.W, sigma, erfuellt, qv, M, sigZul };
+            if (solutionHidden) maskSolution();
 
             draw(qv, sigma);
         }
@@ -474,10 +540,11 @@
             ctx.fillStyle = '#e11d48';
             ctx.font = 'bold 12px sans-serif';
             ctx.textAlign = 'right';
-            ctx.fillText(`−σ = ${fmt(sigma, 1)} N/mm² (Druck)`, 0, centerY - triHalf - 8);
+            const sigmaText = solutionHidden ? '?' : fmt(sigma, 1);
+            ctx.fillText(`−σ = ${sigmaText} N/mm² (Druck)`, 0, centerY - triHalf - 8);
             ctx.fillStyle = '#2563eb';
             ctx.textAlign = 'left';
-            ctx.fillText(`+σ = ${fmt(sigma, 1)} N/mm² (Zug)`, 0, centerY + triHalf + 20);
+            ctx.fillText(`+σ = ${sigmaText} N/mm² (Zug)`, 0, centerY + triHalf + 20);
             ctx.fillStyle = '#64748b';
             ctx.font = '11px sans-serif';
             ctx.fillText('Spannungsverteilung', 8, top - 24);
@@ -486,6 +553,174 @@
         }
 
         [qs_b, qs_h, qs_d, qs_ib, qs_ih, qs_is, qs_it, qs_m].forEach(el => el.addEventListener('input', update));
+
+        // ===== Übernahme von M_max aus Modul 3 (modul-5-spannungsnachweis.html?M=74.14) =====
+        function setMoment(M) {
+            qs_m.step = 'any'; // sonst rastet der Regler auf 0,5er-Schritte ein
+            qs_m.max = Math.max(100, Math.ceil(M));
+            qs_m.value = M;
+        }
+        const mParam = parseFloat(new URLSearchParams(window.location.search).get('M'));
+        if (!isNaN(mParam) && mParam >= 0) {
+            setMoment(mParam);
+            const note = document.getElementById('importNote');
+            note.innerHTML = `➡️ M<sub>max</sub> = ${fmt(mParam, 2)} kNm aus Modul 3 übernommen.`;
+            note.classList.remove('hidden');
+        }
+
+        // ===== Erfolgskontrolle =====
+        let currentResult = null;
+        let practiceMode5 = false;
+        let solutionHidden = false;
+        let sessionLog5 = [];
+        const lockableInputs = [qsType, qs_b, qs_h, qs_d, qs_ib, qs_ih, qs_is, qs_it, qs_m, material, sig_zul];
+        const maskIds = ['rw_i', 'rw_w', 'rw_w_mm', 'rw_sigma', 'rw_ausnutzung'];
+        const checkIds = ['check_i', 'check_w', 'check_sigma', 'check_nachweis'];
+        const fbIds = ['fb_i', 'fb_w', 'fb_sigma', 'fb_nachweis'];
+        const defaultTaskText = document.getElementById('taskText5').innerHTML;
+
+        // Werte im Rechenweg, Nachweis-Box und Ausnutzungsbalken verbergen (würden die Lösung verraten)
+        function maskSolution() {
+            maskIds.forEach(id => { document.getElementById(id).innerText = '?'; });
+            document.getElementById('nachweisBox').className = 'p-5 rounded-2xl border-2 shadow-sm text-center bg-slate-50 border-slate-200';
+            document.getElementById('nachweisLabel').className = 'text-sm font-bold tracking-wide mb-1 text-slate-500';
+            document.getElementById('nachweisText').className = 'text-2xl font-extrabold text-slate-500';
+            document.getElementById('nachweisText').innerText = '❓ Erst berechnen …';
+            document.getElementById('nachweisSub').innerHTML = `σ<sub>zul</sub> = ${currentResult.sigZul} N/mm²`;
+            document.getElementById('ausnutzungCard').classList.add('hidden');
+        }
+
+        function setSolutionHidden(hidden) {
+            solutionHidden = hidden;
+            lockableInputs.forEach(el => { el.disabled = hidden; });
+            if (!hidden) document.getElementById('ausnutzungCard').classList.remove('hidden');
+            update();
+        }
+
+        const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+        const randStep = (min, max, step) => Math.round((min + Math.random() * (max - min)) / step) * step;
+
+        function describeTask(r) {
+            const q = r.qv;
+            let qs;
+            if (q.type === 'rechteck') qs = `Rechteck b = ${q.b} cm, h = ${q.h} cm`;
+            else if (q.type === 'kreis') qs = `Kreis d = ${q.d} cm`;
+            else qs = `I-Profil b = ${q.b} cm, h = ${q.h} cm, s = ${fmt(q.s, 1)} cm, t = ${fmt(q.t, 1)} cm`;
+            const mat = material.options[material.selectedIndex].text;
+            return `${qs}; M = ${fmt(r.M)} kNm; ${mat}`;
+        }
+
+        function newTask5() {
+            // Zufälliger Querschnitt (Werte liegen auf den Rasterschritten der Regler)
+            const type = pick(['rechteck', 'kreis', 'iprofil']);
+            qsType.value = type;
+            document.getElementById('dims_rechteck').classList.toggle('hidden', type !== 'rechteck');
+            document.getElementById('dims_kreis').classList.toggle('hidden', type !== 'kreis');
+            document.getElementById('dims_iprofil').classList.toggle('hidden', type !== 'iprofil');
+            if (type === 'rechteck') {
+                qs_b.value = randStep(10, 30, 2);
+                qs_h.value = randStep(16, 50, 2);
+            } else if (type === 'kreis') {
+                qs_d.value = randStep(10, 40, 2);
+            } else {
+                qs_ib.value = randStep(10, 30, 2);
+                qs_ih.value = randStep(20, 50, 2);
+                qs_is.value = (randStep(6, 15, 1) / 10).toFixed(1);
+                qs_it.value = (randStep(8, 25, 1) / 10).toFixed(1);
+            }
+            // Zufälliger Werkstoff; ein I-Profil ist in der Praxis immer ein Stahlprofil
+            const matVal = type === 'iprofil' ? '140' : pick(['10', '11', '140']);
+            material.value = matVal;
+            sig_zul.value = matVal;
+
+            // Moment so wählen, dass die Ausnutzung zwischen etwa 40 % und 160 % liegt (Nachweis mal erfüllt, mal nicht)
+            const W = getQuerschnittswerte().W;
+            const ratio = 0.4 + Math.random() * 1.2;
+            const M = Math.max(0.5, Math.round(ratio * parseFloat(matVal) * W / 1000 * 2) / 2);
+            setMoment(M);
+            document.getElementById('importNote').classList.add('hidden');
+
+            checkIds.forEach(id => { document.getElementById(id).value = ''; });
+            fbIds.forEach(id => { document.getElementById(id).innerText = ''; });
+            document.getElementById('checkResult5').classList.add('hidden');
+            document.getElementById('practiceForm5').classList.remove('hidden');
+            setSolutionHidden(true);
+            document.getElementById('taskText5').innerHTML = `<strong>Aufgabe:</strong> ${describeTask(currentResult)}. Berechne I, W und σ<sub>vorh</sub> und entscheide, ob der Nachweis σ<sub>vorh</sub> ≤ σ<sub>zul</sub> erfüllt ist.`;
+        }
+
+        document.getElementById('btnPracticeMode5').addEventListener('click', () => {
+            practiceMode5 = !practiceMode5;
+            const btn = document.getElementById('btnPracticeMode5');
+            if (practiceMode5) {
+                btn.innerText = '👁️ Lösung anzeigen';
+                newTask5();
+            } else {
+                btn.innerText = '✏️ Selbst berechnen';
+                document.getElementById('practiceForm5').classList.add('hidden');
+                document.getElementById('taskText5').innerHTML = defaultTaskText;
+                setSolutionHidden(false);
+            }
+        });
+
+        document.getElementById('btnNewTask5').addEventListener('click', () => {
+            if (!practiceMode5) {
+                practiceMode5 = true;
+                document.getElementById('btnPracticeMode5').innerText = '👁️ Lösung anzeigen';
+            }
+            newTask5();
+        });
+
+        document.getElementById('btnCheck5').addEventListener('click', () => {
+            if (!currentResult || !solutionHidden) return;
+            const r = currentResult;
+            const numChecks = [
+                ['check_i', 'fb_i', r.I, 'I', 'cm⁴', 1],
+                ['check_w', 'fb_w', r.W, 'W', 'cm³', 1],
+                ['check_sigma', 'fb_sigma', r.sigma, 'σ_vorh', 'N/mm²', 2],
+            ];
+            let correctCount = 0;
+            const detailLines = [];
+            numChecks.forEach(([inputId, fbId, real, label, unit, digits]) => {
+                const val = parseFloat(document.getElementById(inputId).value);
+                const tolerance = Math.max(Math.abs(real) * 0.02, 0.05); // 2 % Rundungstoleranz
+                const ok = !isNaN(val) && Math.abs(val - real) <= tolerance;
+                document.getElementById(fbId).innerText = ok ? '✅' : '❌';
+                if (ok) correctCount++;
+                detailLines.push(`${label}: eingegeben ${isNaN(val) ? '—' : fmt(val) + ' ' + unit} / richtig ${fmt(real, digits)} ${unit} ${ok ? '✅' : '❌'}`);
+            });
+            const answer = document.getElementById('check_nachweis').value;
+            const okNachweis = answer !== '' && (answer === 'ja') === r.erfuellt;
+            document.getElementById('fb_nachweis').innerText = okNachweis ? '✅' : '❌';
+            if (okNachweis) correctCount++;
+            const txt = v => v === 'ja' ? 'erfüllt' : v === 'nein' ? 'nicht erfüllt' : '—';
+            detailLines.push(`Nachweis: eingegeben ${txt(answer)} / richtig ${r.erfuellt ? 'erfüllt' : 'nicht erfüllt'} ${okNachweis ? '✅' : '❌'}`);
+
+            sessionLog5.push({
+                zeit: new Date().toLocaleTimeString('de-DE'),
+                aufgabe: describeTask(r),
+                details: detailLines,
+                richtig: correctCount,
+                gesamt: 4
+            });
+            document.getElementById('logCount5').innerText = sessionLog5.length;
+            document.getElementById('btnExportLog5').disabled = false;
+
+            // Lösung sichtbar machen
+            setSolutionHidden(false);
+            const box = document.getElementById('checkResult5');
+            box.classList.remove('hidden', 'bg-emerald-50', 'text-emerald-800', 'bg-amber-50', 'text-amber-800');
+            if (correctCount === 4) {
+                box.classList.add('bg-emerald-50', 'text-emerald-800');
+                box.innerText = '🎉 Alles richtig! (4/4) Rechenweg und Nachweis sind jetzt oben sichtbar.';
+            } else {
+                box.classList.add('bg-amber-50', 'text-amber-800');
+                box.innerText = `${correctCount}/4 richtig. Vergleiche deine ❌-Werte mit dem jetzt sichtbaren Rechenweg oben.`;
+            }
+        });
+
+        document.getElementById('btnExportLog5').addEventListener('click', () => {
+            exportProtocol(5, 'Spannungsnachweis', document.getElementById('studentName5').value, sessionLog5);
+        });
 
         // Init
         update();
