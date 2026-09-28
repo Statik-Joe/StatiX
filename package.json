@@ -1,0 +1,11 @@
+{
+  "name": "bautechnik-labor",
+  "private": true,
+  "description": "Virtuelles Bautechnik-Labor – FOS 12 (Hessen)",
+  "scripts": {
+    "build:css": "tailwindcss -i ./src/tailwind.css -o ./tailwind.min.css --minify"
+  },
+  "devDependencies": {
+    "tailwindcss": "3.4.19"
+  }
+}

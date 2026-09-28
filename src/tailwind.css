@@ -1,0 +1,4 @@
+/* Eingabe für den Tailwind-Build. Ergebnis: tailwind.min.css (npm run build:css) */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
