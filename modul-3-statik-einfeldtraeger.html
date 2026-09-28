@@ -831,9 +831,36 @@
         }
 
         // Zeichnen des gesamten Systems im Canvas
-        function drawSystem(L, L_kl, L_kr, kl_active, kr_active, F1, x1, f1_active, F2, x2, f2_active, q1_val, q1_start, q1_end, q1_active, q2_val, q2_start, q2_end, q2_active, getSchnittgroessen, maxM, maxX0) {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        // Kollisionsvermeidung: verschiebt sich überlappende Lasten automatisch übereinander,
+        // damit Pfeile/Beschriftungen nicht ineinander laufen (übernommen aus früherer Tool-Version).
+        // Liefert eine getSafeY-Funktion, die sich alle bereits platzierten Lasten merkt.
+        function createLoadStacker(beamY) {
+            const placedLoads = [];
+            return function getSafeY(startX, endX, requiredHeight) {
+                let currentBottomY = beamY - 5;
+                let collision = true;
+                let watchdog = 0;
+                while (collision && watchdog < 20) {
+                    collision = false;
+                    for (const pl of placedLoads) {
+                        if (Math.max(startX, pl.startX) < Math.min(endX, pl.endX)) {
+                            if (currentBottomY > pl.topY - 6) {
+                                currentBottomY = pl.topY - 12;
+                                collision = true;
+                            }
+                        }
+                    }
+                    watchdog++;
+                }
+                const topY = currentBottomY - requiredHeight;
+                placedLoads.push({ startX, endX, topY });
+                return { bottomY: currentBottomY, topY };
+            };
+        }
 
+        const BASE_CANVAS_HEIGHT = 900; // Höhe ohne zusätzlichen Platz für gestapelte Lasten
+
+        function drawSystem(L, L_kl, L_kr, kl_active, kr_active, F1, x1, f1_active, F2, x2, f2_active, q1_val, q1_start, q1_end, q1_active, q2_val, q2_start, q2_end, q2_active, getSchnittgroessen, maxM, maxX0) {
             const totalLength = L_kl + L + L_kr;
             const paddingX = 80;
             const drawWidth = canvas.width - 2 * paddingX;
@@ -845,6 +872,25 @@
 
             // System-Trägerlinie auf Y = 160
             const beamY = 160;
+
+            // Lastenstapel vorab durchspielen (gleiche Reihenfolge wie beim Zeichnen: q1, q2, F1, F2).
+            // Ragt er samt Beschriftung über den oberen Rand, wird die Zeichenfläche um genau diesen
+            // Betrag höher und die ganze Zeichnung nach unten verschoben – so wird nichts abgeschnitten
+            // (auch nicht im PNG-Export).
+            const previewStack = createLoadStacker(beamY);
+            let stackTop = beamY;
+            if (q1_active && q1_end > q1_start) stackTop = Math.min(stackTop, previewStack(getPixelX(q1_start), getPixelX(q1_end), 60).topY);
+            if (q2_active && q2_end > q2_start) stackTop = Math.min(stackTop, previewStack(getPixelX(q2_start), getPixelX(q2_end), 60).topY);
+            if (f1_active) stackTop = Math.min(stackTop, previewStack(getPixelX(x1) - 25, getPixelX(x1) + 25, 87).topY);
+            if (f2_active) stackTop = Math.min(stackTop, previewStack(getPixelX(x2) - 25, getPixelX(x2) + 25, 87).topY);
+            const topMargin = 12;
+            const offsetY = Math.max(0, Math.ceil(topMargin - stackTop));
+            const neededHeight = BASE_CANVAS_HEIGHT + offsetY;
+            if (canvas.height !== neededHeight) canvas.height = neededHeight; // setzt auch den Canvas-Inhalt zurück
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.save();
+            ctx.translate(0, offsetY);
 
             // Zeichne Träger
             ctx.strokeStyle = '#334155';
@@ -870,29 +916,7 @@
             // Drag-Buttons initialisieren
             dragElements = [];
 
-            // Kollisionsvermeidung: verschiebt sich überlappende Lasten automatisch übereinander,
-            // damit Pfeile/Beschriftungen nicht ineinander laufen (übernommen aus früherer Tool-Version)
-            const placedLoads = [];
-            function getSafeY(startX, endX, requiredHeight) {
-                let currentBottomY = beamY - 5;
-                let collision = true;
-                let watchdog = 0;
-                while (collision && watchdog < 20) {
-                    collision = false;
-                    for (const pl of placedLoads) {
-                        if (Math.max(startX, pl.startX) < Math.min(endX, pl.endX)) {
-                            if (currentBottomY > pl.topY - 6) {
-                                currentBottomY = pl.topY - 12;
-                                collision = true;
-                            }
-                        }
-                    }
-                    watchdog++;
-                }
-                const topY = currentBottomY - requiredHeight;
-                placedLoads.push({ startX, endX, topY });
-                return { bottomY: currentBottomY, topY };
-            }
+            const getSafeY = createLoadStacker(beamY);
 
             // Streckenlasten zuerst zeichnen (unterste Etage, direkt am Träger)
             if (q1_active && q1_end > q1_start) {
@@ -942,8 +966,8 @@
                 ctx.lineWidth = 2;
                 ctx.stroke();
 
-                dragElements.push({ id: 'q1_start', x: qxStart, y: q1LineY });
-                dragElements.push({ id: 'q1_end', x: qxEnd, y: q1LineY });
+                dragElements.push({ id: 'q1_start', x: qxStart, y: q1LineY + offsetY });
+                dragElements.push({ id: 'q1_end', x: qxEnd, y: q1LineY + offsetY });
             }
 
             if (q2_active && q2_end > q2_start) {
@@ -990,15 +1014,15 @@
                 ctx.lineWidth = 2;
                 ctx.stroke();
 
-                dragElements.push({ id: 'q2_start', x: qxStart, y: q2LineY });
-                dragElements.push({ id: 'q2_end', x: qxEnd, y: q2LineY });
+                dragElements.push({ id: 'q2_start', x: qxStart, y: q2LineY + offsetY });
+                dragElements.push({ id: 'q2_end', x: qxEnd, y: q2LineY + offsetY });
             }
 
             // Einzellasten danach zeichnen (stapeln sich automatisch über etwaigen Streckenlasten)
             if (f1_active) {
                 const fx1 = getPixelX(x1);
                 const col = document.getElementById('colorF1').value;
-                const reqHeight = 65 + 16;
+                const reqHeight = 65 + 22;
                 const { bottomY: f1BottomY, topY: f1TopY } = getSafeY(fx1 - 25, fx1 + 25, reqHeight);
                 const f1TailY = f1BottomY - 65;
                 ctx.strokeStyle = col;
@@ -1020,7 +1044,9 @@
                 // Kraftbeschriftung
                 ctx.font = 'bold 12px sans-serif';
                 ctx.fillStyle = '#0f172a';
-                ctx.fillText(`F₁ = ${fmt(F1)} kN`, fx1 - 25, f1TailY - 8);
+                ctx.textAlign = 'center'; // über dem Griff, damit dieser die Beschriftung nicht verdeckt
+                ctx.fillText(`F₁ = ${fmt(F1)} kN`, fx1, f1TailY - 14);
+                ctx.textAlign = 'left';
 
                 // Grip Handle für Drag & Drop
                 ctx.fillStyle = col;
@@ -1031,13 +1057,13 @@
                 ctx.lineWidth = 2.5;
                 ctx.stroke();
 
-                dragElements.push({ id: 'x1', x: fx1, y: f1TailY });
+                dragElements.push({ id: 'x1', x: fx1, y: f1TailY + offsetY });
             }
 
             if (f2_active) {
                 const fx2 = getPixelX(x2);
                 const col = document.getElementById('colorF2').value;
-                const reqHeight = 65 + 16;
+                const reqHeight = 65 + 22;
                 const { bottomY: f2BottomY, topY: f2TopY } = getSafeY(fx2 - 25, fx2 + 25, reqHeight);
                 const f2TailY = f2BottomY - 65;
                 ctx.strokeStyle = col;
@@ -1059,7 +1085,9 @@
                 // Kraftbeschriftung
                 ctx.font = 'bold 12px sans-serif';
                 ctx.fillStyle = '#0f172a';
-                ctx.fillText(`F₂ = ${fmt(F2)} kN`, fx2 - 25, f2TailY - 8);
+                ctx.textAlign = 'center';
+                ctx.fillText(`F₂ = ${fmt(F2)} kN`, fx2, f2TailY - 14);
+                ctx.textAlign = 'left';
 
                 // Grip Handle für Drag & Drop
                 ctx.fillStyle = col;
@@ -1070,7 +1098,7 @@
                 ctx.lineWidth = 2.5;
                 ctx.stroke();
 
-                dragElements.push({ id: 'x2', x: fx2, y: f2TailY });
+                dragElements.push({ id: 'x2', x: fx2, y: f2TailY + offsetY });
             }
 
             // Normgerechte automatische Bemaßungskette
@@ -1245,6 +1273,8 @@
                 }
                 document.getElementById('sonde_didaktik').innerText = formulaStr;
             }
+
+            ctx.restore();
         }
 
         // Zeichnen der normgerechten Maßkette
