@@ -3,29 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modul 5: Spannungsnachweis</title>
+    <title>Modul 5: Spannungsnachweis | Bautechnik-Labor</title>
     <link rel="stylesheet" href="tailwind.min.css">
-    <style>
-        canvas {
-            border: 1px solid #e2e8f0;
-            background: #f8fafc;
-            width: 100%;
-            height: auto;
-            border-radius: 0.75rem;
-        }
-    </style>
+    <link rel="stylesheet" href="labor.css">
 </head>
-<body class="bg-slate-50 min-h-screen p-4 md:p-6 font-sans text-slate-800">
+<body data-modul="5" class="bg-slate-50 min-h-screen p-4 md:p-6 font-sans text-slate-800">
     <div class="max-w-7xl mx-auto bg-white p-6 rounded-2xl shadow-xl border border-slate-100">
 
-        <!-- Header -->
+        <!-- Header inkl. Navigation -->
         <header class="mb-6 border-b pb-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
                 <div class="flex items-center gap-3 mb-1">
-                    <a href="index.html" class="text-sky-600 hover:text-sky-800 font-semibold text-sm flex items-center gap-1 bg-sky-50 px-2 py-1 rounded">
+                    <a href="index.html" class="lab-back">
                         <span>&larr;</span> Zurück zum Menü
                     </a>
-                    <span class="text-xs font-bold bg-sky-100 text-sky-700 px-2 py-0.5 rounded uppercase tracking-wide">Modul 5</span>
+                    <span class="lab-badge">Modul 5</span>
                 </div>
                 <h1 class="text-3xl font-extrabold text-slate-800">Spannungsnachweis</h1>
                 <p class="text-sm text-slate-500 mt-1">Querschnittswerte berechnen, Biegespannung ermitteln und gegen die zulässige Spannung nachweisen.</p>
@@ -33,16 +25,16 @@
         </header>
 
         <p class="text-xs text-amber-700 bg-amber-50 border border-amber-100 rounded-lg px-3 py-2 mb-6">
-            💡 Dieses Modul nutzt die klassische Methode mit <strong>zulässigen Spannungen</strong> (σ_vorh ≤ σ_zul) zur Einführung des Grundprinzips. Die aktuelle Bemessung nach Eurocode arbeitet mit Bemessungswerten und Teilsicherheitsbeiwerten (Grenzzustandsmethode) – das Grundprinzip "Spannung ≤ Grenzwert" bleibt aber dasselbe.
+            💡 Dieses Modul nutzt die klassische Methode mit <strong>zulässigen Spannungen</strong> (σ<sub>vorh</sub> ≤ σ<sub>zul</sub>) zur Einführung des Grundprinzips. Die aktuelle Bemessung nach Eurocode arbeitet mit Bemessungswerten und Teilsicherheitsbeiwerten (Grenzzustandsmethode) – das Grundprinzip „Spannung ≤ Grenzwert“ bleibt aber dasselbe.
         </p>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
 
-            <!-- Controls (Links) -->
+            <!-- Steuerpanel (Links) -->
             <div class="lg:col-span-4 space-y-6">
 
                 <div class="p-4 bg-teal-50/70 rounded-xl border border-teal-100 shadow-sm space-y-4">
-                    <h3 class="text-md font-bold text-teal-800 flex items-center gap-2">
+                    <h3 class="text-base font-bold text-teal-800 flex items-center gap-2">
                         <span class="w-3.5 h-3.5 bg-teal-500 rounded-full"></span>
                         Querschnitt
                     </h3>
@@ -100,55 +92,61 @@
                         <div>
                             <label class="flex justify-between text-xs font-bold text-slate-500 mb-1">
                                 <span>Stegdicke s [cm]</span>
-                                <span id="val_is" class="text-teal-700 font-bold">1.0 cm</span>
+                                <span id="val_is" class="text-teal-700 font-bold">1,0 cm</span>
                             </label>
                             <input type="range" id="qs_is" min="0.5" max="4" step="0.1" value="1" class="w-full accent-teal-600">
                         </div>
                         <div>
                             <label class="flex justify-between text-xs font-bold text-slate-500 mb-1">
                                 <span>Flanschdicke t [cm]</span>
-                                <span id="val_it" class="text-teal-700 font-bold">1.5 cm</span>
+                                <span id="val_it" class="text-teal-700 font-bold">1,5 cm</span>
                             </label>
                             <input type="range" id="qs_it" min="0.5" max="6" step="0.1" value="1.5" class="w-full accent-teal-600">
                         </div>
+                        <p class="text-xs text-slate-400">Stegdicke und Flanschdicke werden automatisch begrenzt, damit ein gültiges I-Profil entsteht (s &lt; b, 2·t &lt; h).</p>
                     </div>
                 </div>
 
                 <div class="p-4 bg-indigo-50/70 rounded-xl border border-indigo-100 shadow-sm space-y-4">
-                    <h3 class="text-md font-bold text-indigo-800 flex items-center gap-2">
+                    <h3 class="text-base font-bold text-indigo-800 flex items-center gap-2">
                         <span class="w-3.5 h-3.5 bg-indigo-500 rounded-full"></span>
                         Belastung
                     </h3>
                     <div>
                         <label class="flex justify-between text-xs font-bold text-slate-500 mb-1">
-                            <span>Bemessungsmoment M [kNm]</span>
+                            <span>Biegemoment M<sub>max</sub> [kNm]</span>
                             <span id="val_m" class="text-indigo-700 font-bold">10 kNm</span>
                         </label>
                         <input type="range" id="qs_m" min="0" max="100" step="0.5" value="10" class="w-full accent-indigo-600">
                     </div>
+                    <p class="text-xs text-slate-400">Tipp: M<sub>max</sub> für einen Träger liefert Modul 3 (Schnittgrößen).</p>
                 </div>
 
                 <div class="p-4 bg-rose-50/70 rounded-xl border border-rose-100 shadow-sm space-y-4">
-                    <h3 class="text-md font-bold text-rose-800 flex items-center gap-2">
+                    <h3 class="text-base font-bold text-rose-800 flex items-center gap-2">
                         <span class="w-3.5 h-3.5 bg-rose-500 rounded-full"></span>
                         Werkstoff
                     </h3>
                     <div>
-                        <label class="block text-xs font-bold text-slate-500 mb-1">Material (setzt σ_zul als Vorschlag)</label>
+                        <label class="block text-xs font-bold text-slate-500 mb-1">Material (setzt σ<sub>zul</sub> als Vorschlag)</label>
+                        <!-- Klassische zulässige Biegespannungen, Lastfall H:
+                             Holz nach DIN 1052:1988 (Nadelholz S10 / Güteklasse II: 10 N/mm², Brettschichtholz BS11: 11 N/mm²),
+                             Stahl St 37 (heute S235) nach DIN 1050: 140 N/mm². -->
                         <select id="material" class="w-full border border-slate-300 rounded-lg px-2 py-1.5 text-sm bg-white">
-                            <option value="14">Nadelholz C24 (14 N/mm²)</option>
-                            <option value="24">Brettschichtholz GL24h (24 N/mm²)</option>
-                            <option value="140" selected>Baustahl S235 (140 N/mm²)</option>
+                            <option value="10">Nadelholz C24 ≈ S10 (10 N/mm²)</option>
+                            <option value="11">Brettschichtholz GL24h ≈ BS11 (11 N/mm²)</option>
+                            <option value="140" selected>Baustahl S235 ≈ St 37 (140 N/mm²)</option>
                             <option value="custom">Eigener Wert …</option>
                         </select>
                     </div>
                     <div>
                         <label class="flex justify-between text-xs font-bold text-slate-500 mb-1">
-                            <span>Zulässige Spannung σ_zul [N/mm²]</span>
+                            <span>Zulässige Spannung σ<sub>zul</sub> [N/mm²]</span>
                             <span id="val_sigzul" class="text-rose-700 font-bold">140 N/mm²</span>
                         </label>
                         <input type="range" id="sig_zul" min="5" max="250" step="1" value="140" class="w-full accent-rose-600">
                     </div>
+                    <p class="text-xs text-slate-400">Klassische zulässige Biegespannungen (Lastfall H): Holz nach DIN 1052:1988, Stahl nach DIN 1050.</p>
                 </div>
 
             </div>
@@ -168,25 +166,26 @@
 
                 <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200 font-mono text-sm shadow-sm">
                     <h3 class="text-lg font-bold text-slate-800 font-sans mb-3 flex items-center gap-2">
-                        <span class="w-2 h-5 bg-emerald-500 rounded-full"></span>
-                        Rechenweg
+                        <span class="lab-bar"></span>
+                        Rechenweg – Querschnittswerte und Biegespannung
                     </h3>
                     <div class="bg-white p-3 rounded-lg border border-slate-200 space-y-1">
-                        <p id="rw_formula_i">I = ...</p>
+                        <p id="rw_formula_i">I = …</p>
                         <p>I = <span id="rw_i">0</span> cm⁴</p>
                         <p class="pt-2 border-t border-slate-100" id="rw_formula_w">W = I / e</p>
                         <p>W = <span id="rw_w">0</span> cm³</p>
-                        <p class="pt-2 border-t border-slate-100">σ_vorh = M / W = <span id="rw_m_nmm">0</span> Nmm / <span id="rw_w_mm">0</span> mm³</p>
-                        <p class="font-bold text-indigo-700">σ_vorh = <span id="rw_sigma">0</span> N/mm²</p>
-                        <p class="pt-2 border-t border-slate-100">Ausnutzungsgrad = σ_vorh / σ_zul = <span id="rw_ausnutzung">0</span> %</p>
+                        <p class="pt-2 border-t border-slate-100">σ<sub>vorh</sub> = M / W = <span id="rw_m_nmm">0</span> Nmm / <span id="rw_w_mm">0</span> mm³</p>
+                        <p class="font-bold text-indigo-700">σ<sub>vorh</sub> = <span id="rw_sigma">0</span> N/mm²</p>
+                        <p class="pt-2 border-t border-slate-100">Ausnutzungsgrad = σ<sub>vorh</sub> / σ<sub>zul</sub> = <span id="rw_ausnutzung">0</span> %</p>
                     </div>
+                    <p class="text-xs text-slate-400 font-sans mt-2">💡 Umrechnung: 1 kNm = 1 000 000 Nmm und 1 cm³ = 1000 mm³, also σ [N/mm²] = 1000 · M [kNm] / W [cm³].</p>
                 </div>
 
                 <!-- Ausnutzungsgrad-Balken -->
                 <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
                     <div class="flex justify-between text-xs font-bold text-slate-500 mb-1">
                         <span>Ausnutzungsgrad</span>
-                        <span id="ausnutzungLabel">0%</span>
+                        <span id="ausnutzungLabel">0 %</span>
                     </div>
                     <div class="w-full h-5 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
                         <div id="ausnutzungBar" class="h-full transition-all duration-300 bg-emerald-500" style="width:0%"></div>
@@ -197,6 +196,7 @@
         </div>
     </div>
 
+    <script src="labor.js"></script>
     <script>
         const canvas = document.getElementById('qsCanvas');
         const ctx = canvas.getContext('2d');
@@ -228,7 +228,19 @@
             update();
         });
 
-        // Berechnet I [cm^4], W [cm^3] und e [cm] (Randfaserabstand) für den gewählten Querschnitt
+        // I-Profil geometrisch gültig halten: Steg schmaler als der Flansch (s < b),
+        // beide Flansche zusammen niedriger als das Profil (2·t < h), sonst wird hᵢ ≤ 0.
+        function limitIProfil() {
+            const b = parseFloat(qs_ib.value), h = parseFloat(qs_ih.value);
+            const sMax = Math.min(4, b - 1);
+            const tMax = Math.min(6, Math.floor((h - 2) / 2 * 10) / 10);
+            qs_is.max = sMax;
+            qs_it.max = tMax;
+            if (parseFloat(qs_is.value) > sMax) qs_is.value = sMax;
+            if (parseFloat(qs_it.value) > tMax) qs_it.value = tMax;
+        }
+
+        // Berechnet I [cm⁴], W [cm³] und e [cm] (Randfaserabstand) für den gewählten Querschnitt
         function getQuerschnittswerte() {
             const type = qsType.value;
             if (type === 'rechteck') {
@@ -242,12 +254,13 @@
                 const e = d / 2;
                 return { type, d, I, e, W: I / e };
             } else {
+                limitIProfil();
                 const b = parseFloat(qs_ib.value), h = parseFloat(qs_ih.value);
                 const s = parseFloat(qs_is.value), t = parseFloat(qs_it.value);
                 const hi = h - 2 * t; // lichte Höhe zwischen den Flanschen
                 const I = (b * h * h * h - (b - s) * hi * hi * hi) / 12;
                 const e = h / 2;
-                return { type, b, h, s, t, I, e, W: I / e };
+                return { type, b, h, s, t, hi, I, e, W: I / e };
             }
         }
 
@@ -256,7 +269,7 @@
             const M = parseFloat(qs_m.value); // kNm
             const sigZul = parseFloat(sig_zul.value); // N/mm²
 
-            document.getElementById('val_m').innerText = M + ' kNm';
+            document.getElementById('val_m').innerText = fmt(M) + ' kNm';
             document.getElementById('val_sigzul').innerText = sigZul + ' N/mm²';
             if (qv.type === 'rechteck') {
                 document.getElementById('val_b').innerText = qv.b + ' cm';
@@ -266,47 +279,48 @@
             } else {
                 document.getElementById('val_ib').innerText = qv.b + ' cm';
                 document.getElementById('val_ih').innerText = qv.h + ' cm';
-                document.getElementById('val_is').innerText = qv.s.toFixed(1) + ' cm';
-                document.getElementById('val_it').innerText = qv.t.toFixed(1) + ' cm';
+                document.getElementById('val_is').innerText = fmt(qv.s, 1) + ' cm';
+                document.getElementById('val_it').innerText = fmt(qv.t, 1) + ' cm';
             }
 
-            // Sigma-Formel: sigma[N/mm²] = 1000 * M[kNm] / W[cm³]  (siehe Herleitung: 1 kNm = 1e6 Nmm, 1 cm³ = 1000 mm³)
+            // σ [N/mm²] = 1000 · M [kNm] / W [cm³]  (1 kNm = 10⁶ Nmm, 1 cm³ = 10³ mm³)
             const sigma = qv.W > 0 ? (1000 * M) / qv.W : 0;
             const ausnutzung = sigZul > 0 ? (sigma / sigZul) * 100 : 0;
 
             // Formeltext je nach Typ
             const formulaEl = document.getElementById('rw_formula_i');
             if (qv.type === 'rechteck') {
-                formulaEl.innerText = `I = b·h³/12 = ${qv.b}·${qv.h}³/12`;
+                formulaEl.innerText = `I = b · h³ / 12 = ${qv.b} · ${qv.h}³ / 12`;
             } else if (qv.type === 'kreis') {
-                formulaEl.innerText = `I = π·d⁴/64 = π·${qv.d}⁴/64`;
+                formulaEl.innerText = `I = π · d⁴ / 64 = π · ${qv.d}⁴ / 64`;
             } else {
-                formulaEl.innerText = `I = (b·h³-(b-s)·hᵢ³)/12 = (${qv.b}·${qv.h}³-${(qv.b-qv.s).toFixed(1)}·${(qv.h-2*qv.t).toFixed(1)}³)/12`;
+                formulaEl.innerHTML = `I = (b · h³ − (b − s) · h<sub>i</sub>³) / 12 = (${qv.b} · ${qv.h}³ − ${fmt(qv.b - qv.s, 1)} · ${fmt(qv.hi, 1)}³) / 12` +
+                    ` <span class="text-slate-400">(h<sub>i</sub> = h − 2 · t)</span>`;
             }
-            document.getElementById('rw_i').innerText = qv.I.toFixed(1);
-            document.getElementById('rw_formula_w').innerText = `W = I / e  (e = ${qv.e.toFixed(1)} cm)`;
-            document.getElementById('rw_w').innerText = qv.W.toFixed(1);
-            document.getElementById('rw_m_nmm').innerText = (M * 1e6).toLocaleString('de-DE');
-            document.getElementById('rw_w_mm').innerText = (qv.W * 1000).toLocaleString('de-DE');
-            document.getElementById('rw_sigma').innerText = sigma.toFixed(2);
-            document.getElementById('rw_ausnutzung').innerText = ausnutzung.toFixed(1);
+            document.getElementById('rw_i').innerText = fmt(qv.I, 1);
+            document.getElementById('rw_formula_w').innerText = `W = I / e   (e = ${fmt(qv.e, 1)} cm, Abstand der Randfaser von der Schwerachse)`;
+            document.getElementById('rw_w').innerText = fmt(qv.W, 1);
+            document.getElementById('rw_m_nmm').innerText = Math.round(M * 1e6).toLocaleString('de-DE');
+            document.getElementById('rw_w_mm').innerText = Math.round(qv.W * 1000).toLocaleString('de-DE');
+            document.getElementById('rw_sigma').innerText = fmt(sigma, 2);
+            document.getElementById('rw_ausnutzung').innerText = fmt(ausnutzung, 1);
 
             // Ausnutzungsgrad-Balken
             const barPct = Math.min(100, ausnutzung);
             const bar = document.getElementById('ausnutzungBar');
             bar.style.width = barPct + '%';
             bar.className = 'h-full transition-all duration-300 ' + (ausnutzung <= 100 ? (ausnutzung > 90 ? 'bg-amber-500' : 'bg-emerald-500') : 'bg-rose-600');
-            document.getElementById('ausnutzungLabel').innerText = ausnutzung.toFixed(1) + '%';
+            document.getElementById('ausnutzungLabel').innerText = fmt(ausnutzung, 1) + ' %';
 
             // Nachweis-Box
             const box = document.getElementById('nachweisBox');
             const erfuellt = sigma <= sigZul;
             box.className = 'p-5 rounded-2xl border-2 shadow-sm text-center ' + (erfuellt ? 'bg-emerald-50 border-emerald-300' : 'bg-rose-50 border-rose-300');
-            document.getElementById('nachweisLabel').className = 'text-sm font-bold uppercase tracking-wide mb-1 ' + (erfuellt ? 'text-emerald-700' : 'text-rose-700');
-            document.getElementById('nachweisLabel').innerText = 'Nachweis σ_vorh ≤ σ_zul';
+            document.getElementById('nachweisLabel').className = 'text-sm font-bold tracking-wide mb-1 ' + (erfuellt ? 'text-emerald-700' : 'text-rose-700');
+            document.getElementById('nachweisLabel').innerHTML = 'Nachweis σ<sub>vorh</sub> ≤ σ<sub>zul</sub>';
             document.getElementById('nachweisText').className = 'text-2xl font-extrabold ' + (erfuellt ? 'text-emerald-700' : 'text-rose-700');
             document.getElementById('nachweisText').innerText = erfuellt ? '✅ Erfüllt' : '❌ Nicht erfüllt';
-            document.getElementById('nachweisSub').innerText = `${sigma.toFixed(2)} N/mm² ${erfuellt ? '≤' : '>'} ${sigZul} N/mm² (zulässig)`;
+            document.getElementById('nachweisSub').innerText = `${fmt(sigma, 2)} N/mm² ${erfuellt ? '≤' : '>'} ${sigZul} N/mm² (zulässig)`;
 
             draw(qv, sigma);
         }
@@ -314,15 +328,16 @@
         function draw(qv, sigma) {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Layout: Querschnitt links, Spannungsdreieck rechts, gleiche Höhe
+            // Layout: Querschnitt links, Spannungsverteilung rechts, gleiche Höhe
             const areaTop = 40, areaBottom = 340;
             const availH = areaBottom - areaTop;
+            const maxDrawW = 260; // Querschnitt darf nicht in die Spannungsverteilung hineinragen
             const centerY = (areaTop + areaBottom) / 2;
 
-            // Skalierung: größte Abmessung (h) auf verfügbare Höhe abbilden
             const realH = qv.type === 'kreis' ? qv.d : qv.h;
-            const scale = Math.min(availH / realH, 8); // px pro cm, gedeckelt für sehr kleine Querschnitte
             const realW = qv.type === 'kreis' ? qv.d : qv.b;
+            // Maßstab: Höhe und Breite müssen passen, gedeckelt für sehr kleine Querschnitte
+            const scale = Math.min(availH / realH, maxDrawW / realW, 8); // px pro cm
 
             const qsCenterX = 220;
             const drawnH = realH * scale;
@@ -368,7 +383,7 @@
                 ctx.stroke();
             }
 
-            // Schwerachse (neutrale Faser)
+            // Schwerachse (neutrale Faser, dort ist σ = 0)
             ctx.strokeStyle = '#475569';
             ctx.lineWidth = 1.2;
             ctx.setLineDash([4, 4]);
@@ -380,9 +395,11 @@
             ctx.fillStyle = '#475569';
             ctx.font = 'bold 11px sans-serif';
             ctx.textAlign = 'left';
-            ctx.fillText('Schwerachse (e=0)', drawnW / 2 + 24, centerY + 4);
+            ctx.fillText('Schwerachse (σ = 0)', drawnW / 2 + 24, centerY + 4);
 
-            // Bemaßung h (links)
+            // Bemaßung Höhe (links): h bzw. beim Kreis d
+            const hLabel = qv.type === 'kreis' ? 'd' : 'h';
+            const bLabel = qv.type === 'kreis' ? 'd' : 'b';
             ctx.strokeStyle = '#334155';
             ctx.lineWidth = 1;
             ctx.textAlign = 'center';
@@ -397,10 +414,10 @@
             ctx.rotate(-Math.PI / 2);
             ctx.fillStyle = '#334155';
             ctx.font = 'bold 12px sans-serif';
-            ctx.fillText(`h = ${realH} cm`, 0, 0);
+            ctx.fillText(`${hLabel} = ${fmt(realH)} cm`, 0, 0);
             ctx.restore();
 
-            // Bemaßung b (unten)
+            // Bemaßung Breite (unten): b bzw. beim Kreis d
             const dimY = bottom + 30;
             ctx.beginPath();
             ctx.moveTo(-drawnW / 2, dimY); ctx.lineTo(drawnW / 2, dimY);
@@ -409,11 +426,11 @@
             ctx.stroke();
             ctx.fillStyle = '#334155';
             ctx.font = 'bold 12px sans-serif';
-            ctx.fillText(`b = ${realW} cm`, 0, dimY + 18);
+            ctx.fillText(`${bLabel} = ${fmt(realW)} cm`, 0, dimY + 18);
 
             ctx.restore();
 
-            // Spannungsdreieck (rechts, gleiche vertikale Ausrichtung)
+            // Spannungsverteilung (rechts, gleiche vertikale Ausrichtung)
             const triCenterX = 560;
             const maxTriWidth = 130;
             const sigmaScale = sigma > 0 ? maxTriWidth / sigma : 0;
@@ -422,7 +439,7 @@
             ctx.save();
             ctx.translate(triCenterX, 0);
 
-            // Nulllinie (vertikal, entspricht der Schwerachse gedreht dargestellt)
+            // Nulllinie (Bezugsachse der Spannungsverteilung)
             ctx.strokeStyle = '#cbd5e1';
             ctx.lineWidth = 1;
             ctx.beginPath();
@@ -430,7 +447,7 @@
             ctx.lineTo(0, bottom + 10);
             ctx.stroke();
 
-            // Druckseite (oben, negativ/rot) und Zugseite (unten, positiv/blau) - lineare Verteilung
+            // Druckseite (oben, rot) und Zugseite (unten, blau) – lineare Verteilung
             const sigmaPx = sigma * sigmaScale;
             ctx.beginPath();
             ctx.moveTo(0, centerY - triHalf);
@@ -456,13 +473,14 @@
 
             ctx.fillStyle = '#e11d48';
             ctx.font = 'bold 12px sans-serif';
-            ctx.textAlign = 'left';
-            ctx.fillText(`-σ = ${sigma.toFixed(1)} N/mm² (Druck)`, -sigmaPx - 4, centerY - triHalf - 8);
+            ctx.textAlign = 'right';
+            ctx.fillText(`−σ = ${fmt(sigma, 1)} N/mm² (Druck)`, 0, centerY - triHalf - 8);
             ctx.fillStyle = '#2563eb';
-            ctx.fillText(`+σ = ${sigma.toFixed(1)} N/mm² (Zug)`, 8, centerY + triHalf + 20);
+            ctx.textAlign = 'left';
+            ctx.fillText(`+σ = ${fmt(sigma, 1)} N/mm² (Zug)`, 0, centerY + triHalf + 20);
             ctx.fillStyle = '#64748b';
             ctx.font = '11px sans-serif';
-            ctx.fillText('Spannungsverteilung', 8, top - 15);
+            ctx.fillText('Spannungsverteilung', 8, top - 24);
 
             ctx.restore();
         }
