@@ -136,3 +136,82 @@ function exportProtocol(modulNr, modulTitel, studentName, entries) {
     link.click();
     URL.revokeObjectURL(url);
 }
+
+// ==========================================================================
+// Unterricht am Beamer / Tablet
+// 1) Präsentationsmodus: Knopf neben dem Modul-Badge vergrößert Schrift und Bedienelemente
+//    (alle Größen hängen an rem). Die Einstellung gilt für alle Module und bleibt beim
+//    Wechsel zwischen den Seiten erhalten.
+// 2) Vollbild: Jede große Zeichenfläche bekommt oben rechts einen ⛶-Knopf. Im Vollbild wird die
+//    Zeichnung formatfüllend skaliert; Ziehen per Maus/Finger funktioniert weiter. Esc beendet.
+// ==========================================================================
+(function initUnterrichtsansicht() {
+    const STORAGE_KEY = 'bautechnik-labor:praesentation';
+    const root = document.documentElement;
+
+    function readSetting() {
+        try { return localStorage.getItem(STORAGE_KEY) === '1'; } catch (e) { return false; }
+    }
+    function saveSetting(on) {
+        try { localStorage.setItem(STORAGE_KEY, on ? '1' : '0'); } catch (e) { /* z. B. privater Modus */ }
+    }
+
+    // ---------- Präsentationsmodus ----------
+    const badge = document.querySelector('.lab-badge');
+    if (badge) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'lab-present-btn';
+        badge.insertAdjacentElement('afterend', btn);
+        const apply = on => {
+            root.classList.toggle('lab-present', on);
+            btn.textContent = on ? '🖥️ Präsentation: an' : '🖥️ Präsentation';
+            btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+            btn.title = on ? 'Normale Schriftgröße' : 'Große Schrift für Beamer und Tafel';
+            // Canvas-Elemente mit festen Pixelgrößen (z. B. Tooltips) neu positionieren lassen
+            window.dispatchEvent(new Event('resize'));
+        };
+        apply(readSetting());
+        btn.addEventListener('click', () => {
+            const on = !root.classList.contains('lab-present');
+            saveSetting(on);
+            apply(on);
+        });
+    }
+
+    // ---------- Vollbild für Zeichenflächen ----------
+    const canFullscreen = !!(root.requestFullscreen || root.webkitRequestFullscreen);
+    if (!canFullscreen) return;   // z. B. iPhone-Safari: dort gibt es keine Vollbild-Schnittstelle für Elemente
+
+    const fsElement = () => document.fullscreenElement || document.webkitFullscreenElement;
+    const enterFs = el => (el.requestFullscreen || el.webkitRequestFullscreen).call(el);
+    const exitFs = () => (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+
+    document.querySelectorAll('canvas').forEach(canvas => {
+        if (canvas.width < 700) return;   // kleine Diagramme (z. B. Antwortkarten in Modul 4) auslassen
+        const host = canvas.parentElement;
+        host.classList.add('lab-fs-host');
+        // Seitenverhältnis merken, damit die Zeichnung im Vollbild unverzerrt formatfüllend wird
+        const updateRatio = () => canvas.style.setProperty('--lab-ratio', canvas.width / canvas.height);
+        updateRatio();
+        new MutationObserver(updateRatio).observe(canvas, { attributes: true, attributeFilter: ['width', 'height'] });
+
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'lab-fs-btn';
+        btn.textContent = '⛶';
+        btn.title = 'Zeichnung im Vollbild anzeigen (Esc beendet)';
+        btn.setAttribute('aria-label', btn.title);
+        btn.addEventListener('click', () => { fsElement() === host ? exitFs() : enterFs(host); });
+        host.appendChild(btn);
+    });
+    const onFsChange = () => {
+        document.querySelectorAll('.lab-fs-btn').forEach(b => {
+            const active = fsElement() === b.parentElement;
+            b.textContent = active ? '✕' : '⛶';
+        });
+        window.dispatchEvent(new Event('resize'));
+    };
+    document.addEventListener('fullscreenchange', onFsChange);
+    document.addEventListener('webkitfullscreenchange', onFsChange);
+})();
