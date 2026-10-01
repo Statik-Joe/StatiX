@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modul 1: Kräfteaddition & Vektoren | Bautechnik-Labor</title>
     <link rel="stylesheet" href="tailwind.min.css?v=2026-09-29">
-    <link rel="stylesheet" href="labor.css?v=2026-09-29">
+    <link rel="stylesheet" href="labor.css?v=2026-10-01-mobile">
 </head>
 <body data-modul="1" class="bg-slate-50 min-h-screen p-4 md:p-6 font-sans text-slate-800">
     <div class="max-w-7xl mx-auto bg-white p-6 rounded-2xl shadow-xl border border-slate-100">
@@ -298,7 +298,7 @@
         </div>
     </div>
 
-    <script src="labor.js?v=2026-09-29"></script>
+    <script src="labor.js?v=2026-10-01"></script>
     <script>
         const canvas = document.getElementById('vectorCanvas');
         const ctx = canvas.getContext('2d');
@@ -517,6 +517,7 @@
             });
             document.getElementById('logCount').innerText = sessionLog.length;
             document.getElementById('btnExportLog').disabled = false;
+            learningProgress.save();
         });
 
         document.getElementById('btnExportLog').addEventListener('click', () => {
@@ -661,6 +662,7 @@
             document.getElementById('mode2').classList.add('hidden');
             document.getElementById('btnMode1').classList.add('is-active');
             document.getElementById('btnMode2').classList.remove('is-active');
+            learningProgress.save();
         });
         document.getElementById('btnMode2').addEventListener('click', () => {
             document.getElementById('mode2').classList.remove('hidden');
@@ -668,6 +670,26 @@
             document.getElementById('btnMode2').classList.add('is-active');
             document.getElementById('btnMode1').classList.remove('is-active');
             updateSlope();
+            learningProgress.save();
+        });
+
+        const learningProgress = initLearningProgress(1, {
+            capture: () => ({
+                sessionLog,
+                activeMode2: document.getElementById('mode2').classList.contains('hidden') === false
+            }),
+            restore: state => {
+                sessionLog = Array.isArray(state && state.sessionLog) ? state.sessionLog : [];
+                document.getElementById('logCount').innerText = sessionLog.length;
+                document.getElementById('btnExportLog').disabled = sessionLog.length === 0;
+                const mode2Active = Boolean(state && state.activeMode2);
+                document.getElementById('mode1').classList.toggle('hidden', mode2Active);
+                document.getElementById('mode2').classList.toggle('hidden', !mode2Active);
+                document.getElementById('btnMode1').classList.toggle('is-active', !mode2Active);
+                document.getElementById('btnMode2').classList.toggle('is-active', mode2Active);
+                update();
+                updateSlope();
+            }
         });
 
         // Init

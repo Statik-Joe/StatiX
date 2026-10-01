@@ -13,6 +13,15 @@
 
 // system = { L, pointLoads: [{ F, x }], udls: [{ q, start, end }] }
 // Liefert Auflagerkräfte A, B, Gesamtlast und die Funktion schnitt(x) -> { Q, M }.
+// Winkel werden von der Trägerachse aus gemessen: 0° nach rechts, 90° nach unten.
+function zerlegeKraft(F, alpha) {
+    const radians = (alpha * Math.PI) / 180;
+    return {
+        horizontal: F * Math.cos(radians),
+        vertical: F * Math.sin(radians)
+    };
+}
+
 function berechneTraeger(system) {
     const L = system.L;
     const pointLoads = system.pointLoads || [];
@@ -85,5 +94,5 @@ function extremwerte(traeger, xmin, xmax, step = 0.01) {
 
 // Für die automatischen Tests unter Node.js exportieren (im Browser ohne Wirkung)
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { berechneTraeger, extremwerte };
+    module.exports = { berechneTraeger, extremwerte, zerlegeKraft };
 }
