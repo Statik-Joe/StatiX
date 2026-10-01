@@ -137,6 +137,155 @@ function exportProtocol(modulNr, modulTitel, studentName, entries) {
     URL.revokeObjectURL(url);
 }
 
+// Optionales Speichern von Eingaben und abgeschlossenen Übungsversuchen auf diesem Gerät.
+function initLearningProgress(modulNr, options = {}) {
+    const key = `bautechnik-labor:modul-${modulNr}:fortschritt:v1`;
+    const enabledKey = 'bautechnik-labor:fortschritt-aktiv';
+    const badge = document.querySelector('.lab-badge');
+    const header = badge && badge.parentElement ? badge.parentElement.parentElement : null;
+    if (!header) throw new Error(`Kopfzeile für Modul ${modulNr} nicht gefunden.`);
+
+    const control = document.createElement('div');
+    control.className = 'lab-progress-control';
+    const label = document.createElement('label');
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.className = 'lab-progress-toggle';
+    checkbox.setAttribute('aria-label', 'Fortschritt auf diesem Gerät speichern');
+    label.append(checkbox, document.createTextNode(' Fortschritt speichern'));
+
+    const clearButton = document.createElement('button');
+    clearButton.type = 'button';
+    clearButton.className = 'lab-progress-clear';
+    clearButton.textContent = 'Daten löschen';
+    clearButton.disabled = true;
+
+    const status = document.createElement('span');
+    status.className = 'lab-progress-status';
+    status.setAttribute('role', 'status');
+    status.setAttribute('aria-live', 'polite');
+    control.append(label, clearButton, status);
+    header.appendChild(control);
+    let restoreBlocked = false;
+
+    function setStatus(message, isError = false) {
+        status.textContent = message;
+        status.classList.toggle('is-error', isError);
+    }
+
+    function captureControls() {
+        const values = {};
+        document.querySelectorAll('input[id], select[id], textarea[id]').forEach(input => {
+            if (input.classList.contains('lab-progress-toggle') ||
+                input.type === 'password' || input.type === 'file' ||
+                /^studentName/i.test(input.id)) return;
+            values[input.id] = input.type === 'checkbox' || input.type === 'radio'
+                ? input.checked
+                : input.value;
+        });
+        return values;
+    }
+
+    function restoreControls(values) {
+        Object.entries(values || {}).forEach(([id, value]) => {
+            const input = document.getElementById(id);
+            if (!input || input.classList.contains('lab-progress-toggle')) return;
+            if (input.type === 'checkbox' || input.type === 'radio') input.checked = value === true;
+            else input.value = String(value);
+        });
+    }
+
+    function save() {
+        if (!checkbox.checked || restoreBlocked) return;
+        try {
+            const record = {
+                version: 1,
+                savedAt: new Date().toISOString(),
+                controls: captureControls(),
+                custom: options.capture ? options.capture() : null
+            };
+            localStorage.setItem(key, JSON.stringify(record));
+            clearButton.disabled = false;
+            setStatus('Auf diesem Gerät gespeichert.');
+        } catch (error) {
+            setStatus(`Speichern nicht möglich: ${error.message || error}`, true);
+        }
+    }
+
+    function restore() {
+        let record;
+        try {
+            const raw = localStorage.getItem(key);
+            if (!raw) {
+                setStatus('Speichern ist aktiviert. Bisher gibt es hier noch keinen gespeicherten Stand.');
+                return 'empty';
+            }
+            record = JSON.parse(raw);
+            if (record.version !== 1 || !record.controls || typeof record.controls !== 'object') {
+                throw new Error('Der gespeicherte Stand hat ein unbekanntes Format.');
+            }
+            restoreControls(record.controls);
+            if (options.restore) options.restore(record.custom);
+            restoreBlocked = false;
+            clearButton.disabled = false;
+            const savedAt = new Date(record.savedAt);
+            const time = Number.isNaN(savedAt.getTime()) ? '' : ` (${savedAt.toLocaleString('de-DE')})`;
+            setStatus(`Gespeicherter Stand wiederhergestellt${time}.`);
+            return 'restored';
+        } catch (error) {
+            restoreBlocked = true;
+            setStatus(`Wiederherstellen nicht möglich: ${error.message || error}`, true);
+            return 'error';
+        }
+    }
+
+    let saveTimer;
+    function scheduleSave() {
+        if (!checkbox.checked) return;
+        window.clearTimeout(saveTimer);
+        saveTimer = window.setTimeout(save, 250);
+    }
+    document.addEventListener('input', scheduleSave);
+    document.addEventListener('change', scheduleSave);
+
+    checkbox.addEventListener('change', () => {
+        try {
+            localStorage.setItem(enabledKey, checkbox.checked ? '1' : '0');
+        } catch (error) {
+            checkbox.checked = false;
+            setStatus(`Speichereinstellung nicht verfügbar: ${error.message || error}`, true);
+            return;
+        }
+        if (checkbox.checked) {
+            if (restore() === 'empty') save();
+        } else {
+            setStatus('Speichern pausiert. Bereits gespeicherte Daten bleiben erhalten.');
+        }
+    });
+
+    clearButton.addEventListener('click', () => {
+        try {
+            localStorage.removeItem(key);
+            restoreBlocked = false;
+            clearButton.disabled = true;
+            setStatus('Gespeicherter Stand dieses Moduls wurde gelöscht.');
+        } catch (error) {
+            setStatus(`Löschen nicht möglich: ${error.message || error}`, true);
+        }
+    });
+
+    try {
+        checkbox.checked = localStorage.getItem(enabledKey) === '1';
+        if (checkbox.checked) restore();
+    } catch (error) {
+        checkbox.disabled = true;
+        clearButton.disabled = true;
+        setStatus(`Lokaler Speicher ist nicht verfügbar: ${error.message || error}`, true);
+    }
+
+    return { save };
+}
+
 // ==========================================================================
 // Unterricht am Beamer / Tablet
 // 1) Präsentationsmodus: Knopf neben dem Modul-Badge vergrößert Schrift und Bedienelemente

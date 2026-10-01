@@ -170,6 +170,73 @@ html.lab-present {
     border-color: var(--mod-600);
 }
 
+/* ---------- Lokales Speichern des Lernfortschritts ---------- */
+.lab-progress-control {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem 0.65rem;
+    margin-top: 0.75rem;
+    color: #475569;
+    font-size: 0.75rem;
+    line-height: 1rem;
+}
+.lab-progress-control label {
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+}
+.lab-progress-toggle {
+    width: 1rem;
+    height: 1rem;
+    accent-color: var(--mod-600);
+}
+.lab-progress-clear {
+    padding: 0.1rem 0.4rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 0.25rem;
+    color: #475569;
+    background: #ffffff;
+    font-weight: 600;
+}
+.lab-progress-clear:hover:not(:disabled) {
+    color: #9f1239;
+    border-color: #fda4af;
+}
+.lab-progress-clear:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+.lab-progress-status {
+    flex-basis: 100%;
+    color: #64748b;
+}
+.lab-progress-status.is-error {
+    color: #be123c;
+}
+
+/* ---------- Validierungsmeldungen in Modul 3 ---------- */
+#output .lab-validation-error {
+    padding: 0.75rem;
+    border: 1px solid #fecdd3;
+    border-radius: 0.5rem;
+    color: #9f1239;
+    background: #fff1f2;
+}
+#output .lab-validation-error ul {
+    margin: 0.25rem 0 0;
+    padding-left: 1.25rem;
+    list-style: disc;
+}
+#output .lab-validation-error p:last-child {
+    margin-top: 0.5rem;
+    font-size: 0.75rem;
+}
+input[aria-invalid="true"] {
+    border-color: #f43f5e;
+    box-shadow: 0 0 0 2px #fecdd3;
+}
+
 /* ---------- Vollbild für Zeichenflächen ---------- */
 .lab-fs-host {
     position: relative;
@@ -228,4 +295,102 @@ html.lab-present {
 .lab-fs-host:fullscreen .lab-fs-btn {
     top: 1rem;
     right: 1rem;
+}
+
+/* ---------- Mobile Darstellung und Interaktion ---------- */
+.lab-mobile-only,
+.lab-canvas-hint {
+    display: none;
+}
+
+@media (max-width: 640px) {
+    .lab-mobile-only {
+        display: inline-flex;
+        min-height: 2.75rem;
+        align-items: center;
+        padding: 0.625rem 0.75rem;
+        border-radius: 0.5rem;
+        color: var(--mod-700);
+        background: var(--mod-50);
+        font-size: 0.875rem;
+        font-weight: 700;
+    }
+
+    body[data-modul] {
+        padding: 0.5rem;
+    }
+
+    body[data-modul] > div.max-w-7xl {
+        padding: 0.875rem;
+        border-radius: 1rem;
+    }
+
+    body[data-modul] header {
+        margin-bottom: 1rem;
+        gap: 0.75rem;
+    }
+
+    body[data-modul] header h1 {
+        font-size: 1.5rem;
+        line-height: 1.9rem;
+    }
+
+    body[data-modul] .lab-tab {
+        min-height: 2.75rem;
+        padding: 0.625rem 0.5rem;
+    }
+
+    body[data-modul] button,
+    body[data-modul] select,
+    body[data-modul] input[type="number"],
+    body[data-modul] input[type="text"] {
+        min-height: 2.75rem;
+    }
+
+    body[data-modul] input[type="checkbox"] {
+        min-width: 1.25rem;
+        min-height: 1.25rem;
+    }
+
+    body[data-modul="2"] #wippeCanvas {
+        touch-action: pan-y;
+    }
+
+    body[data-modul="3"] .lg\:col-span-4 {
+        max-height: none;
+        overflow: visible;
+        padding-right: 0;
+    }
+
+    body[data-modul="3"] .lab-beam-canvas-scroll {
+        overflow-x: auto;
+        overscroll-behavior-x: contain;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    body[data-modul="3"] .lab-beam-canvas-scroll canvas {
+        width: 560px;
+        max-width: none;
+    }
+
+    body[data-modul="3"] .lab-canvas-hint {
+        display: block;
+        margin: 0 0 0.5rem;
+        color: #64748b;
+        font-size: 0.75rem;
+        line-height: 1rem;
+    }
+
+}
+
+@media (min-width: 560px) and (max-width: 767px) {
+    body[data-modul="4"] .lab-quiz-options {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 380px) {
+    body[data-modul] > div.max-w-7xl {
+        padding: 0.75rem;
+    }
 }

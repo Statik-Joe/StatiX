@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modul 3: Schnittgrößen (Einfeldträger) | Bautechnik-Labor</title>
     <link rel="stylesheet" href="tailwind.min.css?v=2026-09-29">
-    <link rel="stylesheet" href="labor.css?v=2026-09-29">
+    <link rel="stylesheet" href="labor.css?v=2026-10-01-mobile">
 </head>
 <body data-modul="3" class="bg-slate-50 min-h-screen p-4 md:p-6 font-sans text-slate-800">
     <div class="max-w-7xl mx-auto bg-white p-6 rounded-2xl shadow-xl border border-slate-100">
@@ -23,6 +23,7 @@
                 <p class="text-sm text-slate-500 mt-1">Interaktive Baustatik: Verschiebe Lasten per Drag & Drop oder passe sie über das Panel an.</p>
             </div>
             <div class="flex flex-wrap items-center gap-3">
+                <a class="lab-mobile-only" href="#statikCanvas">Zur Zeichnung ↓</a>
                 <button id="btnExport" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-4 py-2.5 rounded-lg shadow transition-colors text-sm flex items-center gap-2">
                     📥 Grafik-Export (PNG)
                 </button>
@@ -114,7 +115,7 @@
                         <div id="q1_inputs_container" class="grid grid-cols-3 gap-2">
                             <div>
                                 <label class="block text-xs font-bold text-slate-500 mb-1">Wert [kN/m]</label>
-                                <input type="number" id="q1" value="5" step="0.5" class="w-full border rounded p-1.5 text-sm font-semibold">
+                                <input type="number" id="q1" value="5" min="0" step="0.5" class="w-full border rounded p-1.5 text-sm font-semibold">
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-slate-500 mb-1">Start x [m]</label>
@@ -145,7 +146,7 @@
                         <div id="q2_inputs_container" class="grid grid-cols-3 gap-2">
                             <div>
                                 <label class="block text-xs font-bold text-slate-500 mb-1">Wert [kN/m]</label>
-                                <input type="number" id="q2" value="3" step="0.5" class="w-full border rounded p-1.5 text-sm font-semibold">
+                                <input type="number" id="q2" value="3" min="0" step="0.5" class="w-full border rounded p-1.5 text-sm font-semibold">
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-slate-500 mb-1">Start x [m]</label>
@@ -184,7 +185,7 @@
                         <div id="f1_inputs_container" class="grid grid-cols-3 gap-2">
                             <div>
                                 <label class="block text-xs font-bold text-slate-500 mb-1">Kraft [kN]</label>
-                                <input type="number" id="f1" value="15" step="1" class="w-full border rounded p-1.5 text-sm font-semibold">
+                                <input type="number" id="f1" value="15" min="0" step="1" class="w-full border rounded p-1.5 text-sm font-semibold">
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-slate-500 mb-1">Position x [m]</label>
@@ -215,7 +216,7 @@
                         <div id="f2_inputs_container" class="grid grid-cols-3 gap-2">
                             <div>
                                 <label class="block text-xs font-bold text-slate-500 mb-1">Kraft [kN]</label>
-                                <input type="number" id="f2" value="10" step="1" class="w-full border rounded p-1.5 text-sm font-semibold">
+                                <input type="number" id="f2" value="10" min="0" step="1" class="w-full border rounded p-1.5 text-sm font-semibold">
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-slate-500 mb-1">Position x [m]</label>
@@ -251,7 +252,7 @@
                     <h2 class="font-extrabold text-teal-800 text-lg mb-2 flex items-center gap-2">
                         🔔 Berechnungsergebnisse
                     </h2>
-                    <div id="output" class="space-y-1 text-teal-950 text-sm">
+                    <div id="output" class="space-y-1 text-teal-950 text-sm" role="status" aria-live="polite">
                         <!-- Wird dynamisch befüllt -->
                     </div>
                 </div>
@@ -260,8 +261,9 @@
             <!-- Canvas und Rechenweg rechts -->
             <div class="lg:col-span-8 space-y-6 lg:sticky lg:top-6">
                 <!-- Statik Canvas mit Sonde -->
-                <div class="relative">
-                    <canvas id="statikCanvas" width="900" height="900"></canvas>
+                <div class="relative lab-beam-canvas-scroll">
+                    <p class="lab-canvas-hint">Auf dem Handy kannst du die vergrößerte Zeichnung seitlich verschieben. Für eine größere Ansicht nutze Vollbild.</p>
+                    <canvas id="statikCanvas" width="900" height="900" aria-label="Einfeldträger mit Lasten sowie Querkraft- und Biegemomentdiagrammen. Auflagerkräfte, Querkraft und Moment erscheinen in den Ergebnissen."></canvas>
                     <!-- Schwebendes Sonden-Overlay für Echtzeit-Werte -->
                     <div id="sondeTooltip" class="absolute hidden bg-slate-900/95 text-white p-3 rounded-lg text-xs shadow-xl border border-slate-700 pointer-events-none space-y-1.5 w-64 z-50">
                         <div class="font-bold border-b border-slate-700 pb-1 flex justify-between">
@@ -296,8 +298,8 @@
         </div>
     </div>
 
-    <script src="labor.js?v=2026-09-29"></script>
-    <script src="statik-core.js?v=2026-09-29"></script>
+    <script src="labor.js?v=2026-10-01"></script>
+    <script src="statik-core.js?v=2026-10-01"></script>
     <script>
         const canvas = document.getElementById('statikCanvas');
         const ctx = canvas.getContext('2d');
@@ -313,14 +315,6 @@
         function getVal(id) {
             const val = parseFloat(document.getElementById(id).value);
             return isNaN(val) ? 0 : val;
-        }
-
-        function getForceComponents(force, angle) {
-            const radians = ((angle % 360) * Math.PI) / 180;
-            return {
-                horizontal: force * Math.cos(radians),
-                vertical: force * Math.sin(radians)
-            };
         }
 
         // Steuert das Aus- und Einblenden der Inputbereiche je nach Toggle-Checkbox
@@ -363,6 +357,58 @@
         document.querySelectorAll('input[type="number"]').forEach(input => {
             input.addEventListener('input', calculate);
         });
+
+        function validateInputs(values) {
+            document.querySelectorAll('#f1_inputs_container input, #f2_inputs_container input, #q1_inputs_container input, #q2_inputs_container input, #kl_container input, #kr_container input, #length').forEach(input => {
+                input.setAttribute('aria-invalid', 'false');
+                input.classList.remove('border-rose-500', 'ring-2', 'ring-rose-200');
+            });
+
+            const errors = [];
+            function check(id, label, min, max) {
+                const input = document.getElementById(id);
+                const value = input.value.trim() === '' ? NaN : Number(input.value);
+                let error = '';
+                if (!Number.isFinite(value)) {
+                    error = `${label}: Bitte eine gültige Zahl eingeben.`;
+                } else if (value < min || value > max) {
+                    error = `${label}: Wert muss zwischen ${fmt(min)} und ${fmt(max)} liegen.`;
+                }
+                if (error) {
+                    errors.push(error);
+                    input.setAttribute('aria-invalid', 'true');
+                    input.classList.add('border-rose-500', 'ring-2', 'ring-rose-200');
+                }
+                return value;
+            }
+
+            const minX = values.kl_active ? -values.L_kl : 0;
+            const maxX = values.L + (values.kr_active ? values.L_kr : 0);
+            check('length', 'Hauptfeldlänge', 1, 30);
+            if (values.kl_active) check('length_kl', 'Linke Kragarmlänge', 0.1, 10);
+            if (values.kr_active) check('length_kr', 'Rechte Kragarmlänge', 0.1, 10);
+
+            [['f1', 'F₁', 'x1', 'α₁', values.f1_active], ['f2', 'F₂', 'x2', 'α₂', values.f2_active]].forEach(([forceId, forceLabel, positionId, angleLabel, active]) => {
+                if (!active) return;
+                check(forceId, `Kraft ${forceLabel}`, 0, 100000);
+                check(positionId, `Position ${positionId}`, minX, maxX);
+                check(`alpha${positionId.slice(1)}`, `Winkel ${angleLabel}`, 0, 360);
+            });
+
+            [['q1', 'q1_start', 'q1_end', 'q₁', values.q1_active], ['q2', 'q2_start', 'q2_end', 'q₂', values.q2_active]].forEach(([forceId, startId, endId, label, active]) => {
+                if (!active) return;
+                check(forceId, `Streckenlast ${label}`, 0, 100000);
+                const start = check(startId, `Startposition ${label}`, minX, maxX);
+                const end = check(endId, `Endposition ${label}`, minX, maxX);
+                if (Number.isFinite(start) && Number.isFinite(end) && end <= start) {
+                    errors.push(`Streckenlast ${label}: Die Endposition muss rechts von der Startposition liegen.`);
+                    document.getElementById(endId).setAttribute('aria-invalid', 'true');
+                    document.getElementById(endId).classList.add('border-rose-500', 'ring-2', 'ring-rose-200');
+                }
+            });
+
+            return errors;
+        }
 
         // Szenarien (Presets) laden
         document.getElementById('presetSelect').addEventListener('change', function() {
@@ -540,11 +586,11 @@
             };
         }
 
-        // Nächstgelegenen Griff im Fangradius suchen. Für Finger gilt ein Mindestradius von 26 Bildschirm-Pixeln,
+        // Nächstgelegenen Griff im Fangradius suchen. Für Finger gilt ein Mindestradius von 40 Bildschirm-Pixeln,
         // damit die Griffe auch auf kleinen Displays (Zeichnung stark verkleinert) sicher zu treffen sind.
         function findDragTarget(coords, isTouch) {
             const pxPerCanvas = canvas.getBoundingClientRect().width / canvas.width;
-            const radius = isTouch ? Math.max(22, 26 / pxPerCanvas) : 22;
+            const radius = isTouch ? Math.max(32, 40 / pxPerCanvas) : 22;
             let best = null, bestDist = radius;
             for (let el of dragElements) {
                 const dist = Math.hypot(coords.x - el.x, coords.y - el.y);
@@ -636,6 +682,7 @@
                 activeDragId = null;
                 canvas.style.cursor = 'crosshair';
                 document.getElementById('presetSelect').value = 'custom'; 
+                learningProgress.save();
             }
         }
 
@@ -659,13 +706,13 @@
             const F1 = f1_active ? getVal('f1') : 0;
             const x1 = f1_active ? getVal('x1') : 0;
             const alpha1 = getVal('alpha1');
-            const F1_components = getForceComponents(F1, alpha1);
+            const F1_components = zerlegeKraft(F1, alpha1);
 
             const f2_active = document.getElementById('enable_f2').checked;
             const F2 = f2_active ? getVal('f2') : 0;
             const x2 = f2_active ? getVal('x2') : 0;
             const alpha2 = getVal('alpha2');
-            const F2_components = getForceComponents(F2, alpha2);
+            const F2_components = zerlegeKraft(F2, alpha2);
 
             const q1_active = document.getElementById('enable_q1').checked;
             const q1_val = q1_active ? getVal('q1') : 0;
@@ -676,6 +723,21 @@
             const q2_val = q2_active ? getVal('q2') : 0;
             const q2_start = q2_active ? getVal('q2_start') : 0;
             const q2_end = q2_active ? getVal('q2_end') : 0;
+
+            const validationErrors = validateInputs({ L, L_kl, L_kr, kl_active, kr_active, f1_active, f2_active, q1_active, q2_active });
+            if (validationErrors.length) {
+                document.getElementById('output').innerHTML = `
+                    <div class="lab-validation-error" role="alert">
+                        <p class="font-bold">Bitte Eingaben prüfen:</p>
+                        <ul>${validationErrors.map(error => `<li>${error}</li>`).join('')}</ul>
+                        <p>Berechnung und Diagramm werden erst nach Korrektur aktualisiert.</p>
+                    </div>
+                `;
+                document.getElementById('rechenweg').innerHTML = '';
+                dragElements = [];
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                return;
+            }
 
             // Auflagerkräfte und Schnittgrößen aus dem gemeinsamen Rechenkern (statik-core.js, wie Modul 4)
             const pointLoads = [];
@@ -1274,6 +1336,13 @@
                 }
             }
         }
+
+        const learningProgress = initLearningProgress(3, {
+            restore: () => {
+                updateInputVisualStates();
+                calculate();
+            }
+        });
 
         // Initialisierung des Programms
         window.onload = function() {

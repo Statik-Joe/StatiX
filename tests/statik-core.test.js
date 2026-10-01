@@ -2,7 +2,7 @@
 // Ausführen im Projektordner mit: npm test
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { berechneTraeger, extremwerte } = require('../statik-core.js');
+const { berechneTraeger, extremwerte, zerlegeKraft } = require('../statik-core.js');
 
 const nah = (ist, soll, tol = 0.02) =>
     assert.ok(Math.abs(ist - soll) <= tol, `erwartet ${soll}, erhalten ${ist}`);
@@ -82,4 +82,53 @@ test('Streckenlast ohne Länge (Ende ≤ Anfang) wird ignoriert', () => {
     nah(t.B, 0);
     nah(t.schnitt(4).M, 0);
     nah(t.schnitt(4).Q, 0);
+});
+
+test('Kraftzerlegung an den Hauptachsen liefert die richtigen Vorzeichen', () => {
+    const right = zerlegeKraft(10, 0);
+    nah(right.horizontal, 10);
+    nah(right.vertical, 0);
+
+    const down = zerlegeKraft(10, 90);
+    nah(down.horizontal, 0);
+    nah(down.vertical, 10);
+
+    const left = zerlegeKraft(10, 180);
+    nah(left.horizontal, -10);
+    nah(left.vertical, 0);
+
+    const up = zerlegeKraft(10, 270);
+    nah(up.horizontal, 0);
+    nah(up.vertical, -10);
+});
+
+test('Schräge Einzellast: Auflager und horizontale Reaktion erfüllen das Gleichgewicht', () => {
+    const F = 10, alpha = 30, L = 10, x = 5;
+    const components = zerlegeKraft(F, alpha);
+    const t = berechneTraeger({
+        L,
+        pointLoads: [{ F: components.vertical, x }],
+        udls: []
+    });
+    const horizontalReactionA = -components.horizontal;
+
+    nah(t.A, 2.5);
+    nah(t.B, 2.5);
+    nah(horizontalReactionA, -8.660254, 0.00001);
+    nah(t.A + t.B, components.vertical);
+    nah(t.schnitt(x).M, components.vertical * x / 2);
+});
+
+test('Schräge Einzellast nach oben erzeugt negative Vertikalreaktionen', () => {
+    const components = zerlegeKraft(8, 270);
+    const t = berechneTraeger({
+        L: 8,
+        pointLoads: [{ F: components.vertical, x: 4 }],
+        udls: []
+    });
+
+    nah(components.vertical, -8);
+    nah(t.A, -4);
+    nah(t.B, -4);
+    nah(t.A + t.B + components.vertical, 0);
 });

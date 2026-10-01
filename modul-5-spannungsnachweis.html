@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modul 5: Spannungsnachweis | Bautechnik-Labor</title>
     <link rel="stylesheet" href="tailwind.min.css?v=2026-09-29">
-    <link rel="stylesheet" href="labor.css?v=2026-09-29">
+    <link rel="stylesheet" href="labor.css?v=2026-10-01-mobile">
 </head>
 <body data-modul="5" class="bg-slate-50 min-h-screen p-4 md:p-6 font-sans text-slate-800">
     <div class="max-w-7xl mx-auto bg-white p-6 rounded-2xl shadow-xl border border-slate-100">
@@ -259,7 +259,7 @@
         </div>
     </div>
 
-    <script src="labor.js?v=2026-09-29"></script>
+    <script src="labor.js?v=2026-10-01"></script>
     <script>
         const canvas = document.getElementById('qsCanvas');
         const ctx = canvas.getContext('2d');
@@ -704,6 +704,7 @@
             });
             document.getElementById('logCount5').innerText = sessionLog5.length;
             document.getElementById('btnExportLog5').disabled = false;
+            learningProgress.save();
 
             // Lösung sichtbar machen
             setSolutionHidden(false);
@@ -720,6 +721,20 @@
 
         document.getElementById('btnExportLog5').addEventListener('click', () => {
             exportProtocol(5, 'Spannungsnachweis', document.getElementById('studentName5').value, sessionLog5);
+        });
+
+        const learningProgress = initLearningProgress(5, {
+            capture: () => ({ sessionLog5 }),
+            restore: state => {
+                sessionLog5 = Array.isArray(state && state.sessionLog5) ? state.sessionLog5 : [];
+                document.getElementById('logCount5').innerText = sessionLog5.length;
+                document.getElementById('btnExportLog5').disabled = sessionLog5.length === 0;
+                document.getElementById('dims_rechteck').classList.toggle('hidden', qsType.value !== 'rechteck');
+                document.getElementById('dims_kreis').classList.toggle('hidden', qsType.value !== 'kreis');
+                document.getElementById('dims_iprofil').classList.toggle('hidden', qsType.value !== 'iprofil');
+                limitIProfil();
+                update();
+            }
         });
 
         // Init

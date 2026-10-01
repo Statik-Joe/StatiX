@@ -1,32 +1,62 @@
-Virtuelles Bautechnik-Labor – FOS 12 (Hessen)
-Stand dieser Sicherung: siehe Datei-Zeitstempel im ZIP (zuletzt bearbeitet: Modul 4).
-Enthaltene Dateien (alle zusammen in einen Ordner legen!)
-`index.html` – Hauptmenü mit den 5 Modul-Kacheln
-`modul-1-kraefteaddition.html` – Kräfteaddition & Vektoren (inkl. Erfolgskontrolle + Protokoll-Export)
-`modul-2-hebelgesetz.html` – Hebelgesetz & Drehmoment (inkl. Erfolgskontrolle + Protokoll-Export, M₁/M₂-Beschriftung am Balken, Balkenvergleich, Kompensationsrechner)
-`modul-3-statik-einfeldtraeger.html` – Schnittgrößen-Tool "SchnittGrip Pro" (inkl. erweitertem PNG-Export und Übergabe von M_max an Modul 5)
-`modul-4-diagramme-zuordnen.html` – Quiz: Diagramme zuordnen (Teil A: System→Linie, Teil B: M↔Q direkt; unterstützt Kragarme ein-/beidseitig, mehrere Einzellasten, kombinierte Streckenlast+Einzellast)
-`modul-5-spannungsnachweis.html` – Spannungsnachweis σ_vorh ≤ σ_zul (inkl. Erfolgskontrolle + Protokoll-Export, Übernahme von M_max aus Modul 3; Querschnittswerte I und W für Rechteck, Kreis, I-Profil; Spannungsverteilung; Ausnutzungsgrad; zulässige Spannungen: Holz nach DIN 1052:1988, Stahl nach DIN 1050)
-`tailwind.min.css` – lokal gebautes Stylesheet (offline-fähig, keine CDN-Abhängigkeit). Wird automatisch erzeugt, nicht von Hand bearbeiten!
-`package.json`, `tailwind.config.js`, `src/tailwind.css` – nur zum Neuerzeugen von tailwind.min.css nötig, nicht für den Unterricht
-`labor.css` – gemeinsames Stylesheet aller Module (Modulfarbe, Kopfzeile, Umschalter, Zeichenflächen, Eingabefelder)
-`labor.js` – gemeinsame Hilfsfunktionen aller Module (Zahlen mit Dezimalkomma, Tiefstellung im Canvas, Auflagersymbole, Protokoll-Export, Präsentationsmodus, Vollbild für Zeichnungen)
-`statik-core.js` – gemeinsamer Rechenkern für Modul 3 und 4 (Auflagerkräfte, Q(x), M(x), Extremwerte)
-`tests/statik-core.test.js` – automatische Tests des Rechenkerns gegen Tabellenwerte (F·L/4, q·L²/8, Kragarm …), ausführen mit `npm test`
-Einheitliche Konventionen
-Kräfte in kN, Momente in kNm, Streckenlasten in kN/m, Längen in m (Modul 2: Massen in kg, Umrechnung F = m · g im Rechenweg).
-Zahlen mit Dezimalkomma, Einheit mit Leerzeichen (z. B. „2,5 kN“), Indizes tiefgestellt (z. B. F₁, q₁, M<sub>max</sub>).
-Jedes Modul: Kopfzeile mit „Zurück zum Menü“ + Modul-Badge in der Modulfarbe (1 Indigo, 2 Sky, 3 Teal, 4 Amber, 5 Violet), Abschnitt „Rechenweg – …“, einheitliches Protokollformat.
-tailwind.min.css neu erzeugen
-Nötig, wenn in den HTML-Dateien neue Tailwind-Klassen verwendet werden (sonst fehlen deren Stile). Einmalig Node.js installieren, dann im Projektordner:
-`npm install` und danach `npm run build:css`
-Tailwind durchsucht alle HTML-Dateien und labor.js und nimmt genau die verwendeten Klassen auf.
-Nach Änderungen an tailwind.min.css, labor.css, labor.js oder statik-core.js die Versionsangabe `?v=…` an den Verweisen in allen HTML-Dateien erhöhen (z. B. auf das aktuelle Datum). Sonst zeigt der Browser womöglich noch die alte, zwischengespeicherte Datei an.
-Unterricht am Beamer / Tablet
-„🖥️ Präsentation“ neben dem Modul-Badge: größere Schrift und Bedienelemente (+25 %), bleibt beim Wechsel zwischen den Modulen eingeschaltet.
-⛶ oben rechts an jeder großen Zeichnung: Zeichnung im Vollbild (Esc oder ✕ beendet). Lasten lassen sich auch im Vollbild ziehen.
-Lasten lassen sich auch per Finger ziehen (Modul 2 und 3); die Griffe haben auf kleinen Displays einen vergrößerten Fangbereich.
-Wichtig
-Alle Dateien müssen im selben Ordner liegen, sonst funktionieren Navigation und Styling nicht.
-Am besten im mobilen/Desktop-Browser direkt aus dem Ordner öffnen (nicht nur die Chat-Vorschau einzelner Dateien) – siehe frühere Hinweise zur Chat-Vorschau.
-Bei Änderungswünschen: diese ZIP-Datei (oder die einzelnen .html-Dateien) im nächsten Chat einfach wieder hochladen, dann kann darauf aufgebaut werden.
+# Virtuelles Bautechnik-Labor
+
+Interaktive Statik- und Mechanik-Lernmodule für die Fachoberschule (FOS 12, Hessen). Die Anwendung besteht aus statischen HTML-, CSS- und JavaScript-Dateien und benötigt zur Laufzeit keine Internetverbindung.
+
+## Module
+
+- `index.html` – Startseite mit den fünf Lernmodulen
+- `modul-1-kraefteaddition.html` – Kräfteaddition, Vektorzerlegung und schräge Last auf einer Fläche
+- `modul-2-hebelgesetz.html` – Hebelgesetz, Drehmomente und interaktive Wippe
+- `modul-3-statik-einfeldtraeger.html` – Auflagerkräfte, Querkraft und Biegemoment für Einfeldträger mit Kragarmen, Einzel- und Streckenlasten
+- `modul-4-diagramme-zuordnen.html` – Quiz zum Zuordnen von Systemen und Schnittgrößendiagrammen
+- `modul-5-spannungsnachweis.html` – Querschnittswerte und Biegespannungsnachweis
+
+## Lokaler Fortschritt
+
+In jedem Modul kann **Fortschritt speichern** aktiviert werden. Dann speichert das Labor die Eingaben und abgeschlossenen Übungsversuche lokal im Browser. Die Daten verlassen das Gerät nicht und enthalten nicht den optionalen Namen aus dem Protokoll-Export. Über **Daten löschen** lässt sich der gespeicherte Stand des jeweiligen Moduls entfernen; das Abwählen der Speicheroption pausiert weitere Schreibvorgänge.
+
+Der lokale Browser-Speicher ist an Browserprofil und Seitenadresse gebunden. Bei `file://`-Adressen hängt seine Verfügbarkeit vom Browser ab. Falls Speichern dort nicht funktioniert und Python installiert ist, im Ausgabeordner `python -m http.server 8000` starten und `http://localhost:8000` öffnen. Das Labor selbst benötigt weiterhin keine Netzwerkverbindung.
+
+## Tests und Stylesheet bauen
+
+Für Entwicklung werden Node.js und npm benötigt. Im Projektordner ausführen:
+
+```sh
+npm ci
+npm test
+npm run build:css
+```
+
+Die Tests prüfen den gemeinsamen Statik-Rechenkern gegen bekannte Tabellenwerte, einschließlich der Kraftzerlegung schräger Lasten. `npm run build:css` erzeugt `tailwind.min.css` aus den Klassen in den HTML- und JavaScript-Dateien. Die erzeugte Datei nicht von Hand bearbeiten.
+
+## Offline-Paket erstellen
+
+1. Vor der Weitergabe die Tests und den CSS-Build wie oben ausführen.
+2. Einen neuen Ausgabeordner anlegen und diese Dateien unverändert nebeneinander hineinkopieren:
+   - `index.html`
+   - `modul-1-kraefteaddition.html`
+   - `modul-2-hebelgesetz.html`
+   - `modul-3-statik-einfeldtraeger.html`
+   - `modul-4-diagramme-zuordnen.html`
+   - `modul-5-spannungsnachweis.html`
+   - `tailwind.min.css`
+   - `labor.css` und `labor.js`
+   - `statik-core.js`
+3. Den Ausgabeordner als ZIP komprimieren. `node_modules`, Git-Dateien, `src`, `tests` und Build-Konfigurationen werden für den Unterricht nicht benötigt.
+4. Das ZIP testweise entpacken und `index.html` sowie jedes Modul öffnen. Prüfen, dass alle Seiten und Styles geladen werden und die gewünschten Browser lokale Fortschritte speichern können.
+
+Alle oben aufgeführten Laufzeitdateien müssen im selben Verzeichnis liegen. Nach Änderungen an `labor.css`, `labor.js` oder `statik-core.js` die zugehörigen `?v=…`-Versionsparameter in den HTML-Dateien aktualisieren, damit Browser keine veralteten Dateien aus dem Cache laden. Bei Änderungen an Tailwind-Klassen `npm run build:css` ausführen und `tailwind.min.css` mit ins Paket aufnehmen.
+
+## Gemeinsame Bausteine
+
+- `labor.css` und `labor.js` – Modulfarben, Präsentationsmodus, Vollbild für Zeichnungen, Zahlenformatierung, Protokoll-Export und lokales Speichern des Lernfortschritts
+- `statik-core.js` – gemeinsamer Statik-Rechenkern für Modul 3 und Modul 4
+- `src/tailwind.css`, `tailwind.config.js`, `package.json` und `package-lock.json` – CSS-Build-Konfiguration für die Entwicklung
+- `tests/statik-core.test.js` – automatisierte Tests des Statik-Rechenkerns
+
+## Einheitliche Konventionen
+
+- Kräfte in kN, Momente in kNm, Streckenlasten in kN/m und Längen in m
+- Zahlen werden mit deutschem Dezimalkomma und Einheiten mit Leerzeichen dargestellt, zum Beispiel `2,5 kN`
+- In Modul 3 wird der Winkel schräger Einzelkräfte von der Trägerachse aus gemessen: 0° nach rechts, 90° nach unten, 180° nach links und 270° nach oben
+- In Modul 2 werden Massen in kg eingegeben und die Gewichtskraft mit `F = m · g` berechnet
