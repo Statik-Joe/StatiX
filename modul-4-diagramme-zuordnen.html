@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modul 4: Diagramme zuordnen | Bautechnik-Labor</title>
-    <link rel="stylesheet" href="tailwind.min.css">
-    <link rel="stylesheet" href="labor.css">
+    <link rel="stylesheet" href="tailwind.min.css?v=2026-09-29">
+    <link rel="stylesheet" href="labor.css?v=2026-09-29">
     <style>
         .option-card {
             transition: all 0.2s ease;
@@ -157,7 +157,8 @@
         </div>
     </div>
 
-    <script src="labor.js"></script>
+    <script src="labor.js?v=2026-09-29"></script>
+    <script src="statik-core.js?v=2026-09-29"></script>
     <script>
         // ================= Physik: geschlossene Formeln pro Systemtyp =================
         // Konvention wie in Modul 3: Q positiv nach oben, M positiv nach unten (Zugseite) aufgetragen.
@@ -181,37 +182,11 @@
             xs = xs.map(x => Math.max(xmin, Math.min(xmax, x)));
             xs = [...new Set(xs.map(x => Math.round(x * 100000) / 100000))].sort((x1, x2) => x1 - x2);
 
-            // Auflagerkräfte per Momentengleichgewicht (Superposition über alle Lasten)
-            let sumMB = 0, sumMA = 0;
-            pointLoads.forEach(p => { sumMB += p.F * (L - p.x); sumMA += p.F * p.x; });
-            udls.forEach(u => {
-                const Feq = u.q * (u.end - u.start);
-                const xc = (u.start + u.end) / 2;
-                sumMB += Feq * (L - xc);
-                sumMA += Feq * xc;
-            });
-            const R_A = sumMB / L;
-            const R_B = sumMA / L;
-
-            // Schnittgrößen: Summe aller Kräfte/Momente links vom Schnitt (Standardverfahren)
-            function getSchnitt(x) {
-                let Q = 0, M = 0;
-                if (x > 1e-9) { Q += R_A; M += R_A * x; }
-                pointLoads.forEach(p => {
-                    if (p.x < x) { Q -= p.F; M -= p.F * (x - p.x); }
-                });
-                udls.forEach(u => {
-                    if (x > u.start) {
-                        const loadedLen = Math.min(x, u.end) - u.start;
-                        if (loadedLen > 0) {
-                            Q -= u.q * loadedLen;
-                            M -= u.q * loadedLen * (x - u.start - loadedLen / 2);
-                        }
-                    }
-                });
-                if (x > L + 1e-9) { Q += R_B; M += R_B * (x - L); }
-                return { Q, M };
-            }
+            // Auflagerkräfte und Schnittgrößen aus dem gemeinsamen Rechenkern (statik-core.js, wie Modul 3)
+            const traeger = berechneTraeger({ L, pointLoads, udls });
+            const R_A = traeger.A;
+            const R_B = traeger.B;
+            const getSchnitt = traeger.schnitt;
 
             const Qs = [], Ms = [];
             xs.forEach(x => {

@@ -2,7 +2,8 @@
    Gemeinsames Stylesheet für alle Module des Virtuellen Bautechnik-Labors.
    Ergänzt tailwind.min.css um die Bausteine, die in jedem Modul gleich
    aussehen sollen (Kopfzeile, Canvas, Beschriftungen, Umschalter).
-   Die Modulfarbe wird über <body data-modul="1..5"> gesetzt und passt zur
+   Die Modulfarbe wird über <body data-modul="1..5"> gesetzt; dazu Präsentationsmodus
+   und Vollbild für Zeichenflächen (siehe Ende der Datei und labor.js) und passt zur
    jeweiligen Kachel im Hauptmenü.
    ========================================================================== */
 
@@ -139,4 +140,92 @@ input[type="number"]:focus, input[type="text"]:focus, select:focus {
 /* :where() hält die Spezifität bei 0, damit farbige accent-*-Klassen (z. B. F₁ blau, F₂ rot) Vorrang behalten */
 :where(input[type="checkbox"], input[type="range"]) {
     accent-color: var(--mod-600);
+}
+
+/* ---------- Präsentationsmodus (Beamer, Tafel) ---------- */
+/* Tailwind rechnet alle Größen in rem – eine größere Grundschrift vergrößert die ganze Oberfläche */
+html.lab-present {
+    font-size: 125%;
+}
+.lab-present-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.125rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    line-height: 1rem;
+    font-weight: 700;
+    color: #475569;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    transition: background-color 0.15s ease-in-out;
+}
+.lab-present-btn:hover {
+    background: #e2e8f0;
+}
+.lab-present-btn[aria-pressed="true"] {
+    color: #ffffff;
+    background: var(--mod-600);
+    border-color: var(--mod-600);
+}
+
+/* ---------- Vollbild für Zeichenflächen ---------- */
+.lab-fs-host {
+    position: relative;
+}
+.lab-fs-btn {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    z-index: 40;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 0.5rem;
+    font-size: 1.1rem;
+    line-height: 1;
+    color: #334155;
+    background: rgb(255 255 255 / 0.9);
+    border: 1px solid #cbd5e1;
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.08);
+    cursor: pointer;
+}
+.lab-fs-btn:hover {
+    background: #ffffff;
+    color: var(--mod-700);
+}
+.lab-fs-host:fullscreen {
+    display: flex;
+    flex-direction: column;   /* Beschriftung (z. B. Modul 4) über der Zeichnung */
+    align-items: center;
+    justify-content: center;
+    background: #ffffff;
+    overflow: hidden;
+}
+.lab-fs-host:-webkit-full-screen {
+    display: flex;
+    flex-direction: column;   /* Beschriftung (z. B. Modul 4) über der Zeichnung */
+    align-items: center;
+    justify-content: center;
+    background: #ffffff;
+    overflow: hidden;
+}
+/* Zeichnung formatfüllend, Seitenverhältnis bleibt erhalten (--lab-ratio setzt labor.js) */
+.lab-fs-host:fullscreen canvas {
+    width: min(100vw, calc(100vh * var(--lab-ratio, 2)));
+    height: auto;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+}
+.lab-fs-host:-webkit-full-screen canvas {
+    width: min(100vw, calc(100vh * var(--lab-ratio, 2)));
+    height: auto;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+}
+.lab-fs-host:fullscreen .lab-fs-btn {
+    top: 1rem;
+    right: 1rem;
 }

@@ -4,13 +4,15 @@ Enthaltene Dateien (alle zusammen in einen Ordner legen!)
 `index.html` – Hauptmenü mit den 5 Modul-Kacheln
 `modul-1-kraefteaddition.html` – Kräfteaddition & Vektoren (inkl. Erfolgskontrolle + Protokoll-Export)
 `modul-2-hebelgesetz.html` – Hebelgesetz & Drehmoment (inkl. Erfolgskontrolle + Protokoll-Export, M₁/M₂-Beschriftung am Balken, Balkenvergleich, Kompensationsrechner)
-`modul-3-statik-einfeldtraeger.html` – Schnittgrößen-Tool "SchnittGrip Pro" (inkl. erweitertem PNG-Export)
+`modul-3-statik-einfeldtraeger.html` – Schnittgrößen-Tool "SchnittGrip Pro" (inkl. erweitertem PNG-Export und Übergabe von M_max an Modul 5)
 `modul-4-diagramme-zuordnen.html` – Quiz: Diagramme zuordnen (Teil A: System→Linie, Teil B: M↔Q direkt; unterstützt Kragarme ein-/beidseitig, mehrere Einzellasten, kombinierte Streckenlast+Einzellast)
-`modul-5-spannungsnachweis.html` – Spannungsnachweis σ_vorh ≤ σ_zul (Querschnittswerte I und W für Rechteck, Kreis, I-Profil; Spannungsverteilung; Ausnutzungsgrad; zulässige Spannungen: Holz nach DIN 1052:1988, Stahl nach DIN 1050)
+`modul-5-spannungsnachweis.html` – Spannungsnachweis σ_vorh ≤ σ_zul (inkl. Erfolgskontrolle + Protokoll-Export, Übernahme von M_max aus Modul 3; Querschnittswerte I und W für Rechteck, Kreis, I-Profil; Spannungsverteilung; Ausnutzungsgrad; zulässige Spannungen: Holz nach DIN 1052:1988, Stahl nach DIN 1050)
 `tailwind.min.css` – lokal gebautes Stylesheet (offline-fähig, keine CDN-Abhängigkeit). Wird automatisch erzeugt, nicht von Hand bearbeiten!
 `package.json`, `tailwind.config.js`, `src/tailwind.css` – nur zum Neuerzeugen von tailwind.min.css nötig, nicht für den Unterricht
 `labor.css` – gemeinsames Stylesheet aller Module (Modulfarbe, Kopfzeile, Umschalter, Zeichenflächen, Eingabefelder)
-`labor.js` – gemeinsame Hilfsfunktionen aller Module (Zahlen mit Dezimalkomma, Tiefstellung im Canvas, Auflagersymbole, Protokoll-Export)
+`labor.js` – gemeinsame Hilfsfunktionen aller Module (Zahlen mit Dezimalkomma, Tiefstellung im Canvas, Auflagersymbole, Protokoll-Export, Präsentationsmodus, Vollbild für Zeichnungen)
+`statik-core.js` – gemeinsamer Rechenkern für Modul 3 und 4 (Auflagerkräfte, Q(x), M(x), Extremwerte)
+`tests/statik-core.test.js` – automatische Tests des Rechenkerns gegen Tabellenwerte (F·L/4, q·L²/8, Kragarm …), ausführen mit `npm test`
 Einheitliche Konventionen
 Kräfte in kN, Momente in kNm, Streckenlasten in kN/m, Längen in m (Modul 2: Massen in kg, Umrechnung F = m · g im Rechenweg).
 Zahlen mit Dezimalkomma, Einheit mit Leerzeichen (z. B. „2,5 kN“), Indizes tiefgestellt (z. B. F₁, q₁, M<sub>max</sub>).
@@ -19,6 +21,11 @@ tailwind.min.css neu erzeugen
 Nötig, wenn in den HTML-Dateien neue Tailwind-Klassen verwendet werden (sonst fehlen deren Stile). Einmalig Node.js installieren, dann im Projektordner:
 `npm install` und danach `npm run build:css`
 Tailwind durchsucht alle HTML-Dateien und labor.js und nimmt genau die verwendeten Klassen auf.
+Nach Änderungen an tailwind.min.css, labor.css, labor.js oder statik-core.js die Versionsangabe `?v=…` an den Verweisen in allen HTML-Dateien erhöhen (z. B. auf das aktuelle Datum). Sonst zeigt der Browser womöglich noch die alte, zwischengespeicherte Datei an.
+Unterricht am Beamer / Tablet
+„🖥️ Präsentation“ neben dem Modul-Badge: größere Schrift und Bedienelemente (+25 %), bleibt beim Wechsel zwischen den Modulen eingeschaltet.
+⛶ oben rechts an jeder großen Zeichnung: Zeichnung im Vollbild (Esc oder ✕ beendet). Lasten lassen sich auch im Vollbild ziehen.
+Lasten lassen sich auch per Finger ziehen (Modul 2 und 3); die Griffe haben auf kleinen Displays einen vergrößerten Fangbereich.
 Wichtig
 Alle Dateien müssen im selben Ordner liegen, sonst funktionieren Navigation und Styling nicht.
 Am besten im mobilen/Desktop-Browser direkt aus dem Ordner öffnen (nicht nur die Chat-Vorschau einzelner Dateien) – siehe frühere Hinweise zur Chat-Vorschau.
