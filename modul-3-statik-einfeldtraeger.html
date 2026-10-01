@@ -3,50 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SchnittGrip - Statik-Tool für Einfeldträger</title>
-    <link rel="stylesheet" href="tailwind.min.css">
-    <style>
-        canvas { 
-            border: 1px solid #e2e8f0; 
-            background: #ffffff; 
-            width: 100%; 
-            height: auto; 
-            border-radius: 0.75rem;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-            user-select: none;
-            -webkit-user-select: none;
-        }
-        input[type="number"], select, input[type="range"] {
-            transition: all 0.2s ease-in-out;
-        }
-        input[type="number"]:focus, select:focus {
-            outline: none;
-            border-color: #0d9488;
-            box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
-        }
-    </style>
+    <title>Modul 3: Schnittgrößen (Einfeldträger) | Bautechnik-Labor</title>
+    <link rel="stylesheet" href="tailwind.min.css?v=2026-09-29">
+    <link rel="stylesheet" href="labor.css?v=2026-09-29">
 </head>
-<body class="bg-slate-50 min-h-screen p-4 md:p-6 font-sans text-slate-800">
+<body data-modul="3" class="bg-slate-50 min-h-screen p-4 md:p-6 font-sans text-slate-800">
     <div class="max-w-7xl mx-auto bg-white p-6 rounded-2xl shadow-xl border border-slate-100">
         
         <!-- Header inkl. Navigation -->
         <header class="mb-6 border-b pb-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
                 <div class="flex items-center gap-3 mb-1">
-                    <a href="index.html" class="text-teal-600 hover:text-teal-800 font-semibold text-sm flex items-center gap-1 bg-teal-50 px-2 py-1 rounded">
+                    <a href="index.html" class="lab-back">
                         <span>&larr;</span> Zurück zum Menü
                     </a>
-                    <span class="text-xs font-bold bg-teal-100 text-teal-700 px-2 py-0.5 rounded uppercase tracking-wide">Modul 3</span>
+                    <span class="lab-badge">Modul 3</span>
                 </div>
-                <h1 class="text-3xl font-extrabold text-slate-800">SchnittGrip Pro</h1>
+                <h1 class="text-3xl font-extrabold text-slate-800">Schnittgrößen (Einfeldträger)</h1>
                 <p class="text-sm text-slate-500 mt-1">Interaktive Baustatik: Verschiebe Lasten per Drag & Drop oder passe sie über das Panel an.</p>
             </div>
-            <div class="flex items-center gap-3">
+            <div class="flex flex-wrap items-center gap-3">
                 <button id="btnExport" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-4 py-2.5 rounded-lg shadow transition-colors text-sm flex items-center gap-2">
                     📥 Grafik-Export (PNG)
                 </button>
+                <a id="btnToModul5" href="modul-5-spannungsnachweis.html" class="bg-violet-600 hover:bg-violet-700 text-white font-bold px-4 py-2.5 rounded-lg shadow transition-colors text-sm flex items-center gap-2" title="Öffnet Modul 5 mit dem aktuell berechneten maximalen Biegemoment">
+                    <span>➡️</span><span>M<sub>max</sub> nachweisen (Modul 5)</span>
+                </a>
                 <div class="bg-teal-50 px-4 py-2.5 rounded-lg border border-teal-100 text-teal-800 text-sm font-semibold shadow-sm">
-                    Live-Berechnung & Toggles
+                    SchnittGrip Pro
                 </div>
             </div>
         </header>
@@ -71,12 +55,12 @@
                 <!-- System -->
                 <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 shadow-sm space-y-4">
                     <h2 class="text-lg font-bold text-slate-700 flex items-center gap-2">
-                        <span class="w-2 h-5 bg-teal-600 rounded-full"></span>
+                        <span class="lab-bar"></span>
                         Systemparameter
                     </h2>
                     
                     <div>
-                        <label class="block text-xs font-semibold text-slate-500 mb-1 uppercase tracking-wider">Länge Hauptfeld L [m]</label>
+                        <label class="block text-xs font-bold text-slate-500 mb-1">Länge Hauptfeld L [m]</label>
                         <input type="number" id="length" value="10" min="1" max="30" step="0.5" class="w-full border border-slate-300 rounded-lg p-2 font-semibold text-slate-700">
                     </div>
 
@@ -87,7 +71,7 @@
                             <input type="checkbox" id="enable_kl" class="w-4 h-4 text-teal-600 border-slate-300 rounded focus:ring-teal-500">
                         </div>
                         <div id="kl_container" class="hidden">
-                            <label class="block text-xs font-semibold text-slate-500 mb-1 uppercase tracking-wider">Länge Kragarm links [m]</label>
+                            <label class="block text-xs font-bold text-slate-500 mb-1">Länge Kragarm links [m]</label>
                             <input type="number" id="length_kl" value="2" min="0.1" max="10" step="0.1" class="w-full border border-slate-300 rounded-lg p-2 text-sm">
                         </div>
                     </div>
@@ -99,7 +83,7 @@
                             <input type="checkbox" id="enable_kr" class="w-4 h-4 text-teal-600 border-slate-300 rounded focus:ring-teal-500">
                         </div>
                         <div id="kr_container" class="hidden">
-                            <label class="block text-xs font-semibold text-slate-500 mb-1 uppercase tracking-wider">Länge Kragarm rechts [m]</label>
+                            <label class="block text-xs font-bold text-slate-500 mb-1">Länge Kragarm rechts [m]</label>
                             <input type="number" id="length_kr" value="2" min="0.1" max="10" step="0.1" class="w-full border border-slate-300 rounded-lg p-2 text-sm">
                         </div>
                     </div>
@@ -108,7 +92,7 @@
                 <!-- Streckenlasten -->
                 <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 shadow-sm space-y-4">
                     <h3 class="text-lg font-bold text-slate-700 flex items-center gap-2">
-                        <span class="w-2 h-5 bg-teal-600 rounded-full"></span>
+                        <span class="lab-bar"></span>
                         Streckenlasten
                     </h3>
                     
@@ -117,7 +101,7 @@
                         <div class="flex justify-between items-center mb-2 pb-2 border-b border-slate-100">
                             <div class="flex items-center gap-2">
                                 <input type="checkbox" id="enable_q1" checked class="w-4 h-4 text-teal-600 border-slate-300 rounded focus:ring-teal-500">
-                                <span class="font-bold text-sm text-slate-700">Streckenlast q1</span>
+                                <span class="font-bold text-sm text-slate-700">Streckenlast q₁</span>
                             </div>
                             <select id="colorQ1" class="border border-slate-300 rounded p-1 text-xs bg-slate-50 font-medium">
                                 <option value="#0d9488" selected>Teal</option>
@@ -129,15 +113,15 @@
                         </div>
                         <div id="q1_inputs_container" class="grid grid-cols-3 gap-2">
                             <div>
-                                <label class="block text-[10px] font-bold text-slate-400 uppercase">Wert [kN/m]</label>
+                                <label class="block text-xs font-bold text-slate-500 mb-1">Wert [kN/m]</label>
                                 <input type="number" id="q1" value="5" step="0.5" class="w-full border rounded p-1.5 text-sm font-semibold">
                             </div>
                             <div>
-                                <label class="block text-[10px] font-bold text-slate-400 uppercase">Start x [m]</label>
+                                <label class="block text-xs font-bold text-slate-500 mb-1">Start x [m]</label>
                                 <input type="number" id="q1_start" value="0" step="0.1" class="w-full border rounded p-1.5 text-sm">
                             </div>
                             <div>
-                                <label class="block text-[10px] font-bold text-slate-400 uppercase">Ende x [m]</label>
+                                <label class="block text-xs font-bold text-slate-500 mb-1">Ende x [m]</label>
                                 <input type="number" id="q1_end" value="5" step="0.1" class="w-full border rounded p-1.5 text-sm">
                             </div>
                         </div>
@@ -148,7 +132,7 @@
                         <div class="flex justify-between items-center mb-2 pb-2 border-b border-slate-100">
                             <div class="flex items-center gap-2">
                                 <input type="checkbox" id="enable_q2" checked class="w-4 h-4 text-teal-600 border-slate-300 rounded focus:ring-teal-500">
-                                <span class="font-bold text-sm text-slate-700">Streckenlast q2</span>
+                                <span class="font-bold text-sm text-slate-700">Streckenlast q₂</span>
                             </div>
                             <select id="colorQ2" class="border border-slate-300 rounded p-1 text-xs bg-slate-50 font-medium">
                                 <option value="#0d9488">Teal</option>
@@ -160,15 +144,15 @@
                         </div>
                         <div id="q2_inputs_container" class="grid grid-cols-3 gap-2">
                             <div>
-                                <label class="block text-[10px] font-bold text-slate-400 uppercase">Wert [kN/m]</label>
+                                <label class="block text-xs font-bold text-slate-500 mb-1">Wert [kN/m]</label>
                                 <input type="number" id="q2" value="3" step="0.5" class="w-full border rounded p-1.5 text-sm font-semibold">
                             </div>
                             <div>
-                                <label class="block text-[10px] font-bold text-slate-400 uppercase">Start x [m]</label>
+                                <label class="block text-xs font-bold text-slate-500 mb-1">Start x [m]</label>
                                 <input type="number" id="q2_start" value="5" step="0.1" class="w-full border rounded p-1.5 text-sm">
                             </div>
                             <div>
-                                <label class="block text-[10px] font-bold text-slate-400 uppercase">Ende x [m]</label>
+                                <label class="block text-xs font-bold text-slate-500 mb-1">Ende x [m]</label>
                                 <input type="number" id="q2_end" value="10" step="0.1" class="w-full border rounded p-1.5 text-sm">
                             </div>
                         </div>
@@ -178,7 +162,7 @@
                 <!-- Einzellasten -->
                 <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 shadow-sm space-y-4">
                     <h3 class="text-lg font-bold text-slate-700 flex items-center gap-2">
-                        <span class="w-2 h-5 bg-teal-600 rounded-full"></span>
+                        <span class="lab-bar"></span>
                         Einzellasten
                     </h3>
                     
@@ -187,7 +171,7 @@
                         <div class="flex justify-between items-center mb-2 pb-2 border-b border-slate-100">
                             <div class="flex items-center gap-2">
                                 <input type="checkbox" id="enable_f1" checked class="w-4 h-4 text-teal-600 border-slate-300 rounded focus:ring-teal-500">
-                                <span class="font-bold text-sm text-slate-700">Einzellast F1</span>
+                                <span class="font-bold text-sm text-slate-700">Einzellast F₁</span>
                             </div>
                             <select id="colorF1" class="border border-slate-300 rounded p-1 text-xs bg-slate-50 font-medium">
                                 <option value="#0d9488">Teal</option>
@@ -199,15 +183,15 @@
                         </div>
                         <div id="f1_inputs_container" class="grid grid-cols-3 gap-2">
                             <div>
-                                <label class="block text-[10px] font-bold text-slate-400 uppercase">Kraft [kN]</label>
+                                <label class="block text-xs font-bold text-slate-500 mb-1">Kraft [kN]</label>
                                 <input type="number" id="f1" value="15" step="1" class="w-full border rounded p-1.5 text-sm font-semibold">
                             </div>
                             <div>
-                                <label class="block text-[10px] font-bold text-slate-400 uppercase">Position x [m]</label>
+                                <label class="block text-xs font-bold text-slate-500 mb-1">Position x [m]</label>
                                 <input type="number" id="x1" value="2" step="0.1" class="w-full border rounded p-1.5 text-sm">
                             </div>
                             <div>
-                                <label class="block text-[10px] font-bold text-slate-400 uppercase">Winkel α [°]</label>
+                                <label class="block text-xs font-bold text-slate-500 mb-1">Winkel α [°]</label>
                                 <input type="number" id="alpha1" value="90" min="0" max="360" step="1" class="w-full border rounded p-1.5 text-sm">
                             </div>
                         </div>
@@ -218,7 +202,7 @@
                         <div class="flex justify-between items-center mb-2 pb-2 border-b border-slate-100">
                             <div class="flex items-center gap-2">
                                 <input type="checkbox" id="enable_f2" checked class="w-4 h-4 text-teal-600 border-slate-300 rounded focus:ring-teal-500">
-                                <span class="font-bold text-sm text-slate-700">Einzellast F2</span>
+                                <span class="font-bold text-sm text-slate-700">Einzellast F₂</span>
                             </div>
                             <select id="colorF2" class="border border-slate-300 rounded p-1 text-xs bg-slate-50 font-medium">
                                 <option value="#0d9488">Teal</option>
@@ -230,27 +214,30 @@
                         </div>
                         <div id="f2_inputs_container" class="grid grid-cols-3 gap-2">
                             <div>
-                                <label class="block text-[10px] font-bold text-slate-400 uppercase">Kraft [kN]</label>
+                                <label class="block text-xs font-bold text-slate-500 mb-1">Kraft [kN]</label>
                                 <input type="number" id="f2" value="10" step="1" class="w-full border rounded p-1.5 text-sm font-semibold">
                             </div>
                             <div>
-                                <label class="block text-[10px] font-bold text-slate-400 uppercase">Position x [m]</label>
+                                <label class="block text-xs font-bold text-slate-500 mb-1">Position x [m]</label>
                                 <input type="number" id="x2" value="7" step="0.1" class="w-full border rounded p-1.5 text-sm">
                             </div>
                             <div>
-                                <label class="block text-[10px] font-bold text-slate-400 uppercase">Winkel α [°]</label>
+                                <label class="block text-xs font-bold text-slate-500 mb-1">Winkel α [°]</label>
                                 <input type="number" id="alpha2" value="90" min="0" max="360" step="1" class="w-full border rounded p-1.5 text-sm">
                             </div>
                         </div>
-                        <p class="mt-2 text-[10px] text-slate-400">Winkel zur Trägerachse (beide Lasten): 0° rechts, 90° unten, 180° links, 270° oben.</p>
+                        <p class="mt-2 text-[10px] text-slate-400">Winkel zur Trägerachse: 0° rechts, 90° unten, 180° links, 270° oben.</p>
                     </div>
                 </div>
 
                 <!-- Skalierung & Darstellungsoptionen -->
                 <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 shadow-sm space-y-4">
-                    <h3 class="text-sm font-bold text-slate-700">Darstellungsoptionen</h3>
+                    <h3 class="text-lg font-bold text-slate-700 flex items-center gap-2">
+                        <span class="lab-bar"></span>
+                        Darstellungsoptionen
+                    </h3>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-500 mb-1 uppercase tracking-wider">Maßstab der Kurvenhöhe</label>
+                        <label class="block text-xs font-bold text-slate-500 mb-1">Maßstab der Kurvenhöhe</label>
                         <input type="range" id="diagramScale" min="0.2" max="2.5" step="0.05" value="1" class="w-full accent-teal-600">
                     </div>
                     <div class="flex items-center justify-between border-t border-slate-200 pt-3">
@@ -279,15 +266,15 @@
                     <div id="sondeTooltip" class="absolute hidden bg-slate-900/95 text-white p-3 rounded-lg text-xs shadow-xl border border-slate-700 pointer-events-none space-y-1.5 w-64 z-50">
                         <div class="font-bold border-b border-slate-700 pb-1 flex justify-between">
                             <span>Sondendaten</span>
-                            <span id="sonde_x" class="text-teal-400">x = 0.00 m</span>
+                            <span id="sonde_x" class="text-teal-400">x = 0,00 m</span>
                         </div>
                         <div class="flex justify-between">
                             <span>Querkraft Q(x):</span>
-                            <span id="sonde_q" class="font-bold text-sky-400">0.00 kN</span>
+                            <span id="sonde_q" class="font-bold text-sky-400">0,00 kN</span>
                         </div>
                         <div class="flex justify-between">
                             <span>Biegemoment M(x):</span>
-                            <span id="sonde_m" class="font-bold text-amber-400">0.00 kNm</span>
+                            <span id="sonde_m" class="font-bold text-amber-400">0,00 kNm</span>
                         </div>
                         <div id="sonde_didaktik" class="text-[10px] text-slate-400 italic pt-1 border-t border-slate-800">
                             Mathematischer Zusammenhang...
@@ -297,9 +284,9 @@
 
                 <!-- Didaktischer Rechenweg -->
                 <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200 shadow-sm">
-                    <h3 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
-                        <span class="w-2.5 h-6 bg-indigo-600 rounded-full"></span>
-                        Didaktischer Herleitungsweg (Schritt für Schritt)
+                    <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                        <span class="lab-bar"></span>
+                        Rechenweg – Schritt für Schritt
                     </h3>
                     <div id="rechenweg" class="space-y-6 text-sm text-slate-700 leading-relaxed font-mono">
                         <!-- Wird dynamisch generiert -->
@@ -309,6 +296,8 @@
         </div>
     </div>
 
+    <script src="labor.js?v=2026-09-29"></script>
+    <script src="statik-core.js?v=2026-09-29"></script>
     <script>
         const canvas = document.getElementById('statikCanvas');
         const ctx = canvas.getContext('2d');
@@ -485,20 +474,20 @@
             exportCtx.font = 'bold 18px sans-serif';
             exportCtx.textAlign = 'left';
             exportCtx.textBaseline = 'alphabetic';
-            exportCtx.fillText('Ergebnisse — SchnittGrip Pro', 40, tableTop + 14);
+            exportCtx.fillText('Ergebnisse – Modul 3: Schnittgrößen (Einfeldträger)', 40, tableTop + 14);
 
             // Werte in zwei Spalten
             const rowsLeft = [
-                ['Trägerlänge L', `${L_global.toFixed(2)} m`],
-                ['Horizontalauflager A_h', `${A_h_global.toFixed(2)} kN`],
-                ['Auflagerkraft A', `${A.toFixed(2)} kN`],
-                ['Auflagerkraft B', `${B.toFixed(2)} kN`],
-                ['Gesamtlast (vertikal)', `${totalLoad_global.toFixed(2)} kN`],
+                ['Trägerlänge L', `${fmt(L_global, 2)} m`],
+                ['Horizontalauflager A_h', `${fmt(A_h_global, 2)} kN`],
+                ['Auflagerkraft A', `${fmt(A, 2)} kN`],
+                ['Auflagerkraft B', `${fmt(B, 2)} kN`],
+                ['Gesamtlast (vertikal)', `${fmt(totalLoad_global, 2)} kN`],
             ];
             const rowsRight = [
-                ['Max. Biegemoment |M|max', `${Math.abs(maxM_global).toFixed(2)} kNm`],
-                ['Position von Mmax', `x = ${maxX0_global.toFixed(2)} m`],
-                ['Max. Querkraft |Q|max', `${Math.abs(maxQ_global).toFixed(2)} kN`],
+                ['Max. Biegemoment |M|_{max}', `${fmt(Math.abs(maxM_global), 2)} kNm`],
+                ['Position von M_{max}', `x₀ = ${fmt(maxX0_global, 2)} m`],
+                ['Max. Querkraft |Q|_{max}', `${fmt(Math.abs(maxQ_global), 2)} kN`],
                 ['Erstellt am', new Date().toLocaleDateString('de-DE')],
             ];
 
@@ -512,7 +501,7 @@
                 const y = rowY + i * lineHeight;
                 exportCtx.fillStyle = '#475569';
                 exportCtx.font = '13px sans-serif';
-                exportCtx.fillText(label, colLeftX, y);
+                fillTextSub(exportCtx, label, colLeftX, y);
                 exportCtx.fillStyle = '#0f172a';
                 exportCtx.font = 'bold 14px sans-serif';
                 exportCtx.fillText(value, colLeftX, y + 17);
@@ -521,14 +510,14 @@
                 const y = rowY + i * lineHeight;
                 exportCtx.fillStyle = '#475569';
                 exportCtx.font = '13px sans-serif';
-                exportCtx.fillText(label, colRightX, y);
+                fillTextSub(exportCtx, label, colRightX, y);
                 exportCtx.fillStyle = '#0f172a';
                 exportCtx.font = 'bold 14px sans-serif';
                 exportCtx.fillText(value, colRightX, y + 17);
             });
 
             const link = document.createElement('a');
-            link.download = 'arbeitsblatt_statik_traeger.png';
+            link.download = 'modul3_schnittgroessen_einfeldtraeger.png';
             link.href = exportCanvas.toDataURL('image/png');
             link.click();
 
@@ -551,19 +540,25 @@
             };
         }
 
-        function findDragTarget(coords) {
+        // Nächstgelegenen Griff im Fangradius suchen. Für Finger gilt ein Mindestradius von 26 Bildschirm-Pixeln,
+        // damit die Griffe auch auf kleinen Displays (Zeichnung stark verkleinert) sicher zu treffen sind.
+        function findDragTarget(coords, isTouch) {
+            const pxPerCanvas = canvas.getBoundingClientRect().width / canvas.width;
+            const radius = isTouch ? Math.max(22, 26 / pxPerCanvas) : 22;
+            let best = null, bestDist = radius;
             for (let el of dragElements) {
                 const dist = Math.hypot(coords.x - el.x, coords.y - el.y);
-                if (dist < 22) { 
-                    return el;
+                if (dist < bestDist) {
+                    best = el;
+                    bestDist = dist;
                 }
             }
-            return null;
+            return best;
         }
 
         function startDrag(e) {
             const coords = getEventCoords(e);
-            const target = findDragTarget(coords);
+            const target = findDragTarget(coords, !!e.touches);
             if (target) {
                 activeDragId = target.id;
                 canvas.style.cursor = 'grabbing';
@@ -624,8 +619,10 @@
                 leftPos = Math.max(5, leftPos);
                 topPos = Math.max(5, topPos);
 
-                tooltip.style.left = leftPos + 'px';
-                tooltip.style.top = topPos + 'px';
+                // Position relativ zum umgebenden Container (im Vollbild ist die Zeichnung darin zentriert)
+                const hostRect = canvas.parentElement.getBoundingClientRect();
+                tooltip.style.left = (leftPos + rect.left - hostRect.left) + 'px';
+                tooltip.style.top = (topPos + rect.top - hostRect.top) + 'px';
             }
 
             if (!activeDragId && !e.touches) {
@@ -680,139 +677,55 @@
             const q2_start = q2_active ? getVal('q2_start') : 0;
             const q2_end = q2_active ? getVal('q2_end') : 0;
 
-            // Auflagerkräfte berechnen (Summe der Momente um B = 0 -> A, Summe um A = 0 -> B)
-            let sum_M_B = 0; 
-            let sum_M_A = 0; 
+            // Auflagerkräfte und Schnittgrößen aus dem gemeinsamen Rechenkern (statik-core.js, wie Modul 4)
+            const pointLoads = [];
+            if (f1_active) pointLoads.push({ F: F1_components.vertical, x: x1 });
+            if (f2_active) pointLoads.push({ F: F2_components.vertical, x: x2 });
+            const udls = [];
+            if (q1_active) udls.push({ q: q1_val, start: q1_start, end: q1_end });
+            if (q2_active) udls.push({ q: q2_val, start: q2_start, end: q2_end });
+            const traeger = berechneTraeger({ L, pointLoads, udls });
 
-            // Einzellast F1
-            if (f1_active) {
-                sum_M_B += F1_components.vertical * (L - x1);
-                sum_M_A += F1_components.vertical * x1;
-            }
-            // Einzellast F2
-            if (f2_active) {
-                sum_M_B += F2_components.vertical * (L - x2);
-                sum_M_A += F2_components.vertical * x2;
-            }
-
-            // Streckenlast q1
-            let q1_total = 0;
-            if (q1_active && q1_end > q1_start) {
-                const q1_len = q1_end - q1_start;
-                q1_total = q1_val * q1_len;
-                const q1_cog = q1_start + q1_len / 2; // Schwerpunkt
-                sum_M_B += q1_total * (L - q1_cog);
-                sum_M_A += q1_total * q1_cog;
-            }
-
-            // Streckenlast q2
-            let q2_total = 0;
-            if (q2_active && q2_end > q2_start) {
-                const q2_len = q2_end - q2_start;
-                q2_total = q2_val * q2_len;
-                const q2_cog = q2_start + q2_len / 2; // Schwerpunkt
-                sum_M_B += q2_total * (L - q2_cog);
-                sum_M_A += q2_total * q2_cog;
-            }
-
-            A = sum_M_B / L;
-            B = sum_M_A / L;
+            A = traeger.A;
+            B = traeger.B;
             const A_h = -((f1_active ? F1_components.horizontal : 0) + (f2_active ? F2_components.horizontal : 0));
             A_h_global = A_h;
 
             // Ausgabe runden
             const A_rnd = Math.round(A * 100) / 100;
             const B_rnd = Math.round(B * 100) / 100;
-            const totalLoad = (f1_active ? F1_components.vertical : 0) + (f2_active ? F2_components.vertical : 0) + q1_total + q2_total;
+            const totalLoad = traeger.totalLoad;
 
             document.getElementById('output').innerHTML = `
                 <div class="flex justify-between py-1 border-b border-teal-200/50">
                     <span class="font-semibold">Horizontalauflager A<sub>h</sub>:</span>
-                    <span class="font-extrabold text-teal-900">${A_h.toFixed(2)} kN</span>
+                    <span class="font-extrabold text-teal-900">${fmt(A_h, 2)} kN</span>
                 </div>
                 <div class="flex justify-between py-1 border-b border-teal-200/50">
-                    <span class="font-semibold">Vertikalauflager A:</span>
-                    <span class="font-extrabold text-teal-900">${A_rnd.toFixed(2)} kN</span>
+                    <span class="font-semibold">Auflagerkraft A:</span>
+                    <span class="font-extrabold text-teal-900">${fmt(A_rnd, 2)} kN</span>
                 </div>
                 <div class="flex justify-between py-1 border-b border-teal-200/50">
-                    <span class="font-semibold">Vertikalauflager B:</span>
-                    <span class="font-extrabold text-teal-900">${B_rnd.toFixed(2)} kN</span>
+                    <span class="font-semibold">Auflagerkraft B:</span>
+                    <span class="font-extrabold text-teal-900">${fmt(B_rnd, 2)} kN</span>
                 </div>
                 <div class="flex justify-between py-1 pt-2">
-                    <span class="font-semibold text-slate-500">Gesamte Vertikalbelastung:</span>
-                    <span class="font-bold text-slate-700">${totalLoad.toFixed(2)} kN</span>
+                    <span class="font-semibold text-slate-500">Gesamtlast (vertikal):</span>
+                    <span class="font-bold text-slate-700">${fmt(totalLoad, 2)} kN</span>
                 </div>
             `;
 
             // Schnittgrößenfunktion für x im Trägersystem
-            function getSchnittgroessen(x) {
-                let Q = 0;
-                let M = 0;
+            const getSchnittgroessen = traeger.schnitt;
 
-                // Auflager links vom betrachteten Punkt x
-                if (x > 0) {
-                    Q += A;
-                    M += A * x;
-                }
-                if (x > L) {
-                    Q += B;
-                    M += B * (x - L);
-                }
-
-                // Einzellasten links vom Punkt x
-                if (f1_active && x1 < x) {
-                    Q -= F1_components.vertical;
-                    M -= F1_components.vertical * (x - x1);
-                }
-                if (f2_active && x2 < x) {
-                    Q -= F2_components.vertical;
-                    M -= F2_components.vertical * (x - x2);
-                }
-
-                // Streckenlast q1 integrieren
-                if (q1_active) {
-                    if (x > q1_start) {
-                        let activeEnd = Math.min(x, q1_end);
-                        let activeLen = activeEnd - q1_start;
-                        Q -= q1_val * activeLen;
-                        M -= q1_val * activeLen * (x - (q1_start + activeEnd) / 2);
-                    }
-                }
-
-                // Streckenlast q2 integrieren
-                if (q2_active) {
-                    if (x > q2_start) {
-                        let activeEnd = Math.min(x, q2_end);
-                        let activeLen = activeEnd - q2_start;
-                        Q -= q2_val * activeLen;
-                        M -= q2_val * activeLen * (x - (q2_start + activeEnd) / 2);
-                    }
-                }
-
-                return { Q, M };
-            }
-
-            // Extremwert der Biegemomente (und Querkraft) berechnen (Feldmomente)
-            let maxM = 0;
-            let maxX0 = 0;
-            let maxQ = 0;
-            const step_eval = 0.01;
-            const minX = -L_kl;
-            const maxX = L + L_kr;
-
-            for (let x = minX; x <= maxX; x += step_eval) {
-                const s = getSchnittgroessen(x);
-                if (Math.abs(s.M) > Math.abs(maxM)) {
-                    maxM = s.M;
-                    maxX0 = x;
-                }
-                if (Math.abs(s.Q) > Math.abs(maxQ)) {
-                    maxQ = s.Q;
-                }
-            }
+            // Extremwerte von Biegemoment und Querkraft über die ganze Trägerlänge (inkl. Kragarme)
+            const { maxM, xMaxM: maxX0, maxQ } = extremwerte(traeger, -L_kl, L + L_kr, 0.01);
 
             // Ergebnisse global ablegen (für PNG-Export mit Werte-Tabelle)
             maxM_global = maxM;
+            // Übergabe an Modul 5: |M|max als URL-Parameter (auf 2 Nachkommastellen gerundet)
+            document.getElementById('btnToModul5').href =
+                'modul-5-spannungsnachweis.html?M=' + (Math.round(Math.abs(maxM) * 100) / 100);
             maxX0_global = maxX0;
             maxQ_global = maxQ;
             totalLoad_global = totalLoad;
@@ -832,56 +745,31 @@
             // Schritt 1: Statische Bestimmtheit prüfen
             pathHtml += `
                 <div class="p-4 bg-white rounded-lg border border-slate-200">
-                    <div class="text-teal-600 font-bold mb-1">Schritt 1: Systemanalyse & Statische Bestimmtheit</div>
+                    <div class="text-teal-600 font-bold mb-1">Schritt 1: Systemanalyse & statische Bestimmtheit</div>
                     <p class="text-xs text-slate-600">
-                        Einfacher Einfeldträger mit optionalen Kragarmen. 
-                        Gleichung: $F = 3$ (Reaktionen: $A_v, B_v, A_h$) bei 3 Gleichgewichtsbedingungen.
-                        Bei schrägen Kräften wirkt für Querkraft und Biegemoment nur die Vertikalkomponente $F_v = F \\cdot \\sin(\\alpha)$.
+                        Einfeldträger (Festlager A, Loslager B) mit optionalen Kragarmen.
+                        3 unbekannte Auflagerreaktionen (A<sub>v</sub>, A<sub>h</sub>, B<sub>v</sub>) bei 3 Gleichgewichtsbedingungen (ΣF<sub>x</sub> = 0, ΣF<sub>z</sub> = 0, ΣM = 0).
+                        Für schräge Einzelkräfte wird die Vertikalkomponente $F_v = F \\cdot \\sin(\\alpha)$ für Querkraft und Biegemoment verwendet.
                         Das System ist <strong>statisch bestimmt</strong> und somit direkt lösbar.
                     </p>
                 </div>
             `;
 
             // Schritt 2: Auflagerkräfte herleiten
-            let bMomentEq = `\\sum M^{(A)} = 0 = B \\cdot L`;
-            let aMomentEq = `\\sum M^{(B)} = 0 = A \\cdot L`;
-            
-            if (f1_active) {
-                bMomentEq += ` - (F_1 \\cdot \\sin(${alpha1}^\\circ)) \\cdot x_1`;
-                aMomentEq += ` - (F_1 \\cdot \\sin(${alpha1}^\\circ)) \\cdot (L - x_1)`;
-            }
-            if (f2_active) {
-                bMomentEq += ` - (F_2 \\cdot \\sin(${alpha2}^\\circ)) \\cdot x_2`;
-                aMomentEq += ` - (F_2 \\cdot \\sin(${alpha2}^\\circ)) \\cdot (L - x_2)`;
-            }
-            if (q1_active) {
-                const len = q1_end - q1_start;
-                const force = q1_val * len;
-                const arm = q1_start + len/2;
-                bMomentEq += ` - (q_1 \\cdot l_{q1}) \\cdot x_{cg1}`;
-                aMomentEq += ` - (q_1 \\cdot l_{q1}) \\cdot (L - x_{cg1})`;
-            }
-            if (q2_active) {
-                const len = q2_end - q2_start;
-                const force = q2_val * len;
-                const arm = q2_start + len/2;
-                bMomentEq += ` - (q_2 \\cdot l_{q2}) \\cdot x_{cg2}`;
-                aMomentEq += ` - (q_2 \\cdot l_{q2}) \\cdot (L - x_{cg2})`;
-            }
-
             pathHtml += `
                 <div class="p-4 bg-white rounded-lg border border-slate-200">
                     <div class="text-teal-600 font-bold mb-1">Schritt 2: Momentengleichgewicht um die Auflager</div>
                     <div class="text-xs text-slate-600 space-y-2">
-                        <div>Wir verwenden bei schrägen Einzellasten die Vertikalkomponente $F_v = F \\cdot \\sin(\\alpha)$ und drehen um Auflager A, um B zu berechnen:</div>
+                        <div>Wir verwenden bei schrägen Einzelkräften die Vertikalkomponente $F_v = F \\cdot \\sin(\\alpha)$ und drehen um Auflager A, um B zu berechnen:</div>
                         <div class="bg-slate-50 p-2 rounded font-mono font-bold text-slate-800 text-center">
-                            B = [ $\\sum (F_i \\cdot x_i) + \\sum (q_j \\cdot s_j \\cdot x_{cg,j})$ ] / L
+                            B = [ Σ(F<sub>i</sub> · x<sub>i</sub>) + Σ(q<sub>j</sub> · l<sub>j</sub> · x<sub>S,j</sub>) ] / L
                         </div>
                         <div>Wir drehen um Auflager B, um A zu berechnen:</div>
                         <div class="bg-slate-50 p-2 rounded font-mono font-bold text-slate-800 text-center">
-                            A = [ $\\sum (F_i \\cdot (L - x_i)) + \\sum (q_j \\cdot s_j \\cdot (L - x_{cg,j}))$ ] / L
+                            A = [ Σ(F<sub>i</sub> · (L − x<sub>i</sub>)) + Σ(q<sub>j</sub> · l<sub>j</sub> · (L − x<sub>S,j</sub>)) ] / L
                         </div>
-                        <div class="pt-2 text-indigo-700 font-bold">Ergebnis: A = ${A_rnd.toFixed(2)} kN | B = ${B_rnd.toFixed(2)} kN | A<sub>h</sub> = ${A_h.toFixed(2)} kN</div>
+                        <div class="text-slate-400">l<sub>j</sub> = belastete Länge der Streckenlast, x<sub>S,j</sub> = Lage ihrer Resultierenden (Schwerpunkt)</div>
+                        <div class="pt-2 text-indigo-700 font-bold">Ergebnis: A = ${fmt(A_rnd, 2)} kN | B = ${fmt(B_rnd, 2)} kN | A<sub>h</sub> = ${fmt(A_h, 2)} kN</div>
                     </div>
                 </div>
             `;
@@ -889,13 +777,13 @@
             // Schritt 3: Maximales Moment einblenden
             pathHtml += `
                 <div class="p-4 bg-white rounded-lg border border-slate-200">
-                    <div class="text-teal-600 font-bold mb-1">Schritt 3: Bestimmung des maximalen Biegemoments M_max</div>
+                    <div class="text-teal-600 font-bold mb-1">Schritt 3: Bestimmung des maximalen Biegemoments M<sub>max</sub></div>
                     <p class="text-xs text-slate-600 mb-2">
-                        Das maximale Biegemoment tritt an der Stelle des Nulldurchgangs der Querkraft auf ($Q(x_0) = 0$).
+                        Das maximale Biegemoment tritt an der Stelle des Nulldurchgangs der Querkraft auf (Q(x₀) = 0).
                     </p>
                     <div class="bg-slate-50 p-2.5 rounded font-mono text-xs text-slate-800 space-y-1">
-                        <div>Gefundener Maximalwert: <strong class="text-amber-600">M_max = ${Math.abs(maxM).toFixed(2)} kNm</strong></div>
-                        <div>Position des Extremwerts: <strong>x₀ = ${maxX0.toFixed(2)} m</strong></div>
+                        <div>Gefundener Maximalwert: <strong class="text-amber-600">M<sub>max</sub> = ${fmt(Math.abs(maxM), 2)} kNm</strong></div>
+                        <div>Position des Extremwerts: <strong>x₀ = ${fmt(maxX0, 2)} m</strong></div>
                     </div>
                 </div>
             `;
@@ -904,89 +792,12 @@
         }
 
         // Zeichnen des gesamten Systems im Canvas
-        function drawSystem(L, L_kl, L_kr, kl_active, kr_active, F1, x1, alpha1, f1_active, F2, x2, alpha2, f2_active, q1_val, q1_start, q1_end, q1_active, q2_val, q2_start, q2_end, q2_active, getSchnittgroessen, maxM, maxX0) {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            const totalLength = L_kl + L + L_kr;
-            const paddingX = 80;
-            const drawWidth = canvas.width - 2 * paddingX;
-
-            // X-Koordinate mappen auf Canvas-Pixel
-            function getPixelX(x) {
-                return paddingX + ((x + L_kl) / totalLength) * drawWidth;
-            }
-
-            // System-Trägerlinie auf Y = 160
-            const beamY = 160;
-
-            // Zeichne Träger
-            ctx.strokeStyle = '#334155';
-            ctx.lineWidth = 10;
-            ctx.lineCap = 'round';
-            ctx.beginPath();
-            ctx.moveTo(getPixelX(-L_kl), beamY);
-            ctx.lineTo(getPixelX(L + L_kr), beamY);
-            ctx.stroke();
-
-            // Auflager A (Festlager bei x=0)
-            const ax = getPixelX(0);
-            ctx.fillStyle = '#64748b';
-            ctx.beginPath();
-            ctx.moveTo(ax, beamY);
-            ctx.lineTo(ax - 15, beamY + 25);
-            ctx.lineTo(ax + 15, beamY + 25);
-            ctx.closePath();
-            ctx.fill();
-            // Gelenkkreis
-            ctx.fillStyle = '#ffffff';
-            ctx.beginPath();
-            ctx.arc(ax, beamY + 5, 4, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.strokeStyle = '#475569';
-            ctx.lineWidth = 2;
-            ctx.stroke();
-            // Bodenlinie
-            ctx.strokeStyle = '#475569';
-            ctx.lineWidth = 3;
-            ctx.beginPath();
-            ctx.moveTo(ax - 22, beamY + 27);
-            ctx.lineTo(ax + 22, beamY + 27);
-            ctx.stroke();
-            // Label
-            ctx.fillStyle = '#1e293b';
-            ctx.font = 'bold 13px sans-serif';
-            ctx.fillText('A', ax - 5, beamY + 45);
-
-            // Auflager B (Loslager bei x=L)
-            const bx = getPixelX(L);
-            ctx.fillStyle = '#64748b';
-            ctx.beginPath();
-            ctx.moveTo(bx, beamY);
-            ctx.lineTo(bx - 15, beamY + 20);
-            ctx.lineTo(bx + 15, beamY + 20);
-            ctx.closePath();
-            ctx.fill();
-            // Rollen
-            ctx.beginPath();
-            ctx.arc(bx - 7, beamY + 24, 3, 0, Math.PI * 2);
-            ctx.arc(bx + 7, beamY + 24, 3, 0, Math.PI * 2);
-            ctx.fill();
-            // Bodenlinie
-            ctx.beginPath();
-            ctx.moveTo(bx - 22, beamY + 28);
-            ctx.lineTo(bx + 22, beamY + 28);
-            ctx.stroke();
-            // Label
-            ctx.fillStyle = '#1e293b';
-            ctx.fillText('B', bx - 5, beamY + 45);
-
-            // Drag-Buttons initialisieren
-            dragElements = [];
-
-            // Kollisionsvermeidung: verschiebt sich überlappende Lasten automatisch übereinander,
-            // damit Pfeile/Beschriftungen nicht ineinander laufen (übernommen aus früherer Tool-Version)
+        // Kollisionsvermeidung: verschiebt sich überlappende Lasten automatisch übereinander,
+        // damit Pfeile/Beschriftungen nicht ineinander laufen (übernommen aus früherer Tool-Version).
+        // Liefert eine getSafeY-Funktion, die sich alle bereits platzierten Lasten merkt.
+        function createLoadStacker(beamY) {
             const placedLoads = [];
-            function getSafeY(startX, endX, requiredHeight) {
+            return function getSafeY(startX, endX, requiredHeight) {
                 let currentBottomY = beamY - 5;
                 let collision = true;
                 let watchdog = 0;
@@ -1005,7 +816,68 @@
                 const topY = currentBottomY - requiredHeight;
                 placedLoads.push({ startX, endX, topY });
                 return { bottomY: currentBottomY, topY };
+            };
+        }
+
+        const BASE_CANVAS_HEIGHT = 900; // Höhe ohne zusätzlichen Platz für gestapelte Lasten
+
+        function drawSystem(L, L_kl, L_kr, kl_active, kr_active, F1, x1, alpha1, f1_active, F2, x2, alpha2, f2_active, q1_val, q1_start, q1_end, q1_active, q2_val, q2_start, q2_end, q2_active, getSchnittgroessen, maxM, maxX0) {
+            const totalLength = L_kl + L + L_kr;
+            const paddingX = 80;
+            const drawWidth = canvas.width - 2 * paddingX;
+
+            // X-Koordinate mappen auf Canvas-Pixel
+            function getPixelX(x) {
+                return paddingX + ((x + L_kl) / totalLength) * drawWidth;
             }
+
+            // System-Trägerlinie auf Y = 160
+            const beamY = 160;
+
+            // Lastenstapel vorab durchspielen (gleiche Reihenfolge wie beim Zeichnen: q1, q2, F1, F2).
+            // Ragt er samt Beschriftung über den oberen Rand, wird die Zeichenfläche um genau diesen
+            // Betrag höher und die ganze Zeichnung nach unten verschoben – so wird nichts abgeschnitten
+            // (auch nicht im PNG-Export).
+            const previewStack = createLoadStacker(beamY);
+            let stackTop = beamY;
+            if (q1_active && q1_end > q1_start) stackTop = Math.min(stackTop, previewStack(getPixelX(q1_start), getPixelX(q1_end), 60).topY);
+            if (q2_active && q2_end > q2_start) stackTop = Math.min(stackTop, previewStack(getPixelX(q2_start), getPixelX(q2_end), 60).topY);
+            if (f1_active) stackTop = Math.min(stackTop, previewStack(getPixelX(x1) - 65 * Math.abs(Math.cos(alpha1 * Math.PI / 180)) - 10, getPixelX(x1) + 65 * Math.abs(Math.cos(alpha1 * Math.PI / 180)) + 10, 65 * Math.max(0, Math.sin(alpha1 * Math.PI / 180)) + 22).topY);
+            if (f2_active) stackTop = Math.min(stackTop, previewStack(getPixelX(x2) - 65 * Math.abs(Math.cos(alpha2 * Math.PI / 180)) - 10, getPixelX(x2) + 65 * Math.abs(Math.cos(alpha2 * Math.PI / 180)) + 10, 65 * Math.max(0, Math.sin(alpha2 * Math.PI / 180)) + 22).topY);
+            const topMargin = 12;
+            const offsetY = Math.max(0, Math.ceil(topMargin - stackTop));
+            const neededHeight = BASE_CANVAS_HEIGHT + offsetY;
+            if (canvas.height !== neededHeight) canvas.height = neededHeight; // setzt auch den Canvas-Inhalt zurück
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.save();
+            ctx.translate(0, offsetY);
+
+            // Zeichne Träger
+            ctx.strokeStyle = '#334155';
+            ctx.lineWidth = 10;
+            ctx.lineCap = 'round';
+            ctx.beginPath();
+            ctx.moveTo(getPixelX(-L_kl), beamY);
+            ctx.lineTo(getPixelX(L + L_kr), beamY);
+            ctx.stroke();
+
+            // Auflager A (Festlager bei x=0) und B (Loslager bei x=L) – gleiche Symbole wie in Modul 4
+            const ax = getPixelX(0);
+            const bx = getPixelX(L);
+            drawSupport(ctx, ax, beamY + 5, 'fest');
+            drawSupport(ctx, bx, beamY + 5, 'los');
+            ctx.fillStyle = '#1e293b';
+            ctx.font = 'bold 13px sans-serif';
+            ctx.textAlign = 'right';
+            ctx.fillText('A', ax - 20, beamY + 22);
+            ctx.fillText('B', bx - 20, beamY + 22);
+            ctx.textAlign = 'left';
+
+            // Drag-Buttons initialisieren
+            dragElements = [];
+
+            const getSafeY = createLoadStacker(beamY);
 
             // Streckenlasten zuerst zeichnen (unterste Etage, direkt am Träger)
             if (q1_active && q1_end > q1_start) {
@@ -1043,7 +915,7 @@
                 // Label
                 ctx.fillStyle = '#0f172a';
                 ctx.font = 'bold 12px sans-serif';
-                ctx.fillText(`q1 = ${q1_val} kN/m`, (qxStart + qxEnd)/2 - 40, q1LineY - 8);
+                ctx.fillText(`q₁ = ${fmt(q1_val)} kN/m`, (qxStart + qxEnd)/2 - 40, q1LineY - 8);
 
                 // Drag handles für q1 Start/Ende
                 ctx.fillStyle = col;
@@ -1055,8 +927,8 @@
                 ctx.lineWidth = 2;
                 ctx.stroke();
 
-                dragElements.push({ id: 'q1_start', x: qxStart, y: q1LineY });
-                dragElements.push({ id: 'q1_end', x: qxEnd, y: q1LineY });
+                dragElements.push({ id: 'q1_start', x: qxStart, y: q1LineY + offsetY });
+                dragElements.push({ id: 'q1_end', x: qxEnd, y: q1LineY + offsetY });
             }
 
             if (q2_active && q2_end > q2_start) {
@@ -1091,7 +963,7 @@
 
                 ctx.fillStyle = '#0f172a';
                 ctx.font = 'bold 12px sans-serif';
-                ctx.fillText(`q2 = ${q2_val} kN/m`, (qxStart + qxEnd)/2 - 40, q2LineY - 8);
+                ctx.fillText(`q₂ = ${fmt(q2_val)} kN/m`, (qxStart + qxEnd)/2 - 40, q2LineY - 8);
 
                 // Drag handles
                 ctx.fillStyle = col;
@@ -1103,8 +975,8 @@
                 ctx.lineWidth = 2;
                 ctx.stroke();
 
-                dragElements.push({ id: 'q2_start', x: qxStart, y: q2LineY });
-                dragElements.push({ id: 'q2_end', x: qxEnd, y: q2LineY });
+                dragElements.push({ id: 'q2_start', x: qxStart, y: q2LineY + offsetY });
+                dragElements.push({ id: 'q2_end', x: qxEnd, y: q2LineY + offsetY });
             }
 
             // Einzellasten danach zeichnen (stapeln sich automatisch über etwaigen Streckenlasten)
@@ -1119,7 +991,7 @@
                 const { bottomY: headY } = getSafeY(
                     Math.min(forceX, tailX) - 10,
                     Math.max(forceX, tailX) + 10,
-                    arrowLength + 16
+                    arrowLength * Math.max(0, directionY) + 22
                 );
                 const tailY = headY - arrowLength * directionY;
                 const headBackX = forceX - 12 * directionX;
@@ -1144,7 +1016,9 @@
 
                 ctx.font = 'bold 12px sans-serif';
                 ctx.fillStyle = '#0f172a';
-                ctx.fillText(`${id.toUpperCase()} = ${force} kN (${angle}°)`, tailX - 25, tailY - 8);
+                ctx.textAlign = 'center';
+                ctx.fillText(`${id.toUpperCase()} = ${fmt(force)} kN (${fmt(angle)}°)`, tailX, tailY - 14);
+                ctx.textAlign = 'left';
 
                 ctx.fillStyle = color;
                 ctx.beginPath();
@@ -1154,7 +1028,7 @@
                 ctx.lineWidth = 2.5;
                 ctx.stroke();
 
-                dragElements.push({ id: `x${id.slice(1)}`, x: tailX, y: tailY, offsetX: tailX - forceX });
+                dragElements.push({ id: `x${id.slice(1)}`, x: tailX, y: tailY + offsetY, offsetX: tailX - forceX });
             }
 
             if (f1_active) drawPointLoad('f1', F1, x1, alpha1);
@@ -1281,8 +1155,8 @@
                 // Text dazu
                 ctx.fillStyle = '#7c2d12';
                 ctx.font = 'bold 11px sans-serif';
-                ctx.fillText(`M_max = ${Math.abs(maxM).toFixed(1)} kNm`, mx0 + 10, my0 + 4);
-                ctx.fillText(`x₀ = ${maxX0.toFixed(1)} m`, mx0 + 10, my0 + 18);
+                fillTextSub(ctx, `M_{max} = ${fmt(Math.abs(maxM), 1)} kNm`, mx0 + 10, my0 + 4);
+                ctx.fillText(`x₀ = ${fmt(maxX0, 1)} m`, mx0 + 10, my0 + 18);
             }
 
             // ============================================
@@ -1317,9 +1191,9 @@
                 ctx.fill();
 
                 // Live-Tooltip HTML befüllen
-                document.getElementById('sonde_x').innerText = `x = ${sX.toFixed(2)} m`;
-                document.getElementById('sonde_q').innerText = `${values.Q.toFixed(2)} kN`;
-                document.getElementById('sonde_m').innerText = `${values.M.toFixed(2)} kNm`;
+                document.getElementById('sonde_x').innerText = `x = ${fmt(sX, 2)} m`;
+                document.getElementById('sonde_q').innerText = `${fmt(values.Q, 2)} kN`;
+                document.getElementById('sonde_m').innerText = `${fmt(values.M, 2)} kNm`;
 
                 // Didaktische Herleitungshilfe live generieren
                 let formulaStr = "Reine Biegespannung vorliegend.";
@@ -1332,6 +1206,8 @@
                 }
                 document.getElementById('sonde_didaktik').innerText = formulaStr;
             }
+
+            ctx.restore();
         }
 
         // Zeichnen der normgerechten Maßkette
@@ -1391,7 +1267,9 @@
                     if (diff > 0.05) { // Nur zeichnen, wenn der Abstand messbar ist
                         ctx.fillStyle = '#334155';
                         ctx.font = '11px sans-serif';
-                        ctx.fillText(`${diff.toFixed(1)}m`, (px + nextX)/2 - 10, chainY - 5);
+                        ctx.textAlign = 'center';
+                        ctx.fillText(`${fmt(diff, 1)} m`, (px + nextX)/2, chainY - 5);
+                        ctx.textAlign = 'left';
                     }
                 }
             }

@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bautechnik Labor - FoS 12</title>
-    <link rel="stylesheet" href="tailwind.min.css">
+    <title>Virtuelles Bautechnik-Labor | FOS 12</title>
+    <link rel="stylesheet" href="tailwind.min.css?v=2026-09-29">
     <style>
         .module-card {
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -28,7 +28,7 @@
                         </svg>
                         Virtuelles Bautechnik-Labor
                     </h1>
-                    <p class="text-slate-500 mt-2 text-base md:text-lg">Interaktive Statik- und Mechanik-Lernmodule für die Fachoberschule (FoS 12)</p>
+                    <p class="text-slate-500 mt-2 text-base md:text-lg">Interaktive Statik- und Mechanik-Lernmodule für die Fachoberschule (FOS 12)</p>
                 </div>
                 <div class="bg-sky-50 px-4 py-2 rounded-lg border border-sky-100 text-sky-700 text-sm font-semibold tracking-wide">
                     HESSEN | BAUTECHNIK
@@ -45,7 +45,7 @@
             <p class="text-slate-500 mt-1">Wähle ein Thema aus, um die interaktive Echtzeit-Simulation zu starten.</p>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
 
             <!-- Modul 1: Kräfteaddition & Vektoren -->
             <div class="module-card bg-white border border-slate-200 rounded-2xl overflow-hidden flex flex-col justify-between shadow-md">
@@ -114,7 +114,7 @@
                         </div>
                         <h3 class="text-xl font-bold text-slate-800 mb-2">Schnittgrößen (Einfeldträger)</h3>
                         <p class="text-slate-500 text-sm leading-relaxed">
-                            Berechne detailliert Auflagerkräfte, Querkraftverlauf ($Q$) und Biegemomentenverlauf ($M$) für Träger mit Kragarmen, wandernden Einzellasten und Streckenlasten.
+                            Berechne detailliert Auflagerkräfte, Querkraftverlauf (Q) und Biegemomentenverlauf (M) für Träger mit Kragarmen, wandernden Einzellasten und Streckenlasten.
                         </p>
                     </div>
                 </div>
@@ -147,6 +147,32 @@
                 <div class="p-6 pt-0">
                     <a href="modul-4-diagramme-zuordnen.html" class="block text-center w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-2.5 rounded-lg transition-colors shadow-md">
                         Quiz starten &rarr;
+                    </a>
+                </div>
+            </div>
+
+            <!-- Modul 5: Spannungsnachweis -->
+            <div class="module-card bg-white border border-slate-200 rounded-2xl overflow-hidden flex flex-col justify-between shadow-md">
+                <div>
+                    <div class="h-44 bg-gradient-to-br from-violet-50 to-slate-50 flex items-center justify-center border-b border-slate-100 relative overflow-hidden">
+                        <svg class="w-20 h-20 text-violet-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 4h12M6 20h12M12 4v16M3 12h18"></path>
+                        </svg>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs font-bold text-violet-600 uppercase tracking-wider">Modul 5</span>
+                            <span class="text-xs text-slate-400 font-mono">Bemessung</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-800 mb-2">Spannungsnachweis</h3>
+                        <p class="text-slate-500 text-sm leading-relaxed">
+                            Berechne Trägheitsmoment und Widerstandsmoment für Rechteck, Kreis und I-Profil und weise die Biegespannung σ = M / W gegen die zulässige Spannung nach.
+                        </p>
+                    </div>
+                </div>
+                <div class="p-6 pt-0">
+                    <a href="modul-5-spannungsnachweis.html" class="block text-center w-full bg-violet-600 hover:bg-violet-500 text-white font-bold py-2.5 rounded-lg transition-colors shadow-md">
+                        Nachweis starten &rarr;
                     </a>
                 </div>
             </div>

@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modul 5: Spannungsnachweis | Bautechnik-Labor</title>
+    <link rel="stylesheet" href="tailwind.min.css?v=2026-09-29">
+    <link rel="stylesheet" href="labor.css?v=2026-09-29">
+</head>
+<body data-modul="5" class="bg-slate-50 min-h-screen p-4 md:p-6 font-sans text-slate-800">
+    <div class="max-w-7xl mx-auto bg-white p-6 rounded-2xl shadow-xl border border-slate-100">
+
+        <!-- Header inkl. Navigation -->
+        <header class="mb-6 border-b pb-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+                <div class="flex items-center gap-3 mb-1">
+                    <a href="index.html" class="lab-back">
+                        <span>&larr;</span> Zurück zum Menü
+                    </a>
+                    <span class="lab-badge">Modul 5</span>
+                </div>
+                <h1 class="text-3xl font-extrabold text-slate-800">Spannungsnachweis</h1>
+                <p class="text-sm text-slate-500 mt-1">Querschnittswerte berechnen, Biegespannung ermitteln und gegen die zulässige Spannung nachweisen.</p>
+            </div>
+        </header>
+
+        <p class="text-xs text-amber-700 bg-amber-50 border border-amber-100 rounded-lg px-3 py-2 mb-6">
+            💡 Dieses Modul nutzt die klassische Methode mit <strong>zulässigen Spannungen</strong> (σ<sub>vorh</sub> ≤ σ<sub>zul</sub>) zur Einführung des Grundprinzips. Die aktuelle Bemessung nach Eurocode arbeitet mit Bemessungswerten und Teilsicherheitsbeiwerten (Grenzzustandsmethode) – das Grundprinzip „Spannung ≤ Grenzwert“ bleibt aber dasselbe.
+        </p>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+
+            <!-- Steuerpanel (Links) -->
+            <div class="lg:col-span-4 space-y-6">
+
+                <div class="p-4 bg-teal-50/70 rounded-xl border border-teal-100 shadow-sm space-y-4">
+                    <h3 class="text-base font-bold text-teal-800 flex items-center gap-2">
+                        <span class="w-3.5 h-3.5 bg-teal-500 rounded-full"></span>
+                        Querschnitt
+                    </h3>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 mb-1">Querschnittstyp</label>
+                        <select id="qsType" class="w-full border border-slate-300 rounded-lg px-2 py-1.5 text-sm bg-white">
+                            <option value="rechteck" selected>Rechteck</option>
+                            <option value="kreis">Kreis</option>
+                            <option value="iprofil">I-Profil (Doppel-T)</option>
+                        </select>
+                    </div>
+
+                    <div id="dims_rechteck" class="space-y-3">
+                        <div>
+                            <label class="flex justify-between text-xs font-bold text-slate-500 mb-1">
+                                <span>Breite b [cm]</span>
+                                <span id="val_b" class="text-teal-700 font-bold">20 cm</span>
+                            </label>
+                            <input type="range" id="qs_b" min="5" max="60" step="1" value="20" class="w-full accent-teal-600">
+                        </div>
+                        <div>
+                            <label class="flex justify-between text-xs font-bold text-slate-500 mb-1">
+                                <span>Höhe h [cm]</span>
+                                <span id="val_h" class="text-teal-700 font-bold">40 cm</span>
+                            </label>
+                            <input type="range" id="qs_h" min="5" max="80" step="1" value="40" class="w-full accent-teal-600">
+                        </div>
+                    </div>
+
+                    <div id="dims_kreis" class="space-y-3 hidden">
+                        <div>
+                            <label class="flex justify-between text-xs font-bold text-slate-500 mb-1">
+                                <span>Durchmesser d [cm]</span>
+                                <span id="val_d" class="text-teal-700 font-bold">20 cm</span>
+                            </label>
+                            <input type="range" id="qs_d" min="5" max="60" step="1" value="20" class="w-full accent-teal-600">
+                        </div>
+                    </div>
+
+                    <div id="dims_iprofil" class="space-y-3 hidden">
+                        <div>
+                            <label class="flex justify-between text-xs font-bold text-slate-500 mb-1">
+                                <span>Gesamtbreite b [cm]</span>
+                                <span id="val_ib" class="text-teal-700 font-bold">15 cm</span>
+                            </label>
+                            <input type="range" id="qs_ib" min="6" max="40" step="1" value="15" class="w-full accent-teal-600">
+                        </div>
+                        <div>
+                            <label class="flex justify-between text-xs font-bold text-slate-500 mb-1">
+                                <span>Gesamthöhe h [cm]</span>
+                                <span id="val_ih" class="text-teal-700 font-bold">30 cm</span>
+                            </label>
+                            <input type="range" id="qs_ih" min="10" max="80" step="1" value="30" class="w-full accent-teal-600">
+                        </div>
+                        <div>
+                            <label class="flex justify-between text-xs font-bold text-slate-500 mb-1">
+                                <span>Stegdicke s [cm]</span>
+                                <span id="val_is" class="text-teal-700 font-bold">1,0 cm</span>
+                            </label>
+                            <input type="range" id="qs_is" min="0.5" max="4" step="0.1" value="1" class="w-full accent-teal-600">
+                        </div>
+                        <div>
+                            <label class="flex justify-between text-xs font-bold text-slate-500 mb-1">
+                                <span>Flanschdicke t [cm]</span>
+                                <span id="val_it" class="text-teal-700 font-bold">1,5 cm</span>
+                            </label>
+                            <input type="range" id="qs_it" min="0.5" max="6" step="0.1" value="1.5" class="w-full accent-teal-600">
+                        </div>
+                        <p class="text-xs text-slate-400">Stegdicke und Flanschdicke werden automatisch begrenzt, damit ein gültiges I-Profil entsteht (s &lt; b, 2·t &lt; h).</p>
+                    </div>
+                </div>
+
+                <div class="p-4 bg-indigo-50/70 rounded-xl border border-indigo-100 shadow-sm space-y-4">
+                    <h3 class="text-base font-bold text-indigo-800 flex items-center gap-2">
+                        <span class="w-3.5 h-3.5 bg-indigo-500 rounded-full"></span>
+                        Belastung
+                    </h3>
+                    <div>
+                        <label class="flex justify-between text-xs font-bold text-slate-500 mb-1">
+                            <span>Biegemoment M<sub>max</sub> [kNm]</span>
+                            <span id="val_m" class="text-indigo-700 font-bold">10 kNm</span>
+                        </label>
+                        <input type="range" id="qs_m" min="0" max="100" step="0.5" value="10" class="w-full accent-indigo-600">
+                    </div>
+                    <p id="importNote" class="hidden text-xs font-semibold text-violet-700 bg-violet-50 border border-violet-100 rounded-lg px-2 py-1.5"></p>
+                    <p class="text-xs text-slate-400">Tipp: M<sub>max</sub> für einen Träger liefert Modul 3 (Schnittgrößen) – dort über „M<sub>max</sub> nachweisen“ direkt übernehmen.</p>
+                </div>
+
+                <div class="p-4 bg-rose-50/70 rounded-xl border border-rose-100 shadow-sm space-y-4">
+                    <h3 class="text-base font-bold text-rose-800 flex items-center gap-2">
+                        <span class="w-3.5 h-3.5 bg-rose-500 rounded-full"></span>
+                        Werkstoff
+                    </h3>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 mb-1">Material (setzt σ<sub>zul</sub> als Vorschlag)</label>
+                        <!-- Klassische zulässige Biegespannungen, Lastfall H:
+                             Holz nach DIN 1052:1988 (Nadelholz S10 / Güteklasse II: 10 N/mm², Brettschichtholz BS11: 11 N/mm²),
+                             Stahl St 37 (heute S235) nach DIN 1050: 140 N/mm². -->
+                        <select id="material" class="w-full border border-slate-300 rounded-lg px-2 py-1.5 text-sm bg-white">
+                            <option value="10">Nadelholz C24 ≈ S10 (10 N/mm²)</option>
+                            <option value="11">Brettschichtholz GL24h ≈ BS11 (11 N/mm²)</option>
+                            <option value="140" selected>Baustahl S235 ≈ St 37 (140 N/mm²)</option>
+                            <option value="custom">Eigener Wert …</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="flex justify-between text-xs font-bold text-slate-500 mb-1">
+                            <span>Zulässige Spannung σ<sub>zul</sub> [N/mm²]</span>
+                            <span id="val_sigzul" class="text-rose-700 font-bold">140 N/mm²</span>
+                        </label>
+                        <input type="range" id="sig_zul" min="5" max="250" step="1" value="140" class="w-full accent-rose-600">
+                    </div>
+                    <p class="text-xs text-slate-400">Klassische zulässige Biegespannungen (Lastfall H): Holz nach DIN 1052:1988, Stahl nach DIN 1050.</p>
+                </div>
+
+            </div>
+
+            <!-- Canvas & Rechenweg (Rechts) -->
+            <div class="lg:col-span-8 space-y-6">
+
+                <div>
+                    <canvas id="qsCanvas" width="800" height="420"></canvas>
+                </div>
+
+                <div id="nachweisBox" class="p-5 rounded-2xl border-2 shadow-sm text-center">
+                    <div class="text-sm font-bold uppercase tracking-wide mb-1" id="nachweisLabel">Nachweis</div>
+                    <div class="text-2xl font-extrabold" id="nachweisText">–</div>
+                    <div class="text-xs mt-1" id="nachweisSub">–</div>
+                </div>
+
+                <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200 font-mono text-sm shadow-sm">
+                    <h3 class="text-lg font-bold text-slate-800 font-sans mb-3 flex items-center gap-2">
+                        <span class="lab-bar"></span>
+                        Rechenweg – Querschnittswerte und Biegespannung
+                    </h3>
+                    <div class="bg-white p-3 rounded-lg border border-slate-200 space-y-1">
+                        <p id="rw_formula_i">I = …</p>
+                        <p>I = <span id="rw_i">0</span> cm⁴</p>
+                        <p class="pt-2 border-t border-slate-100" id="rw_formula_w">W = I / e</p>
+                        <p>W = <span id="rw_w">0</span> cm³</p>
+                        <p class="pt-2 border-t border-slate-100">σ<sub>vorh</sub> = M / W = <span id="rw_m_nmm">0</span> Nmm / <span id="rw_w_mm">0</span> mm³</p>
+                        <p class="font-bold text-indigo-700">σ<sub>vorh</sub> = <span id="rw_sigma">0</span> N/mm²</p>
+                        <p class="pt-2 border-t border-slate-100">Ausnutzungsgrad = σ<sub>vorh</sub> / σ<sub>zul</sub> = <span id="rw_ausnutzung">0</span> %</p>
+                    </div>
+                    <p class="text-xs text-slate-400 font-sans mt-2">💡 Umrechnung: 1 kNm = 1 000 000 Nmm und 1 cm³ = 1000 mm³, also σ [N/mm²] = 1000 · M [kNm] / W [cm³].</p>
+                </div>
+
+                <!-- Ausnutzungsgrad-Balken -->
+                <div id="ausnutzungCard" class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="flex justify-between text-xs font-bold text-slate-500 mb-1">
+                        <span>Ausnutzungsgrad</span>
+                        <span id="ausnutzungLabel">0 %</span>
+                    </div>
+                    <div class="w-full h-5 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
+                        <div id="ausnutzungBar" class="h-full transition-all duration-300 bg-emerald-500" style="width:0%"></div>
+                    </div>
+                </div>
+
+                <!-- Erfolgskontrolle -->
+                <div class="bg-white p-6 rounded-2xl border-2 border-dashed border-amber-300 shadow-sm">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-1">
+                        <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                            <span class="w-2 h-5 bg-amber-500 rounded-full"></span>
+                            Erfolgskontrolle
+                        </h3>
+                        <div class="flex gap-2 flex-wrap">
+                            <button id="btnNewTask5" class="text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-lg transition-colors">
+                                🎲 Neue Aufgabe
+                            </button>
+                            <button id="btnPracticeMode5" class="text-xs font-bold bg-amber-500 hover:bg-amber-600 text-white px-3 py-2 rounded-lg transition-colors">
+                                ✏️ Selbst berechnen
+                            </button>
+                        </div>
+                    </div>
+                    <p id="taskText5" class="text-sm text-slate-600 mt-2 mb-4">Aktiviere „Selbst berechnen“ für eine Aufgabe: Querschnitt, Moment und Werkstoff werden zufällig gewählt, der Rechenweg oben wird ausgeblendet. Berechne I, W und σ<sub>vorh</sub> von Hand und entscheide, ob der Nachweis erfüllt ist.</p>
+
+                    <div id="practiceForm5" class="hidden space-y-4">
+                        <div class="bg-amber-50/60 p-3 rounded-lg border border-amber-100 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div class="flex items-center gap-2">
+                                <label for="check_i" class="text-xs font-mono w-24">I =</label>
+                                <input type="number" id="check_i" step="0.1" class="w-28 border border-slate-300 rounded px-2 py-1 text-sm">
+                                <span class="text-xs">cm⁴</span>
+                                <span id="fb_i" class="text-lg"></span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <label for="check_w" class="text-xs font-mono w-24">W =</label>
+                                <input type="number" id="check_w" step="0.1" class="w-28 border border-slate-300 rounded px-2 py-1 text-sm">
+                                <span class="text-xs">cm³</span>
+                                <span id="fb_w" class="text-lg"></span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <label for="check_sigma" class="text-xs font-mono w-24">σ<sub>vorh</sub> =</label>
+                                <input type="number" id="check_sigma" step="0.01" class="w-28 border border-slate-300 rounded px-2 py-1 text-sm">
+                                <span class="text-xs">N/mm²</span>
+                                <span id="fb_sigma" class="text-lg"></span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <label for="check_nachweis" class="text-xs font-mono w-24">Nachweis</label>
+                                <select id="check_nachweis" class="w-28 border border-slate-300 rounded px-2 py-1 text-sm bg-white">
+                                    <option value="">– wählen –</option>
+                                    <option value="ja">erfüllt</option>
+                                    <option value="nein">nicht erfüllt</option>
+                                </select>
+                                <span id="fb_nachweis" class="text-lg"></span>
+                            </div>
+                        </div>
+                        <button id="btnCheck5" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-lg transition-colors">
+                            Prüfen
+                        </button>
+                        <div id="checkResult5" class="hidden text-center font-bold text-sm p-3 rounded-lg"></div>
+                    </div>
+
+                    <div class="border-t border-slate-200 mt-4 pt-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                        <input type="text" id="studentName5" placeholder="Name (optional)" class="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm">
+                        <button id="btnExportLog5" class="text-sm font-bold bg-slate-700 hover:bg-slate-800 text-white px-4 py-2 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed" disabled>
+                            📄 Protokoll exportieren (<span id="logCount5">0</span>)
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="labor.js?v=2026-09-29"></script>
+    <script>
+        const canvas = document.getElementById('qsCanvas');
+        const ctx = canvas.getContext('2d');
+
+        const qsType = document.getElementById('qsType');
+        const qs_b = document.getElementById('qs_b'), qs_h = document.getElementById('qs_h');
+        const qs_d = document.getElementById('qs_d');
+        const qs_ib = document.getElementById('qs_ib'), qs_ih = document.getElementById('qs_ih'),
+              qs_is = document.getElementById('qs_is'), qs_it = document.getElementById('qs_it');
+        const qs_m = document.getElementById('qs_m');
+        const material = document.getElementById('material');
+        const sig_zul = document.getElementById('sig_zul');
+
+        qsType.addEventListener('change', () => {
+            document.getElementById('dims_rechteck').classList.toggle('hidden', qsType.value !== 'rechteck');
+            document.getElementById('dims_kreis').classList.toggle('hidden', qsType.value !== 'kreis');
+            document.getElementById('dims_iprofil').classList.toggle('hidden', qsType.value !== 'iprofil');
+            update();
+        });
+
+        material.addEventListener('change', () => {
+            if (material.value !== 'custom') {
+                sig_zul.value = material.value;
+            }
+            update();
+        });
+        sig_zul.addEventListener('input', () => {
+            material.value = 'custom';
+            update();
+        });
+
+        // I-Profil geometrisch gültig halten: Steg schmaler als der Flansch (s < b),
+        // beide Flansche zusammen niedriger als das Profil (2·t < h), sonst wird hᵢ ≤ 0.
+        function limitIProfil() {
+            const b = parseFloat(qs_ib.value), h = parseFloat(qs_ih.value);
+            const sMax = Math.min(4, b - 1);
+            const tMax = Math.min(6, Math.floor((h - 2) / 2 * 10) / 10);
+            qs_is.max = sMax;
+            qs_it.max = tMax;
+            if (parseFloat(qs_is.value) > sMax) qs_is.value = sMax;
+            if (parseFloat(qs_it.value) > tMax) qs_it.value = tMax;
+        }
+
+        // Berechnet I [cm⁴], W [cm³] und e [cm] (Randfaserabstand) für den gewählten Querschnitt
+        function getQuerschnittswerte() {
+            const type = qsType.value;
+            if (type === 'rechteck') {
+                const b = parseFloat(qs_b.value), h = parseFloat(qs_h.value);
+                const I = (b * h * h * h) / 12;
+                const e = h / 2;
+                return { type, b, h, I, e, W: I / e };
+            } else if (type === 'kreis') {
+                const d = parseFloat(qs_d.value);
+                const I = (Math.PI * Math.pow(d, 4)) / 64;
+                const e = d / 2;
+                return { type, d, I, e, W: I / e };
+            } else {
+                limitIProfil();
+                const b = parseFloat(qs_ib.value), h = parseFloat(qs_ih.value);
+                const s = parseFloat(qs_is.value), t = parseFloat(qs_it.value);
+                const hi = h - 2 * t; // lichte Höhe zwischen den Flanschen
+                const I = (b * h * h * h - (b - s) * hi * hi * hi) / 12;
+                const e = h / 2;
+                return { type, b, h, s, t, hi, I, e, W: I / e };
+            }
+        }
+
+        function update() {
+            const qv = getQuerschnittswerte();
+            const M = parseFloat(qs_m.value); // kNm
+            const sigZul = parseFloat(sig_zul.value); // N/mm²
+
+            document.getElementById('val_m').innerText = fmt(M) + ' kNm';
+            document.getElementById('val_sigzul').innerText = sigZul + ' N/mm²';
+            if (qv.type === 'rechteck') {
+                document.getElementById('val_b').innerText = qv.b + ' cm';
+                document.getElementById('val_h').innerText = qv.h + ' cm';
+            } else if (qv.type === 'kreis') {
+                document.getElementById('val_d').innerText = qv.d + ' cm';
+            } else {
+                document.getElementById('val_ib').innerText = qv.b + ' cm';
+                document.getElementById('val_ih').innerText = qv.h + ' cm';
+                document.getElementById('val_is').innerText = fmt(qv.s, 1) + ' cm';
+                document.getElementById('val_it').innerText = fmt(qv.t, 1) + ' cm';
+            }
+
+            // σ [N/mm²] = 1000 · M [kNm] / W [cm³]  (1 kNm = 10⁶ Nmm, 1 cm³ = 10³ mm³)
+            const sigma = qv.W > 0 ? (1000 * M) / qv.W : 0;
+            const ausnutzung = sigZul > 0 ? (sigma / sigZul) * 100 : 0;
+
+            // Formeltext je nach Typ
+            const formulaEl = document.getElementById('rw_formula_i');
+            if (qv.type === 'rechteck') {
+                formulaEl.innerText = `I = b · h³ / 12 = ${qv.b} · ${qv.h}³ / 12`;
+            } else if (qv.type === 'kreis') {
+                formulaEl.innerText = `I = π · d⁴ / 64 = π · ${qv.d}⁴ / 64`;
+            } else {
+                formulaEl.innerHTML = `I = (b · h³ − (b − s) · h<sub>i</sub>³) / 12 = (${qv.b} · ${qv.h}³ − ${fmt(qv.b - qv.s, 1)} · ${fmt(qv.hi, 1)}³) / 12` +
+                    ` <span class="text-slate-400">(h<sub>i</sub> = h − 2 · t)</span>`;
+            }
+            document.getElementById('rw_i').innerText = fmt(qv.I, 1);
+            document.getElementById('rw_formula_w').innerText = `W = I / e   (e = ${fmt(qv.e, 1)} cm, Abstand der Randfaser von der Schwerachse)`;
+            document.getElementById('rw_w').innerText = fmt(qv.W, 1);
+            document.getElementById('rw_m_nmm').innerText = Math.round(M * 1e6).toLocaleString('de-DE');
+            document.getElementById('rw_w_mm').innerText = Math.round(qv.W * 1000).toLocaleString('de-DE');
+            document.getElementById('rw_sigma').innerText = fmt(sigma, 2);
+            document.getElementById('rw_ausnutzung').innerText = fmt(ausnutzung, 1);
+
+            // Ausnutzungsgrad-Balken
+            const barPct = Math.min(100, ausnutzung);
+            const bar = document.getElementById('ausnutzungBar');
+            bar.style.width = barPct + '%';
+            bar.className = 'h-full transition-all duration-300 ' + (ausnutzung <= 100 ? (ausnutzung > 90 ? 'bg-amber-500' : 'bg-emerald-500') : 'bg-rose-600');
+            document.getElementById('ausnutzungLabel').innerText = fmt(ausnutzung, 1) + ' %';
+
+            // Nachweis-Box
+            const box = document.getElementById('nachweisBox');
+            const erfuellt = sigma <= sigZul;
+            box.className = 'p-5 rounded-2xl border-2 shadow-sm text-center ' + (erfuellt ? 'bg-emerald-50 border-emerald-300' : 'bg-rose-50 border-rose-300');
+            document.getElementById('nachweisLabel').className = 'text-sm font-bold tracking-wide mb-1 ' + (erfuellt ? 'text-emerald-700' : 'text-rose-700');
+            document.getElementById('nachweisLabel').innerHTML = 'Nachweis σ<sub>vorh</sub> ≤ σ<sub>zul</sub>';
+            document.getElementById('nachweisText').className = 'text-2xl font-extrabold ' + (erfuellt ? 'text-emerald-700' : 'text-rose-700');
+            document.getElementById('nachweisText').innerText = erfuellt ? '✅ Erfüllt' : '❌ Nicht erfüllt';
+            document.getElementById('nachweisSub').innerText = `${fmt(sigma, 2)} N/mm² ${erfuellt ? '≤' : '>'} ${sigZul} N/mm² (zulässig)`;
+
+            currentResult = { I: qv.I, W: qv.W, sigma, erfuellt, qv, M, sigZul };
+            if (solutionHidden) maskSolution();
+
+            draw(qv, sigma);
+        }
+
+        function draw(qv, sigma) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Layout: Querschnitt links, Spannungsverteilung rechts, gleiche Höhe
+            const areaTop = 40, areaBottom = 340;
+            const availH = areaBottom - areaTop;
+            const maxDrawW = 260; // Querschnitt darf nicht in die Spannungsverteilung hineinragen
+            const centerY = (areaTop + areaBottom) / 2;
+
+            const realH = qv.type === 'kreis' ? qv.d : qv.h;
+            const realW = qv.type === 'kreis' ? qv.d : qv.b;
+            // Maßstab: Höhe und Breite müssen passen, gedeckelt für sehr kleine Querschnitte
+            const scale = Math.min(availH / realH, maxDrawW / realW, 8); // px pro cm
+
+            const qsCenterX = 220;
+            const drawnH = realH * scale;
+            const drawnW = realW * scale;
+            const top = centerY - drawnH / 2;
+            const bottom = centerY + drawnH / 2;
+
+            ctx.save();
+            ctx.translate(qsCenterX, 0);
+
+            // Querschnitt zeichnen
+            ctx.fillStyle = '#5eead4';
+            ctx.strokeStyle = '#0d9488';
+            ctx.lineWidth = 2;
+
+            if (qv.type === 'rechteck') {
+                ctx.beginPath();
+                ctx.rect(-drawnW / 2, top, drawnW, drawnH);
+                ctx.fill();
+                ctx.stroke();
+            } else if (qv.type === 'kreis') {
+                ctx.beginPath();
+                ctx.arc(0, centerY, drawnH / 2, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+            } else {
+                const bW = qv.b * scale, hH = qv.h * scale, sW = qv.s * scale, tH = qv.t * scale;
+                ctx.beginPath();
+                ctx.moveTo(-bW / 2, top);
+                ctx.lineTo(bW / 2, top);
+                ctx.lineTo(bW / 2, top + tH);
+                ctx.lineTo(sW / 2, top + tH);
+                ctx.lineTo(sW / 2, top + hH - tH);
+                ctx.lineTo(bW / 2, top + hH - tH);
+                ctx.lineTo(bW / 2, top + hH);
+                ctx.lineTo(-bW / 2, top + hH);
+                ctx.lineTo(-bW / 2, top + hH - tH);
+                ctx.lineTo(-sW / 2, top + hH - tH);
+                ctx.lineTo(-sW / 2, top + tH);
+                ctx.lineTo(-bW / 2, top + tH);
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+            }
+
+            // Schwerachse (neutrale Faser, dort ist σ = 0)
+            ctx.strokeStyle = '#475569';
+            ctx.lineWidth = 1.2;
+            ctx.setLineDash([4, 4]);
+            ctx.beginPath();
+            ctx.moveTo(-drawnW / 2 - 20, centerY);
+            ctx.lineTo(drawnW / 2 + 20, centerY);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            ctx.fillStyle = '#475569';
+            ctx.font = 'bold 11px sans-serif';
+            ctx.textAlign = 'left';
+            ctx.fillText('Schwerachse (σ = 0)', drawnW / 2 + 24, centerY + 4);
+
+            // Bemaßung Höhe (links): h bzw. beim Kreis d
+            const hLabel = qv.type === 'kreis' ? 'd' : 'h';
+            const bLabel = qv.type === 'kreis' ? 'd' : 'b';
+            ctx.strokeStyle = '#334155';
+            ctx.lineWidth = 1;
+            ctx.textAlign = 'center';
+            const dimX = -drawnW / 2 - 45;
+            ctx.beginPath();
+            ctx.moveTo(dimX, top); ctx.lineTo(dimX, bottom);
+            ctx.moveTo(dimX - 4, top); ctx.lineTo(dimX + 4, top);
+            ctx.moveTo(dimX - 4, bottom); ctx.lineTo(dimX + 4, bottom);
+            ctx.stroke();
+            ctx.save();
+            ctx.translate(dimX - 12, centerY);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillStyle = '#334155';
+            ctx.font = 'bold 12px sans-serif';
+            ctx.fillText(`${hLabel} = ${fmt(realH)} cm`, 0, 0);
+            ctx.restore();
+
+            // Bemaßung Breite (unten): b bzw. beim Kreis d
+            const dimY = bottom + 30;
+            ctx.beginPath();
+            ctx.moveTo(-drawnW / 2, dimY); ctx.lineTo(drawnW / 2, dimY);
+            ctx.moveTo(-drawnW / 2, dimY - 4); ctx.lineTo(-drawnW / 2, dimY + 4);
+            ctx.moveTo(drawnW / 2, dimY - 4); ctx.lineTo(drawnW / 2, dimY + 4);
+            ctx.stroke();
+            ctx.fillStyle = '#334155';
+            ctx.font = 'bold 12px sans-serif';
+            ctx.fillText(`${bLabel} = ${fmt(realW)} cm`, 0, dimY + 18);
+
+            ctx.restore();
+
+            // Spannungsverteilung (rechts, gleiche vertikale Ausrichtung)
+            const triCenterX = 560;
+            const maxTriWidth = 130;
+            const sigmaScale = sigma > 0 ? maxTriWidth / sigma : 0;
+            const triHalf = drawnH / 2;
+
+            ctx.save();
+            ctx.translate(triCenterX, 0);
+
+            // Nulllinie (Bezugsachse der Spannungsverteilung)
+            ctx.strokeStyle = '#cbd5e1';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(0, top - 10);
+            ctx.lineTo(0, bottom + 10);
+            ctx.stroke();
+
+            // Druckseite (oben, rot) und Zugseite (unten, blau) – lineare Verteilung
+            const sigmaPx = sigma * sigmaScale;
+            ctx.beginPath();
+            ctx.moveTo(0, centerY - triHalf);
+            ctx.lineTo(-sigmaPx, centerY - triHalf);
+            ctx.lineTo(0, centerY);
+            ctx.closePath();
+            ctx.fillStyle = '#f43f5e55';
+            ctx.strokeStyle = '#e11d48';
+            ctx.lineWidth = 2;
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(0, centerY + triHalf);
+            ctx.lineTo(sigmaPx, centerY + triHalf);
+            ctx.lineTo(0, centerY);
+            ctx.closePath();
+            ctx.fillStyle = '#3b82f655';
+            ctx.strokeStyle = '#2563eb';
+            ctx.lineWidth = 2;
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = '#e11d48';
+            ctx.font = 'bold 12px sans-serif';
+            ctx.textAlign = 'right';
+            const sigmaText = solutionHidden ? '?' : fmt(sigma, 1);
+            ctx.fillText(`−σ = ${sigmaText} N/mm² (Druck)`, 0, centerY - triHalf - 8);
+            ctx.fillStyle = '#2563eb';
+            ctx.textAlign = 'left';
+            ctx.fillText(`+σ = ${sigmaText} N/mm² (Zug)`, 0, centerY + triHalf + 20);
+            ctx.fillStyle = '#64748b';
+            ctx.font = '11px sans-serif';
+            ctx.fillText('Spannungsverteilung', 8, top - 24);
+
+            ctx.restore();
+        }
+
+        [qs_b, qs_h, qs_d, qs_ib, qs_ih, qs_is, qs_it, qs_m].forEach(el => el.addEventListener('input', update));
+
+        // ===== Übernahme von M_max aus Modul 3 (modul-5-spannungsnachweis.html?M=74.14) =====
+        function setMoment(M) {
+            qs_m.step = 'any'; // sonst rastet der Regler auf 0,5er-Schritte ein
+            qs_m.max = Math.max(100, Math.ceil(M));
+            qs_m.value = M;
+        }
+        const mParam = parseFloat(new URLSearchParams(window.location.search).get('M'));
+        if (!isNaN(mParam) && mParam >= 0) {
+            setMoment(mParam);
+            const note = document.getElementById('importNote');
+            note.innerHTML = `➡️ M<sub>max</sub> = ${fmt(mParam, 2)} kNm aus Modul 3 übernommen.`;
+            note.classList.remove('hidden');
+        }
+
+        // ===== Erfolgskontrolle =====
+        let currentResult = null;
+        let practiceMode5 = false;
+        let solutionHidden = false;
+        let sessionLog5 = [];
+        const lockableInputs = [qsType, qs_b, qs_h, qs_d, qs_ib, qs_ih, qs_is, qs_it, qs_m, material, sig_zul];
+        const maskIds = ['rw_i', 'rw_w', 'rw_w_mm', 'rw_sigma', 'rw_ausnutzung'];
+        const checkIds = ['check_i', 'check_w', 'check_sigma', 'check_nachweis'];
+        const fbIds = ['fb_i', 'fb_w', 'fb_sigma', 'fb_nachweis'];
+        const defaultTaskText = document.getElementById('taskText5').innerHTML;
+
+        // Werte im Rechenweg, Nachweis-Box und Ausnutzungsbalken verbergen (würden die Lösung verraten)
+        function maskSolution() {
+            maskIds.forEach(id => { document.getElementById(id).innerText = '?'; });
+            document.getElementById('nachweisBox').className = 'p-5 rounded-2xl border-2 shadow-sm text-center bg-slate-50 border-slate-200';
+            document.getElementById('nachweisLabel').className = 'text-sm font-bold tracking-wide mb-1 text-slate-500';
+            document.getElementById('nachweisText').className = 'text-2xl font-extrabold text-slate-500';
+            document.getElementById('nachweisText').innerText = '❓ Erst berechnen …';
+            document.getElementById('nachweisSub').innerHTML = `σ<sub>zul</sub> = ${currentResult.sigZul} N/mm²`;
+            document.getElementById('ausnutzungCard').classList.add('hidden');
+        }
+
+        function setSolutionHidden(hidden) {
+            solutionHidden = hidden;
+            lockableInputs.forEach(el => { el.disabled = hidden; });
+            if (!hidden) document.getElementById('ausnutzungCard').classList.remove('hidden');
+            update();
+        }
+
+        const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+        const randStep = (min, max, step) => Math.round((min + Math.random() * (max - min)) / step) * step;
+
+        function describeTask(r) {
+            const q = r.qv;
+            let qs;
+            if (q.type === 'rechteck') qs = `Rechteck b = ${q.b} cm, h = ${q.h} cm`;
+            else if (q.type === 'kreis') qs = `Kreis d = ${q.d} cm`;
+            else qs = `I-Profil b = ${q.b} cm, h = ${q.h} cm, s = ${fmt(q.s, 1)} cm, t = ${fmt(q.t, 1)} cm`;
+            const mat = material.options[material.selectedIndex].text;
+            return `${qs}; M = ${fmt(r.M)} kNm; ${mat}`;
+        }
+
+        function newTask5() {
+            // Zufälliger Querschnitt (Werte liegen auf den Rasterschritten der Regler)
+            const type = pick(['rechteck', 'kreis', 'iprofil']);
+            qsType.value = type;
+            document.getElementById('dims_rechteck').classList.toggle('hidden', type !== 'rechteck');
+            document.getElementById('dims_kreis').classList.toggle('hidden', type !== 'kreis');
+            document.getElementById('dims_iprofil').classList.toggle('hidden', type !== 'iprofil');
+            if (type === 'rechteck') {
+                qs_b.value = randStep(10, 30, 2);
+                qs_h.value = randStep(16, 50, 2);
+            } else if (type === 'kreis') {
+                qs_d.value = randStep(10, 40, 2);
+            } else {
+                qs_ib.value = randStep(10, 30, 2);
+                qs_ih.value = randStep(20, 50, 2);
+                qs_is.value = (randStep(6, 15, 1) / 10).toFixed(1);
+                qs_it.value = (randStep(8, 25, 1) / 10).toFixed(1);
+            }
+            // Zufälliger Werkstoff; ein I-Profil ist in der Praxis immer ein Stahlprofil
+            const matVal = type === 'iprofil' ? '140' : pick(['10', '11', '140']);
+            material.value = matVal;
+            sig_zul.value = matVal;
+
+            // Moment so wählen, dass die Ausnutzung zwischen etwa 40 % und 160 % liegt (Nachweis mal erfüllt, mal nicht)
+            const W = getQuerschnittswerte().W;
+            const ratio = 0.4 + Math.random() * 1.2;
+            const M = Math.max(0.5, Math.round(ratio * parseFloat(matVal) * W / 1000 * 2) / 2);
+            setMoment(M);
+            document.getElementById('importNote').classList.add('hidden');
+
+            checkIds.forEach(id => { document.getElementById(id).value = ''; });
+            fbIds.forEach(id => { document.getElementById(id).innerText = ''; });
+            document.getElementById('checkResult5').classList.add('hidden');
+            document.getElementById('practiceForm5').classList.remove('hidden');
+            setSolutionHidden(true);
+            document.getElementById('taskText5').innerHTML = `<strong>Aufgabe:</strong> ${describeTask(currentResult)}. Berechne I, W und σ<sub>vorh</sub> und entscheide, ob der Nachweis σ<sub>vorh</sub> ≤ σ<sub>zul</sub> erfüllt ist.`;
+        }
+
+        document.getElementById('btnPracticeMode5').addEventListener('click', () => {
+            practiceMode5 = !practiceMode5;
+            const btn = document.getElementById('btnPracticeMode5');
+            if (practiceMode5) {
+                btn.innerText = '👁️ Lösung anzeigen';
+                newTask5();
+            } else {
+                btn.innerText = '✏️ Selbst berechnen';
+                document.getElementById('practiceForm5').classList.add('hidden');
+                document.getElementById('taskText5').innerHTML = defaultTaskText;
+                setSolutionHidden(false);
+            }
+        });
+
+        document.getElementById('btnNewTask5').addEventListener('click', () => {
+            if (!practiceMode5) {
+                practiceMode5 = true;
+                document.getElementById('btnPracticeMode5').innerText = '👁️ Lösung anzeigen';
+            }
+            newTask5();
+        });
+
+        document.getElementById('btnCheck5').addEventListener('click', () => {
+            if (!currentResult || !solutionHidden) return;
+            const r = currentResult;
+            const numChecks = [
+                ['check_i', 'fb_i', r.I, 'I', 'cm⁴', 1],
+                ['check_w', 'fb_w', r.W, 'W', 'cm³', 1],
+                ['check_sigma', 'fb_sigma', r.sigma, 'σ_vorh', 'N/mm²', 2],
+            ];
+            let correctCount = 0;
+            const detailLines = [];
+            numChecks.forEach(([inputId, fbId, real, label, unit, digits]) => {
+                const val = parseFloat(document.getElementById(inputId).value);
+                const tolerance = Math.max(Math.abs(real) * 0.02, 0.05); // 2 % Rundungstoleranz
+                const ok = !isNaN(val) && Math.abs(val - real) <= tolerance;
+                document.getElementById(fbId).innerText = ok ? '✅' : '❌';
+                if (ok) correctCount++;
+                detailLines.push(`${label}: eingegeben ${isNaN(val) ? '—' : fmt(val) + ' ' + unit} / richtig ${fmt(real, digits)} ${unit} ${ok ? '✅' : '❌'}`);
+            });
+            const answer = document.getElementById('check_nachweis').value;
+            const okNachweis = answer !== '' && (answer === 'ja') === r.erfuellt;
+            document.getElementById('fb_nachweis').innerText = okNachweis ? '✅' : '❌';
+            if (okNachweis) correctCount++;
+            const txt = v => v === 'ja' ? 'erfüllt' : v === 'nein' ? 'nicht erfüllt' : '—';
+            detailLines.push(`Nachweis: eingegeben ${txt(answer)} / richtig ${r.erfuellt ? 'erfüllt' : 'nicht erfüllt'} ${okNachweis ? '✅' : '❌'}`);
+
+            sessionLog5.push({
+                zeit: new Date().toLocaleTimeString('de-DE'),
+                aufgabe: describeTask(r),
+                details: detailLines,
+                richtig: correctCount,
+                gesamt: 4
+            });
+            document.getElementById('logCount5').innerText = sessionLog5.length;
+            document.getElementById('btnExportLog5').disabled = false;
+
+            // Lösung sichtbar machen
+            setSolutionHidden(false);
+            const box = document.getElementById('checkResult5');
+            box.classList.remove('hidden', 'bg-emerald-50', 'text-emerald-800', 'bg-amber-50', 'text-amber-800');
+            if (correctCount === 4) {
+                box.classList.add('bg-emerald-50', 'text-emerald-800');
+                box.innerText = '🎉 Alles richtig! (4/4) Rechenweg und Nachweis sind jetzt oben sichtbar.';
+            } else {
+                box.classList.add('bg-amber-50', 'text-amber-800');
+                box.innerText = `${correctCount}/4 richtig. Vergleiche deine ❌-Werte mit dem jetzt sichtbaren Rechenweg oben.`;
+            }
+        });
+
+        document.getElementById('btnExportLog5').addEventListener('click', () => {
+            exportProtocol(5, 'Spannungsnachweis', document.getElementById('studentName5').value, sessionLog5);
+        });
+
+        // Init
+        update();
+    </script>
+</body>
+</html>

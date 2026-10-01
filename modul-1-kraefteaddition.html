@@ -3,30 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modul 1: Kräfteaddition & Vektoren</title>
-    <link rel="stylesheet" href="tailwind.min.css">
-    <style>
-        canvas { 
-            border: 1px solid #e2e8f0; 
-            background: #f8fafc; 
-            width: 100%; 
-            height: auto; 
-            border-radius: 0.75rem;
-            box-shadow: inset 0 2px 4px 0 rgb(0 0 0 / 0.05);
-        }
-    </style>
+    <title>Modul 1: Kräfteaddition & Vektoren | Bautechnik-Labor</title>
+    <link rel="stylesheet" href="tailwind.min.css?v=2026-09-29">
+    <link rel="stylesheet" href="labor.css?v=2026-09-29">
 </head>
-<body class="bg-slate-50 min-h-screen p-4 md:p-6 font-sans text-slate-800">
+<body data-modul="1" class="bg-slate-50 min-h-screen p-4 md:p-6 font-sans text-slate-800">
     <div class="max-w-7xl mx-auto bg-white p-6 rounded-2xl shadow-xl border border-slate-100">
-        
-        <!-- Header -->
+
+        <!-- Header inkl. Navigation -->
         <header class="mb-6 border-b pb-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
                 <div class="flex items-center gap-3 mb-1">
-                    <a href="index.html" class="text-sky-600 hover:text-sky-800 font-semibold text-sm flex items-center gap-1 bg-sky-50 px-2 py-1 rounded">
+                    <a href="index.html" class="lab-back">
                         <span>&larr;</span> Zurück zum Menü
                     </a>
-                    <span class="text-xs font-bold bg-sky-100 text-sky-700 px-2 py-0.5 rounded uppercase tracking-wide">Modul 1</span>
+                    <span class="lab-badge">Modul 1</span>
                 </div>
                 <h1 class="text-3xl font-extrabold text-slate-800">Kräfteaddition & Vektoren</h1>
                 <p class="text-sm text-slate-500 mt-1">Verändere die Winkel und Beträge der Kräfte, um die Resultierende (grün) zu ermitteln.</p>
@@ -35,10 +26,10 @@
 
         <!-- Umschalter Modus 1 / Modus 2 -->
         <div class="flex gap-2 mb-6">
-            <button id="btnMode1" class="flex-1 text-sm font-bold px-4 py-3 rounded-lg transition-colors bg-indigo-600 text-white">
+            <button id="btnMode1" class="lab-tab is-active">
                 1️⃣ Kräfteaddition (Parallelogramm)
             </button>
-            <button id="btnMode2" class="flex-1 text-sm font-bold px-4 py-3 rounded-lg transition-colors bg-slate-100 text-slate-600 hover:bg-slate-200">
+            <button id="btnMode2" class="lab-tab">
                 2️⃣ Schräge Last auf Fläche
             </button>
         </div>
@@ -50,15 +41,15 @@
                 
                 <!-- Kraft 1 -->
                 <div class="p-4 bg-indigo-50/70 rounded-xl border border-indigo-100 shadow-sm space-y-4">
-                    <h3 class="text-md font-bold text-indigo-800 flex items-center gap-2">
+                    <h3 class="text-base font-bold text-indigo-800 flex items-center gap-2">
                         <span class="w-3.5 h-3.5 bg-indigo-500 rounded-full"></span>
                         Kraft F₁ (Blau)
                     </h3>
                     <div class="space-y-3">
                         <div>
                             <label class="flex justify-between text-xs font-bold text-slate-500 mb-1">
-                                <span>Betrag F₁ [N]</span>
-                                <span id="val_f1" class="text-indigo-700 font-bold">80 N</span>
+                                <span>Betrag F₁ [kN]</span>
+                                <span id="val_f1" class="text-indigo-700 font-bold">80 kN</span>
                             </label>
                             <input type="range" id="f1_val" min="10" max="150" value="80" class="w-full accent-indigo-600">
                         </div>
@@ -74,15 +65,15 @@
 
                 <!-- Kraft 2 -->
                 <div class="p-4 bg-rose-50/70 rounded-xl border border-rose-100 shadow-sm space-y-4">
-                    <h3 class="text-md font-bold text-rose-800 flex items-center gap-2">
+                    <h3 class="text-base font-bold text-rose-800 flex items-center gap-2">
                         <span class="w-3.5 h-3.5 bg-rose-500 rounded-full"></span>
                         Kraft F₂ (Rot)
                     </h3>
                     <div class="space-y-3">
                         <div>
                             <label class="flex justify-between text-xs font-bold text-slate-500 mb-1">
-                                <span>Betrag F₂ [N]</span>
-                                <span id="val_f2" class="text-rose-700 font-bold">100 N</span>
+                                <span>Betrag F₂ [kN]</span>
+                                <span id="val_f2" class="text-rose-700 font-bold">100 kN</span>
                             </label>
                             <input type="range" id="f2_val" min="10" max="150" value="100" class="w-full accent-rose-600">
                         </div>
@@ -108,28 +99,28 @@
                 <!-- Rechenweg -->
                 <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200 font-mono text-sm shadow-sm">
                     <h3 class="text-lg font-bold text-slate-800 font-sans mb-3 flex items-center gap-2">
-                        <span class="w-2 h-5 bg-emerald-500 rounded-full"></span>
-                        Analytische Addition (Vektorzerlegung)
+                        <span class="lab-bar"></span>
+                        Rechenweg – Vektorzerlegung
                     </h3>
-                    
+
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="bg-white p-3 rounded-lg border border-slate-200">
                             <p class="font-bold text-indigo-700">F₁ Zerlegung:</p>
-                            <p>F₁ₓ = F₁ · cos(α₁) = <span id="math_f1x">0</span> N</p>
-                            <p>F₁ᵧ = F₁ · sin(α₁) = <span id="math_f1y">0</span> N</p>
+                            <p>F<sub>1x</sub> = F₁ · cos(α₁) = <span id="math_f1x">0</span> kN</p>
+                            <p>F<sub>1y</sub> = F₁ · sin(α₁) = <span id="math_f1y">0</span> kN</p>
                         </div>
                         <div class="bg-white p-3 rounded-lg border border-slate-200">
                             <p class="font-bold text-rose-600">F₂ Zerlegung:</p>
-                            <p>F₂ₓ = F₂ · cos(α₂) = <span id="math_f2x">0</span> N</p>
-                            <p>F₂ᵧ = F₂ · sin(α₂) = <span id="math_f2y">0</span> N</p>
+                            <p>F<sub>2x</sub> = F₂ · cos(α₂) = <span id="math_f2x">0</span> kN</p>
+                            <p>F<sub>2y</sub> = F₂ · sin(α₂) = <span id="math_f2y">0</span> kN</p>
                         </div>
                     </div>
 
                     <div class="mt-4 p-3 bg-emerald-50 border border-emerald-100 rounded-lg text-emerald-950">
-                        <p class="font-bold">Resultierende Gesamtkraft F_R (Grün):</p>
-                        <p class="mt-1">F_Rₓ = F₁ₓ + F₂ₓ = <span id="math_frx">0</span> N</p>
-                        <p>F_Rᵧ = F₁ᵧ + F₂ᵧ = <span id="math_fry">0</span> N</p>
-                        <p class="font-bold mt-2 text-lg">F_R = √(F_Rₓ² + F_Rᵧ²) = <span id="math_fr_val">0</span> N</p>
+                        <p class="font-bold">Resultierende Gesamtkraft F<sub>R</sub> (Grün):</p>
+                        <p class="mt-1">F<sub>Rx</sub> = F<sub>1x</sub> + F<sub>2x</sub> = <span id="math_frx">0</span> kN</p>
+                        <p>F<sub>Ry</sub> = F<sub>1y</sub> + F<sub>2y</sub> = <span id="math_fry">0</span> kN</p>
+                        <p class="font-bold mt-2 text-lg">F<sub>R</sub> = √(F<sub>Rx</sub>² + F<sub>Ry</sub>²) = <span id="math_fr_val">0</span> kN</p>
                         <p class="text-xs text-emerald-700">Wirkungswinkel φ = <span id="math_fr_ang">0</span>°</p>
                     </div>
                 </div>
@@ -143,7 +134,7 @@
                         </h3>
                         <div class="flex gap-2 flex-wrap">
                             <button id="btnNewTask" class="text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-lg transition-colors">
-                                🎲 Neue Zufallsaufgabe
+                                🎲 Neue Aufgabe
                             </button>
                             <button id="btnPracticeMode" class="text-xs font-bold bg-amber-500 hover:bg-amber-600 text-white px-3 py-2 rounded-lg transition-colors">
                                 ✏️ Selbst berechnen
@@ -157,53 +148,53 @@
                             <div class="bg-amber-50/60 p-3 rounded-lg border border-amber-100 space-y-2">
                                 <p class="font-bold text-indigo-700 text-sm font-mono">F₁ Zerlegung:</p>
                                 <div class="flex items-center gap-2">
-                                    <label class="text-xs font-mono w-28">F₁ₓ = F₁·cos(α₁) =</label>
+                                    <label class="text-xs font-mono w-28">F<sub>1x</sub> = F₁·cos(α₁) =</label>
                                     <input type="number" id="check_f1x" step="0.1" class="w-24 border border-slate-300 rounded px-2 py-1 text-sm">
-                                    <span class="text-xs">N</span>
+                                    <span class="text-xs">kN</span>
                                     <span id="fb_f1x" class="text-lg"></span>
                                 </div>
                                 <div class="flex items-center gap-2">
-                                    <label class="text-xs font-mono w-28">F₁ᵧ = F₁·sin(α₁) =</label>
+                                    <label class="text-xs font-mono w-28">F<sub>1y</sub> = F₁·sin(α₁) =</label>
                                     <input type="number" id="check_f1y" step="0.1" class="w-24 border border-slate-300 rounded px-2 py-1 text-sm">
-                                    <span class="text-xs">N</span>
+                                    <span class="text-xs">kN</span>
                                     <span id="fb_f1y" class="text-lg"></span>
                                 </div>
                             </div>
                             <div class="bg-amber-50/60 p-3 rounded-lg border border-amber-100 space-y-2">
                                 <p class="font-bold text-rose-600 text-sm font-mono">F₂ Zerlegung:</p>
                                 <div class="flex items-center gap-2">
-                                    <label class="text-xs font-mono w-28">F₂ₓ = F₂·cos(α₂) =</label>
+                                    <label class="text-xs font-mono w-28">F<sub>2x</sub> = F₂·cos(α₂) =</label>
                                     <input type="number" id="check_f2x" step="0.1" class="w-24 border border-slate-300 rounded px-2 py-1 text-sm">
-                                    <span class="text-xs">N</span>
+                                    <span class="text-xs">kN</span>
                                     <span id="fb_f2x" class="text-lg"></span>
                                 </div>
                                 <div class="flex items-center gap-2">
-                                    <label class="text-xs font-mono w-28">F₂ᵧ = F₂·sin(α₂) =</label>
+                                    <label class="text-xs font-mono w-28">F<sub>2y</sub> = F₂·sin(α₂) =</label>
                                     <input type="number" id="check_f2y" step="0.1" class="w-24 border border-slate-300 rounded px-2 py-1 text-sm">
-                                    <span class="text-xs">N</span>
+                                    <span class="text-xs">kN</span>
                                     <span id="fb_f2y" class="text-lg"></span>
                                 </div>
                             </div>
                         </div>
                         <div class="bg-amber-50/60 p-3 rounded-lg border border-amber-100 space-y-2">
-                            <p class="font-bold text-emerald-700 text-sm font-mono">Resultierende F_R:</p>
+                            <p class="font-bold text-emerald-700 text-sm font-mono">Resultierende F<sub>R</sub>:</p>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                 <div class="flex items-center gap-2">
-                                    <label class="text-xs font-mono w-28">F_Rₓ =</label>
+                                    <label class="text-xs font-mono w-28">F<sub>Rx</sub> =</label>
                                     <input type="number" id="check_frx" step="0.1" class="w-24 border border-slate-300 rounded px-2 py-1 text-sm">
-                                    <span class="text-xs">N</span>
+                                    <span class="text-xs">kN</span>
                                     <span id="fb_frx" class="text-lg"></span>
                                 </div>
                                 <div class="flex items-center gap-2">
-                                    <label class="text-xs font-mono w-28">F_Rᵧ =</label>
+                                    <label class="text-xs font-mono w-28">F<sub>Ry</sub> =</label>
                                     <input type="number" id="check_fry" step="0.1" class="w-24 border border-slate-300 rounded px-2 py-1 text-sm">
-                                    <span class="text-xs">N</span>
+                                    <span class="text-xs">kN</span>
                                     <span id="fb_fry" class="text-lg"></span>
                                 </div>
                                 <div class="flex items-center gap-2">
-                                    <label class="text-xs font-mono w-28">F_R =</label>
+                                    <label class="text-xs font-mono w-28">F<sub>R</sub> =</label>
                                     <input type="number" id="check_fr" step="0.1" class="w-24 border border-slate-300 rounded px-2 py-1 text-sm">
-                                    <span class="text-xs">N</span>
+                                    <span class="text-xs">kN</span>
                                     <span id="fb_fr" class="text-lg"></span>
                                 </div>
                                 <div class="flex items-center gap-2">
@@ -218,13 +209,13 @@
                             Prüfen
                         </button>
                         <div id="checkResult" class="hidden text-center font-bold text-sm p-3 rounded-lg"></div>
+                    </div>
 
-                        <div class="border-t border-slate-200 pt-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                            <input type="text" id="studentName" placeholder="Name (optional)" class="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm">
-                            <button id="btnExportLog" class="text-sm font-bold bg-slate-700 hover:bg-slate-800 text-white px-4 py-2 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed" disabled>
-                                📄 Protokoll exportieren (<span id="logCount">0</span>)
-                            </button>
-                        </div>
+                    <div class="border-t border-slate-200 mt-4 pt-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                        <input type="text" id="studentName" placeholder="Name (optional)" class="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm">
+                        <button id="btnExportLog" class="text-sm font-bold bg-slate-700 hover:bg-slate-800 text-white px-4 py-2 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed" disabled>
+                            📄 Protokoll exportieren (<span id="logCount">0</span>)
+                        </button>
                     </div>
                 </div>
 
@@ -237,9 +228,9 @@
             <!-- Controls (Links) -->
             <div class="lg:col-span-4 space-y-6">
 
-                <div class="p-4 bg-teal-50/70 rounded-xl border border-teal-100 shadow-sm space-y-4">
-                    <h3 class="text-md font-bold text-teal-800 flex items-center gap-2">
-                        <span class="w-3.5 h-3.5 bg-teal-500 rounded-full"></span>
+                <div class="p-4 bg-teal-50 rounded-xl border border-teal-100 shadow-sm space-y-4">
+                    <h3 class="text-base font-bold text-teal-800 flex items-center gap-2">
+                        <span class="w-3.5 h-3.5 bg-teal-600 rounded-full"></span>
                         Last F
                     </h3>
                     <div>
@@ -251,9 +242,9 @@
                     </div>
                 </div>
 
-                <div class="p-4 bg-slate-100/70 rounded-xl border border-slate-200 shadow-sm space-y-4">
-                    <h3 class="text-md font-bold text-slate-700 flex items-center gap-2">
-                        <span class="w-3.5 h-3.5 bg-slate-500 rounded-full"></span>
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 shadow-sm space-y-4">
+                    <h3 class="text-base font-bold text-slate-700 flex items-center gap-2">
+                        <span class="w-3.5 h-3.5 bg-slate-700 rounded-full"></span>
                         Winkel
                     </h3>
                     <div>
@@ -261,12 +252,12 @@
                             <span>Lastwinkel zur Flächennormalen β [°]</span>
                             <span id="val_sbeta" class="text-slate-700 font-bold">25°</span>
                         </label>
-                        <input type="range" id="s_beta" min="0" max="90" value="25" class="w-full accent-slate-600">
+                        <input type="range" id="s_beta" min="0" max="90" value="25" class="w-full">
                     </div>
                 </div>
 
                 <div class="p-4 bg-indigo-50/70 rounded-xl border border-indigo-100 shadow-sm space-y-4">
-                    <h3 class="text-md font-bold text-indigo-800 flex items-center gap-2">
+                    <h3 class="text-base font-bold text-indigo-800 flex items-center gap-2">
                         <span class="w-3.5 h-3.5 bg-indigo-500 rounded-full"></span>
                         Kräftemaßstab
                     </h3>
@@ -292,21 +283,22 @@
 
                 <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200 font-mono text-sm shadow-sm">
                     <h3 class="text-lg font-bold text-slate-800 font-sans mb-3 flex items-center gap-2">
-                        <span class="w-2 h-5 bg-emerald-500 rounded-full"></span>
-                        Kräftezerlegung an der Fläche
+                        <span class="lab-bar"></span>
+                        Rechenweg – Kräftezerlegung an der Fläche
                     </h3>
                     <div class="bg-white p-3 rounded-lg border border-slate-200 space-y-2">
-                        <p>F_y = F · cos(β) = <span id="s_math_fn">0</span> kN <span class="text-xs text-slate-400 font-sans">→ Pfeillänge: <span id="s_cm_fn">0</span> cm</span></p>
-                        <p>F_x = F · sin(β) = <span id="s_math_ft">0</span> kN <span class="text-xs text-slate-400 font-sans">→ Pfeillänge: <span id="s_cm_ft">0</span> cm</span></p>
+                        <p>F<sub>y</sub> = F · cos(β) = <span id="s_math_fn">0</span> kN <span class="text-xs text-slate-400 font-sans">→ Pfeillänge: <span id="s_cm_fn">0</span> cm</span></p>
+                        <p>F<sub>x</sub> = F · sin(β) = <span id="s_math_ft">0</span> kN <span class="text-xs text-slate-400 font-sans">→ Pfeillänge: <span id="s_cm_ft">0</span> cm</span></p>
                         <p class="pt-2 border-t border-slate-100">F = <span id="s_math_f">0</span> kN <span class="text-xs text-slate-400 font-sans">→ Pfeillänge: <span id="s_cm_f">0</span> cm</span></p>
                     </div>
-                    <p class="text-xs text-slate-400 font-sans mt-3">💡 Die Fläche ist waagerecht: F_y ist die senkrechte, F_x die waagerechte Komponente der Last. β = 90° bedeutet: die Last zieht komplett waagerecht (F_y = 0).</p>
+                    <p class="text-xs text-slate-400 font-sans mt-2">💡 Die Fläche ist waagerecht: F<sub>y</sub> ist die senkrechte, F<sub>x</sub> die waagerechte Komponente der Last. β = 90° bedeutet: die Last zieht komplett waagerecht (F<sub>y</sub> = 0).</p>
                 </div>
 
             </div>
         </div>
     </div>
 
+    <script src="labor.js?v=2026-09-29"></script>
     <script>
         const canvas = document.getElementById('vectorCanvas');
         const ctx = canvas.getContext('2d');
@@ -322,9 +314,9 @@
             const F2 = parseFloat(f2_val.value);
             const a2_rad = parseFloat(f2_ang.value) * Math.PI / 180;
 
-            document.getElementById('val_f1').innerText = F1 + " N";
+            document.getElementById('val_f1').innerText = fmt(F1) + " kN";
             document.getElementById('val_a1').innerText = f1_ang.value + "°";
-            document.getElementById('val_f2').innerText = F2 + " N";
+            document.getElementById('val_f2').innerText = fmt(F2) + " kN";
             document.getElementById('val_a2').innerText = f2_ang.value + "°";
 
             // Zerlegung
@@ -340,14 +332,14 @@
             if (FR_ang < 0) FR_ang += 360;
 
             // Math Box updaten
-            document.getElementById('math_f1x').innerText = f1x.toFixed(1);
-            document.getElementById('math_f1y').innerText = f1y.toFixed(1);
-            document.getElementById('math_f2x').innerText = f2x.toFixed(1);
-            document.getElementById('math_f2y').innerText = f2y.toFixed(1);
-            document.getElementById('math_frx').innerText = frx.toFixed(1);
-            document.getElementById('math_fry').innerText = fry.toFixed(1);
-            document.getElementById('math_fr_val').innerText = FR.toFixed(1);
-            document.getElementById('math_fr_ang').innerText = FR_ang.toFixed(1);
+            document.getElementById('math_f1x').innerText = fmt(f1x, 1);
+            document.getElementById('math_f1y').innerText = fmt(f1y, 1);
+            document.getElementById('math_f2x').innerText = fmt(f2x, 1);
+            document.getElementById('math_f2y').innerText = fmt(f2y, 1);
+            document.getElementById('math_frx').innerText = fmt(frx, 1);
+            document.getElementById('math_fry').innerText = fmt(fry, 1);
+            document.getElementById('math_fr_val').innerText = fmt(FR, 1);
+            document.getElementById('math_fr_ang').innerText = fmt(FR_ang, 1);
 
             currentResult = { f1x, f1y, f2x, f2y, frx, fry, fr: FR, ang: FR_ang };
             if (practiceMode) setSolutionVisible(false);
@@ -359,7 +351,7 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             const cx = canvas.width / 2;
             const cy = canvas.height / 2;
-            const scale = 1.3; // Skalierungsfaktor Pixel/Newton
+            const scale = 1.3; // Skalierungsfaktor Pixel/kN
 
             // Koordinatengitter zeichnen
             ctx.strokeStyle = '#e2e8f0';
@@ -396,7 +388,7 @@
             // Resultierende Kraft (Grün)
             const prx = cx + frx * scale;
             const pry = cy - fry * scale;
-            drawArrow(cx, cy, prx, pry, '#10b981', 4.5, 'F_Resultierend');
+            drawArrow(cx, cy, prx, pry, '#10b981', 4.5, 'F_{R}');
         }
 
         function drawArrow(fromx, fromy, tox, toy, color, width, label) {
@@ -423,9 +415,12 @@
             ctx.closePath();
             ctx.fill();
 
-            // Beschriftung an der Spitze platzen
-            ctx.font = 'bold 12px sans-serif';
-            ctx.fillText(label, tox + 10 * Math.cos(angle), toy + 10 * Math.sin(angle));
+            // Beschriftung an der Spitze platzieren
+            ctx.font = 'bold 13px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            fillTextSub(ctx, label, tox + 16 * Math.cos(angle), toy + 16 * Math.sin(angle));
+            ctx.textBaseline = 'alphabetic';
         }
 
         // Event-Listeners registrieren
@@ -480,25 +475,26 @@
         document.getElementById('btnCheck').addEventListener('click', () => {
             if (!currentResult) return;
             const checks = [
-                ['check_f1x', 'fb_f1x', currentResult.f1x, 'F1x'],
-                ['check_f1y', 'fb_f1y', currentResult.f1y, 'F1y'],
-                ['check_f2x', 'fb_f2x', currentResult.f2x, 'F2x'],
-                ['check_f2y', 'fb_f2y', currentResult.f2y, 'F2y'],
-                ['check_frx', 'fb_frx', currentResult.frx, 'F_Rx'],
-                ['check_fry', 'fb_fry', currentResult.fry, 'F_Ry'],
-                ['check_fr', 'fb_fr', currentResult.fr, 'F_R'],
-                ['check_ang', 'fb_ang', currentResult.ang, 'φ'],
+                ['check_f1x', 'fb_f1x', currentResult.f1x, 'F1x', 'kN'],
+                ['check_f1y', 'fb_f1y', currentResult.f1y, 'F1y', 'kN'],
+                ['check_f2x', 'fb_f2x', currentResult.f2x, 'F2x', 'kN'],
+                ['check_f2y', 'fb_f2y', currentResult.f2y, 'F2y', 'kN'],
+                ['check_frx', 'fb_frx', currentResult.frx, 'FRx', 'kN'],
+                ['check_fry', 'fb_fry', currentResult.fry, 'FRy', 'kN'],
+                ['check_fr', 'fb_fr', currentResult.fr, 'FR', 'kN'],
+                ['check_ang', 'fb_ang', currentResult.ang, 'φ', '°'],
             ];
             let correctCount = 0;
             const detailLines = [];
-            checks.forEach(([inputId, fbId, real, label]) => {
+            checks.forEach(([inputId, fbId, real, label, unit]) => {
                 const inputVal = parseFloat(document.getElementById(inputId).value);
                 const fb = document.getElementById(fbId);
                 const tolerance = Math.max(1.5, Math.abs(real) * 0.03);
                 const ok = !isNaN(inputVal) && Math.abs(inputVal - real) <= tolerance;
                 fb.innerText = ok ? '✅' : '❌';
                 if (ok) correctCount++;
-                detailLines.push(`    ${label}: eingegeben ${isNaN(inputVal) ? '—' : inputVal} / richtig ${real.toFixed(1)} ${ok ? '✅' : '❌'}`);
+                const sep = unit === '°' ? '' : ' '; // Winkelgrad ohne Leerzeichen
+                detailLines.push(`${label}: eingegeben ${isNaN(inputVal) ? '—' : fmt(inputVal) + sep + unit} / richtig ${fmt(real, 1)}${sep}${unit} ${ok ? '✅' : '❌'}`);
             });
             setSolutionVisible(true);
             const resultBox = document.getElementById('checkResult');
@@ -514,41 +510,17 @@
             // Sitzungsprotokoll für Export
             sessionLog.push({
                 zeit: new Date().toLocaleTimeString('de-DE'),
-                aufgabe: `F1=${f1_val.value}N/${f1_ang.value}°, F2=${f2_val.value}N/${f2_ang.value}°`,
-                detailLines,
-                correctCount,
-                total: checks.length
+                aufgabe: `F₁ = ${fmt(f1_val.value)} kN / α₁ = ${f1_ang.value}°, F₂ = ${fmt(f2_val.value)} kN / α₂ = ${f2_ang.value}°`,
+                details: detailLines,
+                richtig: correctCount,
+                gesamt: checks.length
             });
             document.getElementById('logCount').innerText = sessionLog.length;
             document.getElementById('btnExportLog').disabled = false;
         });
 
         document.getElementById('btnExportLog').addEventListener('click', () => {
-            if (sessionLog.length === 0) return;
-            const name = document.getElementById('studentName').value.trim() || '—';
-            let text = `Erfolgskontrolle – Modul 1: Kräfteaddition & Vektoren\n`;
-            text += `Name: ${name}\n`;
-            text += `Exportiert am: ${new Date().toLocaleString('de-DE')}\n`;
-            text += `${'='.repeat(50)}\n\n`;
-            sessionLog.forEach((entry, i) => {
-                text += `Versuch ${i + 1} (${entry.zeit})\n`;
-                text += `  Aufgabe: ${entry.aufgabe}\n`;
-                text += entry.detailLines.join('\n') + '\n';
-                text += `  Ergebnis: ${entry.correctCount}/${entry.total} richtig\n\n`;
-            });
-            const gesamtRichtig = sessionLog.reduce((s, e) => s + e.correctCount, 0);
-            const gesamtTotal = sessionLog.reduce((s, e) => s + e.total, 0);
-            text += `${'='.repeat(50)}\n`;
-            text += `Gesamt: ${sessionLog.length} Versuch(e), ${gesamtRichtig}/${gesamtTotal} Werte richtig (${Math.round(100 * gesamtRichtig / gesamtTotal)}%)\n`;
-
-            const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            const safeName = name !== '—' ? name.replace(/[^a-zA-Z0-9äöüÄÖÜß_-]/g, '_') : 'protokoll';
-            link.download = `erfolgskontrolle_modul1_${safeName}.txt`;
-            link.href = url;
-            link.click();
-            URL.revokeObjectURL(url);
+            exportProtocol(1, 'Kräfteaddition & Vektoren', document.getElementById('studentName').value, sessionLog);
         });
 
         // ================= MODUS 2: Schräge Last auf Fläche =================
@@ -583,21 +555,21 @@
             const beta = betaDeg * Math.PI / 180;
             const kNPerCm = parseFloat(s_scale.value); // Kräftemaßstab: so viele kN entsprechen 1 cm
 
-            document.getElementById('val_sf').innerText = F + ' kN';
+            document.getElementById('val_sf').innerText = fmt(F) + ' kN';
             document.getElementById('val_sbeta').innerText = betaDeg + '°';
 
             const F_y = F * Math.cos(beta);
             const F_x = F * Math.sin(beta);
-            document.getElementById('s_math_fn').innerText = F_y.toFixed(1);
-            document.getElementById('s_math_ft').innerText = F_x.toFixed(1);
-            document.getElementById('s_math_f').innerText = F.toFixed(1);
+            document.getElementById('s_math_fn').innerText = fmt(F_y, 1);
+            document.getElementById('s_math_ft').innerText = fmt(F_x, 1);
+            document.getElementById('s_math_f').innerText = fmt(F, 1);
 
             const cm_f = kNPerCm > 0 ? F / kNPerCm : 0;
             const cm_fy = kNPerCm > 0 ? F_y / kNPerCm : 0;
             const cm_fx = kNPerCm > 0 ? F_x / kNPerCm : 0;
-            document.getElementById('s_cm_f').innerText = cm_f.toFixed(1);
-            document.getElementById('s_cm_fn').innerText = cm_fy.toFixed(1);
-            document.getElementById('s_cm_ft').innerText = cm_fx.toFixed(1);
+            document.getElementById('s_cm_f').innerText = fmt(cm_f, 1);
+            document.getElementById('s_cm_fn').innerText = fmt(cm_fy, 1);
+            document.getElementById('s_cm_ft').innerText = fmt(cm_fx, 1);
 
             drawSlope(F, beta, betaDeg, F_y, F_x, cm_f, cm_fy, cm_fx);
         }
@@ -663,20 +635,20 @@
             drawSlopeArrow(ctx, B.x, B.y, A.x, A.y, '#4f46e5', 3);
             ctx.fillStyle = '#4f46e5';
             ctx.textAlign = 'right';
-            ctx.fillText(`F_y = ${F_y.toFixed(1)} kN (${cm_fy.toFixed(1)} cm)`, -8, -fyLen / 2);
+            fillTextSub(ctx, `F_{y} = ${fmt(F_y, 1)} kN (${fmt(cm_fy, 1)} cm)`, -8, -fyLen / 2);
 
             // F_x: jetzt oben am Dreieck (an der Spitze von F_y), Richtung umgedreht: von C nach B
             drawSlopeArrow(ctx, C.x, C.y, B.x, B.y, '#e11d48', 3);
             ctx.fillStyle = '#e11d48';
             ctx.textAlign = 'center';
-            ctx.fillText(`F_x = ${F_x.toFixed(1)} kN (${cm_fx.toFixed(1)} cm)`, fxLen / 2, -fyLen - 10);
+            fillTextSub(ctx, `F_{x} = ${fmt(F_x, 1)} kN (${fmt(cm_fx, 1)} cm)`, fxLen / 2, -fyLen - 10);
 
             // Lastpfeil F (Hypotenuse, von C nach A - schließt das Dreieck)
             drawSlopeArrow(ctx, C.x, C.y, A.x, A.y, '#0d9488', 3.5);
             ctx.fillStyle = '#0d9488';
             ctx.font = 'bold 13px sans-serif';
             ctx.textAlign = 'left';
-            ctx.fillText(`F = ${F.toFixed(1)} kN (${cm_f.toFixed(1)} cm)`, C.x + 8, C.y - 4);
+            ctx.fillText(`F = ${fmt(F, 1)} kN (${fmt(cm_f, 1)} cm)`, C.x / 2 + 14, C.y / 2 + 4);
 
             ctx.restore();
         }
@@ -687,14 +659,14 @@
         document.getElementById('btnMode1').addEventListener('click', () => {
             document.getElementById('mode1').classList.remove('hidden');
             document.getElementById('mode2').classList.add('hidden');
-            document.getElementById('btnMode1').className = 'flex-1 text-sm font-bold px-4 py-3 rounded-lg transition-colors bg-indigo-600 text-white';
-            document.getElementById('btnMode2').className = 'flex-1 text-sm font-bold px-4 py-3 rounded-lg transition-colors bg-slate-100 text-slate-600 hover:bg-slate-200';
+            document.getElementById('btnMode1').classList.add('is-active');
+            document.getElementById('btnMode2').classList.remove('is-active');
         });
         document.getElementById('btnMode2').addEventListener('click', () => {
             document.getElementById('mode2').classList.remove('hidden');
             document.getElementById('mode1').classList.add('hidden');
-            document.getElementById('btnMode2').className = 'flex-1 text-sm font-bold px-4 py-3 rounded-lg transition-colors bg-teal-600 text-white';
-            document.getElementById('btnMode1').className = 'flex-1 text-sm font-bold px-4 py-3 rounded-lg transition-colors bg-slate-100 text-slate-600 hover:bg-slate-200';
+            document.getElementById('btnMode2').classList.add('is-active');
+            document.getElementById('btnMode1').classList.remove('is-active');
             updateSlope();
         });
 

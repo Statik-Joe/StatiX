@@ -1,0 +1,231 @@
+/* ==========================================================================
+   Gemeinsames Stylesheet für alle Module des Virtuellen Bautechnik-Labors.
+   Ergänzt tailwind.min.css um die Bausteine, die in jedem Modul gleich
+   aussehen sollen (Kopfzeile, Canvas, Beschriftungen, Umschalter).
+   Die Modulfarbe wird über <body data-modul="1..5"> gesetzt; dazu Präsentationsmodus
+   und Vollbild für Zeichenflächen (siehe Ende der Datei und labor.js) und passt zur
+   jeweiligen Kachel im Hauptmenü.
+   ========================================================================== */
+
+body {
+    --mod-50: #f0f9ff;
+    --mod-100: #e0f2fe;
+    --mod-500: #0ea5e9;
+    --mod-600: #0284c7;
+    --mod-700: #0369a1;
+    --mod-800: #075985;
+}
+body[data-modul="1"] { /* Indigo – Kräfteaddition */
+    --mod-50: #eef2ff;
+    --mod-100: #e0e7ff;
+    --mod-500: #6366f1;
+    --mod-600: #4f46e5;
+    --mod-700: #4338ca;
+    --mod-800: #3730a3;
+}
+body[data-modul="2"] { /* Sky – Hebelgesetz */
+    --mod-50: #f0f9ff;
+    --mod-100: #e0f2fe;
+    --mod-500: #0ea5e9;
+    --mod-600: #0284c7;
+    --mod-700: #0369a1;
+    --mod-800: #075985;
+}
+body[data-modul="3"] { /* Teal – Schnittgrößen */
+    --mod-50: #f0fdfa;
+    --mod-100: #ccfbf1;
+    --mod-500: #14b8a6;
+    --mod-600: #0d9488;
+    --mod-700: #0f766e;
+    --mod-800: #115e59;
+}
+body[data-modul="4"] { /* Amber – Diagramme zuordnen */
+    --mod-50: #fffbeb;
+    --mod-100: #fef3c7;
+    --mod-500: #f59e0b;
+    --mod-600: #d97706;
+    --mod-700: #b45309;
+    --mod-800: #92400e;
+}
+body[data-modul="5"] { /* Violet – Spannungsnachweis */
+    --mod-50: #f5f3ff;
+    --mod-100: #ede9fe;
+    --mod-500: #8b5cf6;
+    --mod-600: #7c3aed;
+    --mod-700: #6d28d9;
+    --mod-800: #5b21b6;
+}
+
+/* ---------- Kopfzeile: Zurück-Link und Modul-Badge ---------- */
+.lab-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    font-weight: 600;
+    color: var(--mod-600);
+    background: var(--mod-50);
+    transition: color 0.15s ease-in-out;
+}
+.lab-back:hover {
+    color: var(--mod-800);
+}
+.lab-badge {
+    display: inline-block;
+    padding: 0.125rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    line-height: 1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+    color: var(--mod-700);
+    background: var(--mod-100);
+}
+
+/* ---------- Farbiger Balken vor Abschnittsüberschriften ---------- */
+.lab-bar {
+    display: inline-block;
+    flex-shrink: 0;
+    width: 0.5rem;
+    height: 1.25rem;
+    border-radius: 9999px;
+    background: var(--mod-500);
+}
+
+/* ---------- Umschalter (Modus / Teil / Hebelart) ---------- */
+.lab-tab {
+    flex: 1 1 0%;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    font-weight: 700;
+    color: #475569;
+    background: #f1f5f9;
+    transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
+}
+.lab-tab:hover {
+    background: #e2e8f0;
+}
+.lab-tab.is-active {
+    color: #ffffff;
+    background: var(--mod-600);
+}
+
+/* ---------- Zeichenflächen ---------- */
+canvas {
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+    width: 100%;
+    height: auto;
+    border-radius: 0.75rem;
+    box-shadow: inset 0 2px 4px 0 rgb(0 0 0 / 0.05);
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+/* ---------- Eingabefelder ---------- */
+input[type="number"], input[type="text"], select, input[type="range"] {
+    transition: all 0.2s ease-in-out;
+}
+input[type="number"]:focus, input[type="text"]:focus, select:focus {
+    outline: none;
+    border-color: var(--mod-600);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--mod-600) 15%, transparent);
+}
+/* :where() hält die Spezifität bei 0, damit farbige accent-*-Klassen (z. B. F₁ blau, F₂ rot) Vorrang behalten */
+:where(input[type="checkbox"], input[type="range"]) {
+    accent-color: var(--mod-600);
+}
+
+/* ---------- Präsentationsmodus (Beamer, Tafel) ---------- */
+/* Tailwind rechnet alle Größen in rem – eine größere Grundschrift vergrößert die ganze Oberfläche */
+html.lab-present {
+    font-size: 125%;
+}
+.lab-present-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.125rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    line-height: 1rem;
+    font-weight: 700;
+    color: #475569;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    transition: background-color 0.15s ease-in-out;
+}
+.lab-present-btn:hover {
+    background: #e2e8f0;
+}
+.lab-present-btn[aria-pressed="true"] {
+    color: #ffffff;
+    background: var(--mod-600);
+    border-color: var(--mod-600);
+}
+
+/* ---------- Vollbild für Zeichenflächen ---------- */
+.lab-fs-host {
+    position: relative;
+}
+.lab-fs-btn {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    z-index: 40;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 0.5rem;
+    font-size: 1.1rem;
+    line-height: 1;
+    color: #334155;
+    background: rgb(255 255 255 / 0.9);
+    border: 1px solid #cbd5e1;
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.08);
+    cursor: pointer;
+}
+.lab-fs-btn:hover {
+    background: #ffffff;
+    color: var(--mod-700);
+}
+.lab-fs-host:fullscreen {
+    display: flex;
+    flex-direction: column;   /* Beschriftung (z. B. Modul 4) über der Zeichnung */
+    align-items: center;
+    justify-content: center;
+    background: #ffffff;
+    overflow: hidden;
+}
+.lab-fs-host:-webkit-full-screen {
+    display: flex;
+    flex-direction: column;   /* Beschriftung (z. B. Modul 4) über der Zeichnung */
+    align-items: center;
+    justify-content: center;
+    background: #ffffff;
+    overflow: hidden;
+}
+/* Zeichnung formatfüllend, Seitenverhältnis bleibt erhalten (--lab-ratio setzt labor.js) */
+.lab-fs-host:fullscreen canvas {
+    width: min(100vw, calc(100vh * var(--lab-ratio, 2)));
+    height: auto;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+}
+.lab-fs-host:-webkit-full-screen canvas {
+    width: min(100vw, calc(100vh * var(--lab-ratio, 2)));
+    height: auto;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+}
+.lab-fs-host:fullscreen .lab-fs-btn {
+    top: 1rem;
+    right: 1rem;
+}
