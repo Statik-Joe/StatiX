@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modul 5: Spannungsnachweis | Bautechnik-Labor</title>
     <link rel="stylesheet" href="tailwind.min.css?v=2026-09-29">
-    <link rel="stylesheet" href="labor.css?v=2026-10-01-mobile">
+    <link rel="stylesheet" href="labor.css?v=2026-10-01-classroom">
 </head>
 <body data-modul="5" class="bg-slate-50 min-h-screen p-4 md:p-6 font-sans text-slate-800">
     <div class="max-w-7xl mx-auto bg-white p-6 rounded-2xl shadow-xl border border-slate-100">
@@ -260,6 +260,7 @@
     </div>
 
     <script src="labor.js?v=2026-10-01"></script>
+    <script src="statik-core.js?v=2026-10-01-teacher"></script>
     <script>
         const canvas = document.getElementById('qsCanvas');
         const ctx = canvas.getContext('2d');
@@ -560,8 +561,8 @@
             qs_m.max = Math.max(100, Math.ceil(M));
             qs_m.value = M;
         }
-        const mParam = parseFloat(new URLSearchParams(window.location.search).get('M'));
-        if (!isNaN(mParam) && mParam >= 0) {
+        const mParam = momentParameterwert(new URLSearchParams(window.location.search).get('M'));
+        if (mParam !== null) {
             setMoment(mParam);
             const note = document.getElementById('importNote');
             note.innerHTML = `➡️ M<sub>max</sub> = ${fmt(mParam, 2)} kNm aus Modul 3 übernommen.`;

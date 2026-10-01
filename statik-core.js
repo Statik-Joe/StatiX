@@ -22,6 +22,26 @@ function zerlegeKraft(F, alpha) {
     };
 }
 
+function istImWertebereich(value, min, max) {
+    if (typeof value === 'string' && value.trim() === '') return false;
+    const number = Number(value);
+    return Number.isFinite(number) && number >= min && number <= max;
+}
+
+function momentParameterwert(value) {
+    if (value === null || value === undefined || (typeof value === 'string' && value.trim() === '')) return null;
+    const moment = Number(value);
+    if (!Number.isFinite(moment) || moment < 0) return null;
+    return Math.round(moment * 100) / 100;
+}
+
+function erhoeheQuizPunktestand(punkte, versuche, richtig) {
+    return {
+        punkte: punkte + (richtig ? 1 : 0),
+        versuche: versuche + 1
+    };
+}
+
 function berechneTraeger(system) {
     const L = system.L;
     const pointLoads = system.pointLoads || [];
@@ -94,5 +114,12 @@ function extremwerte(traeger, xmin, xmax, step = 0.01) {
 
 // Für die automatischen Tests unter Node.js exportieren (im Browser ohne Wirkung)
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { berechneTraeger, extremwerte, zerlegeKraft };
+    module.exports = {
+        berechneTraeger,
+        extremwerte,
+        zerlegeKraft,
+        istImWertebereich,
+        momentParameterwert,
+        erhoeheQuizPunktestand
+    };
 }

@@ -11,6 +11,12 @@ Interaktive Statik- und Mechanik-Lernmodule für die Fachoberschule (FOS 12, Hes
 - `modul-4-diagramme-zuordnen.html` – Quiz zum Zuordnen von Systemen und Schnittgrößendiagrammen
 - `modul-5-spannungsnachweis.html` – Querschnittswerte und Biegespannungsnachweis
 
+## Unterricht und Zugänglichkeit
+
+Modul 3 bietet im **Lehrkraftmodus** vorgefertigte Unterrichtsszenarien, einen Reset auf die ursprünglichen Vorführwerte und eine Druckansicht für ein Arbeitsblatt. Ein optionaler Arbeitsauftrag kann ergänzt werden; Lösungen und Diagramm werden nur mit aktivierter Option mitgedruckt. Im Druckdialog kann das Blatt auch als PDF gespeichert werden.
+
+Im Diagrammquiz lassen sich Antwortkarten per Tastatur auswählen. Screenreader erhalten Textbeschreibungen der dargestellten Kurven; zu jedem Aufgabenteil gibt es aufklappbare, schrittweise Hinweise. Nach einer Antwort wird die Auswertung angesagt und erläutert typische Vorzeichen- und Lagefehler.
+
 ## Lokaler Fortschritt
 
 In jedem Modul kann **Fortschritt speichern** aktiviert werden. Dann speichert das Labor die Eingaben und abgeschlossenen Übungsversuche lokal im Browser. Die Daten verlassen das Gerät nicht und enthalten nicht den optionalen Namen aus dem Protokoll-Export. Über **Daten löschen** lässt sich der gespeicherte Stand des jeweiligen Moduls entfernen; das Abwählen der Speicheroption pausiert weitere Schreibvorgänge.
@@ -27,7 +33,7 @@ npm test
 npm run build:css
 ```
 
-Die Tests prüfen den gemeinsamen Statik-Rechenkern gegen bekannte Tabellenwerte, einschließlich der Kraftzerlegung schräger Lasten. `npm run build:css` erzeugt `tailwind.min.css` aus den Klassen in den HTML- und JavaScript-Dateien. Die erzeugte Datei nicht von Hand bearbeiten.
+Die Tests prüfen den gemeinsamen Statik-Rechenkern gegen bekannte Tabellenwerte, einschließlich der Kraftzerlegung schräger Lasten, Eingabegrenzen, Quiz-Punktestand und Momentenübergabe von Modul 3 an Modul 5. `npm run build:css` erzeugt `tailwind.min.css` aus den Klassen in den HTML- und JavaScript-Dateien. Die erzeugte Datei nicht von Hand bearbeiten.
 
 ## Offline-Paket erstellen
 
@@ -50,7 +56,7 @@ Alle oben aufgeführten Laufzeitdateien müssen im selben Verzeichnis liegen. Na
 ## Gemeinsame Bausteine
 
 - `labor.css` und `labor.js` – Modulfarben, Präsentationsmodus, Vollbild für Zeichnungen, Zahlenformatierung, Protokoll-Export und lokales Speichern des Lernfortschritts
-- `statik-core.js` – gemeinsamer Statik-Rechenkern für Modul 3 und Modul 4
+- `statik-core.js` – gemeinsamer Statik-Rechenkern für Modul 3 und Modul 4 sowie getestete Validierungs-, Quiz- und Übergabehelfer
 - `src/tailwind.css`, `tailwind.config.js`, `package.json` und `package-lock.json` – CSS-Build-Konfiguration für die Entwicklung
 - `tests/statik-core.test.js` – automatisierte Tests des Statik-Rechenkerns
 
