@@ -2,7 +2,14 @@
 // Ausführen im Projektordner mit: npm test
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { berechneTraeger, extremwerte, zerlegeKraft } = require('../statik-core.js');
+const {
+    berechneTraeger,
+    extremwerte,
+    zerlegeKraft,
+    istImWertebereich,
+    momentParameterwert,
+    erhoeheQuizPunktestand
+} = require('../statik-core.js');
 
 const nah = (ist, soll, tol = 0.02) =>
     assert.ok(Math.abs(ist - soll) <= tol, `erwartet ${soll}, erhalten ${ist}`);
@@ -131,4 +138,27 @@ test('Schräge Einzellast nach oben erzeugt negative Vertikalreaktionen', () => 
     nah(t.A, -4);
     nah(t.B, -4);
     nah(t.A + t.B + components.vertical, 0);
+});
+
+test('Eingabegrenzen sind inklusiv und weisen ungültige Werte zurück', () => {
+    assert.equal(istImWertebereich(1, 1, 30), true);
+    assert.equal(istImWertebereich('30', 1, 30), true);
+    assert.equal(istImWertebereich(0.99, 1, 30), false);
+    assert.equal(istImWertebereich(30.01, 1, 30), false);
+    assert.equal(istImWertebereich('', 0, 100000), false);
+    assert.equal(istImWertebereich('NaN', 0, 100000), false);
+});
+
+test('M_max-Übergabe von Modul 3 nach Modul 5 rundet und lehnt ungültige Werte ab', () => {
+    assert.equal(momentParameterwert(74.144), 74.14);
+    assert.equal(momentParameterwert(0), 0);
+    assert.equal(momentParameterwert(null), null);
+    assert.equal(momentParameterwert(''), null);
+    assert.equal(momentParameterwert('unbekannt'), null);
+    assert.equal(momentParameterwert(-1), null);
+});
+
+test('Quiz-Punktestand zählt jeden Versuch, aber nur richtige Antworten als Punkt', () => {
+    assert.deepEqual(erhoeheQuizPunktestand(2, 3, true), { punkte: 3, versuche: 4 });
+    assert.deepEqual(erhoeheQuizPunktestand(2, 3, false), { punkte: 2, versuche: 4 });
 });

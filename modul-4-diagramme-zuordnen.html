@@ -5,13 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modul 4: Diagramme zuordnen | Bautechnik-Labor</title>
     <link rel="stylesheet" href="tailwind.min.css?v=2026-09-29">
-    <link rel="stylesheet" href="labor.css?v=2026-10-01-mobile">
+    <link rel="stylesheet" href="labor.css?v=2026-10-01-classroom">
     <style>
         .option-card {
+            display: block;
+            width: 100%;
+            text-align: left;
             transition: all 0.2s ease;
+        }
+        .option-card-label {
+            display: block;
+            margin-bottom: 0.25rem;
+            color: #64748b;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-align: center;
+        }
+        .option-card-caption {
+            display: block;
+            min-height: 2.5em;
+            margin-top: 0.5rem;
+            font-size: 0.75rem;
+            text-align: center;
         }
         .option-card:hover {
             transform: translateY(-2px);
+        }
+        .option-card:focus-visible {
+            outline: 3px solid #0f766e;
+            outline-offset: 3px;
         }
     </style>
 </head>
@@ -61,37 +83,49 @@
         <div id="partA" class="bg-indigo-50/40 border-2 border-indigo-100 rounded-2xl p-4">
         <!-- Aufgabenstellung -->
         <div class="bg-indigo-50/60 border border-indigo-100 rounded-xl p-4 mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-            <p id="taskPrompt" class="font-bold text-indigo-900 text-lg">Lade die erste Aufgabe …</p>
+            <p id="taskPrompt" class="font-bold text-indigo-900 text-lg" aria-live="polite">Lade die erste Aufgabe …</p>
             <button id="btnNewTask" class="text-sm font-bold bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg transition-colors whitespace-nowrap">
                 🎲 Neue Aufgabe
             </button>
         </div>
 
+        <details class="mb-4 rounded-lg border border-indigo-200 bg-white p-3">
+            <summary class="cursor-pointer font-bold text-indigo-900">Schrittweise Hinweise zu Teil A</summary>
+            <ol class="mt-2 list-decimal space-y-1 pl-5 text-sm text-slate-700">
+                <li>Suche zuerst die Stelle, an der eine Einzellast oder das Ende einer Streckenlast liegt.</li>
+                <li>Eine Einzellast erzeugt einen Sprung in Q und einen Knick in M. Eine Streckenlast macht Q schräg und M gekrümmt.</li>
+                <li>Vergleiche danach die Lage der Sprünge und Knicke sowie das Vorzeichen auf beiden Seiten der Nulllinie.</li>
+            </ol>
+        </details>
+
         <!-- System -->
         <div class="mb-6">
-            <canvas id="systemCanvas" width="900" height="200"></canvas>
+            <canvas id="systemCanvas" width="900" height="200" role="img" aria-label="Systemzeichnung der aktuellen Aufgabe."></canvas>
         </div>
 
         <!-- Antwortoptionen -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 lab-quiz-options">
-            <div class="option-card bg-white border-2 border-slate-200 rounded-xl p-3 cursor-pointer" data-idx="0">
-                <div class="text-center text-xs font-bold text-slate-500 mb-1">Diagramm A</div>
-                <canvas id="ans0" width="280" height="160"></canvas>
-                <p id="cap0" class="text-xs text-center mt-2 min-h-[2.5em]"></p>
-            </div>
-            <div class="option-card bg-white border-2 border-slate-200 rounded-xl p-3 cursor-pointer" data-idx="1">
-                <div class="text-center text-xs font-bold text-slate-500 mb-1">Diagramm B</div>
-                <canvas id="ans1" width="280" height="160"></canvas>
-                <p id="cap1" class="text-xs text-center mt-2 min-h-[2.5em]"></p>
-            </div>
-            <div class="option-card bg-white border-2 border-slate-200 rounded-xl p-3 cursor-pointer" data-idx="2">
-                <div class="text-center text-xs font-bold text-slate-500 mb-1">Diagramm C</div>
-                <canvas id="ans2" width="280" height="160"></canvas>
-                <p id="cap2" class="text-xs text-center mt-2 min-h-[2.5em]"></p>
-            </div>
+            <button type="button" class="option-card bg-white border-2 border-slate-200 rounded-xl p-3 cursor-pointer" data-idx="0" aria-pressed="false">
+                <span class="option-card-label">Diagramm A</span>
+                <canvas id="ans0" width="280" height="160" aria-hidden="true"></canvas>
+                <span id="summary0" class="lab-sr-only"></span>
+                <span id="cap0" class="option-card-caption"></span>
+            </button>
+            <button type="button" class="option-card bg-white border-2 border-slate-200 rounded-xl p-3 cursor-pointer" data-idx="1" aria-pressed="false">
+                <span class="option-card-label">Diagramm B</span>
+                <canvas id="ans1" width="280" height="160" aria-hidden="true"></canvas>
+                <span id="summary1" class="lab-sr-only"></span>
+                <span id="cap1" class="option-card-caption"></span>
+            </button>
+            <button type="button" class="option-card bg-white border-2 border-slate-200 rounded-xl p-3 cursor-pointer" data-idx="2" aria-pressed="false">
+                <span class="option-card-label">Diagramm C</span>
+                <canvas id="ans2" width="280" height="160" aria-hidden="true"></canvas>
+                <span id="summary2" class="lab-sr-only"></span>
+                <span id="cap2" class="option-card-caption"></span>
+            </button>
         </div>
 
-        <div id="feedbackBox" class="hidden text-center font-bold p-4 rounded-xl mb-4"></div>
+        <div id="feedbackBox" class="hidden text-center font-bold p-4 rounded-xl mb-4" role="status" aria-live="polite"></div>
 
         <div class="text-center mb-6">
             <button id="btnNext" class="hidden bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-6 py-2.5 rounded-lg transition-colors">
@@ -106,38 +140,50 @@
         <div id="partB" class="hidden bg-amber-50/40 border-2 border-amber-100 rounded-2xl p-4">
         <!-- Aufgabenstellung -->
         <div class="bg-amber-50/60 border border-amber-100 rounded-xl p-4 mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-            <p id="taskPromptB" class="font-bold text-amber-900 text-lg">Lade die erste Aufgabe …</p>
+            <p id="taskPromptB" class="font-bold text-amber-900 text-lg" aria-live="polite">Lade die erste Aufgabe …</p>
             <button id="btnNewTaskB" class="text-sm font-bold bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg transition-colors whitespace-nowrap">
                 🎲 Neue Aufgabe
             </button>
         </div>
 
+        <details class="mb-4 rounded-lg border border-amber-200 bg-white p-3">
+            <summary class="cursor-pointer font-bold text-amber-900">Schrittweise Hinweise zu Teil B</summary>
+            <ol class="mt-2 list-decimal space-y-1 pl-5 text-sm text-slate-700">
+                <li>Q beschreibt die Steigung des Momentenverlaufs: M'(x) = Q(x).</li>
+                <li>Wo Q null wird und das Vorzeichen wechselt, liegt bei M ein Hoch- oder Tiefpunkt.</li>
+                <li>Ein Sprung in Q durch eine Einzellast entspricht einem Knick in M. Achte zusätzlich auf das Vorzeichen.</li>
+            </ol>
+        </details>
+
         <!-- Gegebene Linie -->
         <div class="mb-6">
             <div class="text-center text-xs font-bold text-slate-500 mb-1" id="givenLabel">Gegeben</div>
-            <canvas id="givenCanvas" width="900" height="170"></canvas>
+            <canvas id="givenCanvas" width="900" height="170" role="img" aria-label="Vorgegebener Schnittgrößenverlauf."></canvas>
         </div>
 
         <!-- Antwortoptionen -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 lab-quiz-options">
-            <div class="option-card bg-white border-2 border-slate-200 rounded-xl p-3 cursor-pointer" data-bidx="0">
-                <div class="text-center text-xs font-bold text-slate-500 mb-1">Kandidat A</div>
-                <canvas id="ansB0" width="280" height="160"></canvas>
-                <p id="capB0" class="text-xs text-center mt-2 min-h-[2.5em]"></p>
-            </div>
-            <div class="option-card bg-white border-2 border-slate-200 rounded-xl p-3 cursor-pointer" data-bidx="1">
-                <div class="text-center text-xs font-bold text-slate-500 mb-1">Kandidat B</div>
-                <canvas id="ansB1" width="280" height="160"></canvas>
-                <p id="capB1" class="text-xs text-center mt-2 min-h-[2.5em]"></p>
-            </div>
-            <div class="option-card bg-white border-2 border-slate-200 rounded-xl p-3 cursor-pointer" data-bidx="2">
-                <div class="text-center text-xs font-bold text-slate-500 mb-1">Kandidat C</div>
-                <canvas id="ansB2" width="280" height="160"></canvas>
-                <p id="capB2" class="text-xs text-center mt-2 min-h-[2.5em]"></p>
-            </div>
+            <button type="button" class="option-card bg-white border-2 border-slate-200 rounded-xl p-3 cursor-pointer" data-bidx="0" aria-pressed="false">
+                <span class="option-card-label">Kandidat A</span>
+                <canvas id="ansB0" width="280" height="160" aria-hidden="true"></canvas>
+                <span id="summaryB0" class="lab-sr-only"></span>
+                <span id="capB0" class="option-card-caption"></span>
+            </button>
+            <button type="button" class="option-card bg-white border-2 border-slate-200 rounded-xl p-3 cursor-pointer" data-bidx="1" aria-pressed="false">
+                <span class="option-card-label">Kandidat B</span>
+                <canvas id="ansB1" width="280" height="160" aria-hidden="true"></canvas>
+                <span id="summaryB1" class="lab-sr-only"></span>
+                <span id="capB1" class="option-card-caption"></span>
+            </button>
+            <button type="button" class="option-card bg-white border-2 border-slate-200 rounded-xl p-3 cursor-pointer" data-bidx="2" aria-pressed="false">
+                <span class="option-card-label">Kandidat C</span>
+                <canvas id="ansB2" width="280" height="160" aria-hidden="true"></canvas>
+                <span id="summaryB2" class="lab-sr-only"></span>
+                <span id="capB2" class="option-card-caption"></span>
+            </button>
         </div>
 
-        <div id="feedbackBoxB" class="hidden text-center font-bold p-4 rounded-xl mb-4"></div>
+        <div id="feedbackBoxB" class="hidden text-center font-bold p-4 rounded-xl mb-4" role="status" aria-live="polite"></div>
 
         <div class="text-center mb-6">
             <button id="btnNextB" class="hidden bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-6 py-2.5 rounded-lg transition-colors">
@@ -158,7 +204,7 @@
     </div>
 
     <script src="labor.js?v=2026-10-01"></script>
-    <script src="statik-core.js?v=2026-10-01"></script>
+    <script src="statik-core.js?v=2026-10-01-teacher"></script>
     <script>
         // ================= Physik: geschlossene Formeln pro Systemtyp =================
         // Konvention wie in Modul 3: Q positiv nach oben, M positiv nach unten (Zugseite) aufgetragen.
@@ -286,6 +332,17 @@
             if (kragLasten.length > 0) parts.push(`Kragarm-Spitzenlast: ${kragLasten.map(p => fmt(p.F) + ' kN').join(' / ')}`);
 
             return parts.length ? parts.join(' + ') : 'Unbelasteter Einfeldträger';
+        }
+
+        function describeSystemDetails(task) {
+            const pointLoads = task.pointLoads.map((load, i) =>
+                `Einzellast ${i + 1}: ${fmt(load.F)} kN bei x = ${fmt(load.x)} m`
+            );
+            const distributedLoads = task.udls.map((load, i) =>
+                `Streckenlast ${i + 1}: ${fmt(load.q)} kN/m von x = ${fmt(load.start)} m bis ${fmt(load.end)} m`
+            );
+            const details = pointLoads.concat(distributedLoads);
+            return details.length ? `${describeSystem(task)}. ${details.join('. ')}.` : describeSystem(task);
         }
 
         // Baut 3 Antwortoptionen (1 korrekt + 2 Distraktoren: Vorzeichenfehler, Positionsfehler)
@@ -547,17 +604,41 @@
         }
 
         // ================= Rendering & Interaktion =================
+        function describeCurve(series) {
+            const first = series[0];
+            const last = series[series.length - 1];
+            const min = series.reduce((best, point) => point.y < best.y ? point : best, first);
+            const max = series.reduce((best, point) => point.y > best.y ? point : best, first);
+            return `Start bei x = ${fmt(first.x)} m mit ${fmt(first.y)}; Ende bei x = ${fmt(last.x)} m mit ${fmt(last.y)}. Minimum ${fmt(min.y)} bei x = ${fmt(min.x)} m, Maximum ${fmt(max.y)} bei x = ${fmt(max.x)} m.`;
+        }
+
+        function resetAnswerCards(selector, summaryPrefix, captionPrefix, options, isMoment) {
+            document.querySelectorAll(selector).forEach((card, i) => {
+                const letter = String.fromCharCode(65 + i);
+                const series = options[i].curve;
+                const summary = `${letter}: ${isMoment ? 'Momentenverlauf' : 'Querkraftverlauf'}. ${describeCurve(series)}`;
+                card.disabled = false;
+                card.setAttribute('aria-pressed', 'false');
+                card.className = 'option-card bg-white border-2 border-slate-200 rounded-xl p-3 cursor-pointer';
+                document.getElementById(`${summaryPrefix}${i}`).innerText = summary;
+                document.getElementById(`${captionPrefix}${i}`).innerText = '';
+            });
+        }
+
         function renderTask(task) {
             drawSystem(task);
+            document.getElementById('systemCanvas').setAttribute(
+                'aria-label',
+                `Systemzeichnung. Hauptfeld ${fmt(task.L)} m. ${describeSystemDetails(task)}`
+            );
             const trueSeries = task.diagramType === 'M' ? task.computed.Ms : task.computed.Qs;
             const sharedMax = Math.max(...trueSeries.map(p => Math.abs(p.y)), 0.01) * 1.15;
             const isM = task.diagramType === 'M';
             const markerXs = getMarkerXs(task);
             task.options.forEach((opt, i) => {
                 drawDiagram(`ans${i}`, opt.curve, isM, task.computed.xmin, task.computed.xmax, sharedMax, null, markerXs);
-                document.getElementById(`cap${i}`).innerText = '';
-                document.getElementById(`cap${i}`).parentElement.className = 'option-card bg-white border-2 border-slate-200 rounded-xl p-3 cursor-pointer';
             });
+            resetAnswerCards('#partA .option-card', 'summary', 'cap', task.options, isM);
             const label = isM ? 'Momentenverlauf M(x)' : 'Querkraftverlauf Q(x)';
             document.getElementById('taskPrompt').innerText = `Welches Diagramm zeigt den korrekten ${label} für dieses System?`;
             document.getElementById('feedbackBox').classList.add('hidden');
@@ -575,8 +656,8 @@
 
         function explainKind(kind) {
             if (kind === 'correct') return '✅ Richtig – passt exakt zum System.';
-            if (kind === 'sign') return '❌ Vorzeichenfehler – Form stimmt, aber falsch herum aufgetragen.';
-            if (kind === 'position') return '❌ Falsche Position – Knick/Sprung/Extremstelle sitzt an der falschen Stelle.';
+            if (kind === 'sign') return '❌ Vorzeichenfehler – die Form passt, aber der Verlauf liegt auf der falschen Seite der Nulllinie.';
+            if (kind === 'position') return '❌ Lagefehler – prüfe, ob Sprung, Knick oder Extremstelle mit den Lastpositionen zusammenpasst.';
             return '';
         }
 
@@ -593,6 +674,8 @@
                 } else {
                     card.className = 'option-card bg-white border-2 border-slate-200 rounded-xl p-3 cursor-pointer opacity-60';
                 }
+                card.setAttribute('aria-pressed', String(i === idx));
+                card.disabled = true;
                 document.getElementById(`cap${i}`).innerText = explainKind(opt.kind);
             });
 
@@ -610,10 +693,13 @@
             const isCorrect = idx === currentTask.correctIndex;
             showAnswer(idx);
 
-            document.getElementById('scoreTotalA').innerText = parseInt(document.getElementById('scoreTotalA').innerText) + 1;
-            if (isCorrect) {
-                document.getElementById('scoreCorrectA').innerText = parseInt(document.getElementById('scoreCorrectA').innerText) + 1;
-            }
+            const scoreA = erhoeheQuizPunktestand(
+                Number(document.getElementById('scoreCorrectA').innerText),
+                Number(document.getElementById('scoreTotalA').innerText),
+                isCorrect
+            );
+            document.getElementById('scoreTotalA').innerText = scoreA.versuche;
+            document.getElementById('scoreCorrectA').innerText = scoreA.punkte;
 
             sessionLog4.push({
                 zeit: new Date().toLocaleTimeString('de-DE'),
@@ -625,13 +711,17 @@
             document.getElementById('logCount4').innerText = sessionLog4.length;
             document.getElementById('btnExportLog4').disabled = false;
             learningProgress.save();
+            document.getElementById('btnNext').focus();
         }
 
         document.querySelectorAll('#partA .option-card').forEach(card => {
             card.addEventListener('click', () => selectOption(parseInt(card.dataset.idx)));
         });
         document.getElementById('btnNewTask').addEventListener('click', newTask);
-        document.getElementById('btnNext').addEventListener('click', newTask);
+        document.getElementById('btnNext').addEventListener('click', () => {
+            newTask();
+            document.querySelector('#partA .option-card').focus();
+        });
 
         document.getElementById('btnExportLog4').addEventListener('click', () => {
             exportProtocol(4, 'Diagramme zuordnen', document.getElementById('studentName4').value, sessionLog4);
@@ -661,14 +751,17 @@
             drawDiagram('givenCanvas', task.givenSeries, isGivenM, task.computed.xmin, task.computed.xmax, givenMax);
             document.getElementById('givenLabel').innerText =
                 isGivenM ? 'Gegeben: Momentenverlauf M(x)' : 'Gegeben: Querkraftverlauf Q(x)';
+            document.getElementById('givenCanvas').setAttribute(
+                'aria-label',
+                `${isGivenM ? 'Momentenverlauf' : 'Querkraftverlauf'}. ${describeCurve(task.givenSeries)}`
+            );
 
             const isAnswerM = task.answerType === 'M';
             const answerMax = Math.max(...task.options.map(o => Math.max(...o.curve.map(p => Math.abs(p.y)))), 0.01) * 1.15;
             task.options.forEach((opt, i) => {
                 drawDiagram(`ansB${i}`, opt.curve, isAnswerM, task.computed.xmin, task.computed.xmax, answerMax);
-                document.getElementById(`capB${i}`).innerText = '';
-                document.getElementById(`capB${i}`).parentElement.className = 'option-card bg-white border-2 border-slate-200 rounded-xl p-3 cursor-pointer';
             });
+            resetAnswerCards('#partB .option-card', 'summaryB', 'capB', task.options, isAnswerM);
 
             const label = isAnswerM ? 'Momentenverlauf M(x)' : 'Querkraftverlauf Q(x)';
             document.getElementById('taskPromptB').innerText = `Welcher ${label} passt zur oben gezeigten Linie (gleiches System)?`;
@@ -696,6 +789,8 @@
                 } else {
                     card.className = 'option-card bg-white border-2 border-slate-200 rounded-xl p-3 cursor-pointer opacity-60';
                 }
+                card.setAttribute('aria-pressed', String(i === idx));
+                card.disabled = true;
                 document.getElementById(`capB${i}`).innerText = explainKind(opt.kind);
             });
 
@@ -716,10 +811,13 @@
             showAnswerB(idx);
             const sysDetail = describeSystem(currentTaskB.params);
 
-            document.getElementById('scoreTotalB').innerText = parseInt(document.getElementById('scoreTotalB').innerText) + 1;
-            if (isCorrect) {
-                document.getElementById('scoreCorrectB').innerText = parseInt(document.getElementById('scoreCorrectB').innerText) + 1;
-            }
+            const scoreB = erhoeheQuizPunktestand(
+                Number(document.getElementById('scoreCorrectB').innerText),
+                Number(document.getElementById('scoreTotalB').innerText),
+                isCorrect
+            );
+            document.getElementById('scoreTotalB').innerText = scoreB.versuche;
+            document.getElementById('scoreCorrectB').innerText = scoreB.punkte;
 
             sessionLog4.push({
                 zeit: new Date().toLocaleTimeString('de-DE'),
@@ -731,13 +829,17 @@
             document.getElementById('logCount4').innerText = sessionLog4.length;
             document.getElementById('btnExportLog4').disabled = false;
             learningProgress.save();
+            document.getElementById('btnNextB').focus();
         }
 
         document.querySelectorAll('#partB .option-card').forEach(card => {
             card.addEventListener('click', () => selectOptionB(parseInt(card.dataset.bidx)));
         });
         document.getElementById('btnNewTaskB').addEventListener('click', newTaskB);
-        document.getElementById('btnNextB').addEventListener('click', newTaskB);
+        document.getElementById('btnNextB').addEventListener('click', () => {
+            newTaskB();
+            document.querySelector('#partB .option-card').focus();
+        });
 
         // ================= Umschalter Teil A / Teil B =================
         document.getElementById('btnPartA').addEventListener('click', () => {

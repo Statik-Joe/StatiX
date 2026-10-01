@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modul 3: Schnittgrößen (Einfeldträger) | Bautechnik-Labor</title>
     <link rel="stylesheet" href="tailwind.min.css?v=2026-09-29">
-    <link rel="stylesheet" href="labor.css?v=2026-10-01-mobile">
+    <link rel="stylesheet" href="labor.css?v=2026-10-01-classroom">
 </head>
 <body data-modul="3" class="bg-slate-50 min-h-screen p-4 md:p-6 font-sans text-slate-800">
     <div class="max-w-7xl mx-auto bg-white p-6 rounded-2xl shadow-xl border border-slate-100">
@@ -38,19 +38,30 @@
         
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             <!-- Steuerungspanel links (4 Spalten) -->
-            <div class="lg:col-span-4 space-y-6 max-h-[calc(100vh-140px)] overflow-y-auto pr-2">
+            <div id="controlPanel" class="lg:col-span-4 space-y-6 max-h-[calc(100vh-140px)] overflow-y-auto pr-2">
                 <!-- Muster-Szenarien / Presets -->
                 <div class="p-4 bg-gradient-to-r from-teal-50 to-indigo-50 rounded-xl border border-slate-200 shadow-sm">
-                    <h2 class="text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider flex items-center gap-2">
-                        ⭐ Muster-Szenarien (Presets)
-                    </h2>
-                    <select id="presetSelect" class="w-full border border-slate-300 rounded-lg p-2.5 font-semibold text-slate-700 bg-white shadow-sm focus:ring-2 focus:ring-teal-500">
-                        <option value="custom" selected>-- Eigenes System erstellen --</option>
-                        <option value="einfeld">1. Reiner Einfeldträger mit Einzellast</option>
-                        <option value="gleichlast">2. Gleichlast-Klassiker (vollflächig)</option>
-                        <option value="doppelkragarm">3. Doppel-Kragarm mit Stützmomenten</option>
-                        <option value="pruefung">4. Komplexe Prüfungsmischlast</option>
-                    </select>
+                    <details id="teacherTools" class="lab-teacher-tools" open>
+                        <summary class="lab-teacher-summary">Lehrkraftmodus</summary>
+                        <p class="lab-teacher-description">Szenario für die Vorführung wählen oder das System auf den Startzustand zurücksetzen.</p>
+                        <label for="presetSelect" class="lab-teacher-label">Unterrichtsszenario</label>
+                        <select id="presetSelect" class="lab-teacher-select">
+                            <option value="custom" selected>Eigenes System</option>
+                            <option value="einfeld">1. Einfeldträger mit Einzellast</option>
+                            <option value="gleichlast">2. Gleichlast-Klassiker</option>
+                            <option value="doppelkragarm">3. Doppel-Kragarm</option>
+                            <option value="pruefung">4. Prüfungsmischlast</option>
+                        </select>
+                        <button id="btnDemoReset" type="button" class="lab-teacher-action lab-teacher-secondary">Vorführsystem zurücksetzen</button>
+                        <label for="teacherNotes" class="lab-teacher-label">Arbeitsauftrag (optional)</label>
+                        <textarea id="teacherNotes" rows="2" class="lab-teacher-notes" placeholder="Zum Beispiel: Bestimme die Auflagerkräfte und skizziere Q und M."></textarea>
+                        <label class="lab-teacher-solution">
+                            <input id="teacherShowSolution" type="checkbox">
+                            Lösung (Ergebnisse und Diagramm) mitdrucken
+                        </label>
+                        <button id="btnPrintWorksheet" type="button" class="lab-teacher-action lab-teacher-primary">Arbeitsblatt drucken / als PDF</button>
+                        <p id="teacherToolStatus" class="lab-teacher-status" role="status" aria-live="polite"></p>
+                    </details>
                 </div>
 
                 <!-- System -->
@@ -263,7 +274,7 @@
                 <!-- Statik Canvas mit Sonde -->
                 <div class="relative lab-beam-canvas-scroll">
                     <p class="lab-canvas-hint">Auf dem Handy kannst du die vergrößerte Zeichnung seitlich verschieben. Für eine größere Ansicht nutze Vollbild.</p>
-                    <canvas id="statikCanvas" width="900" height="900" aria-label="Einfeldträger mit Lasten sowie Querkraft- und Biegemomentdiagrammen. Auflagerkräfte, Querkraft und Moment erscheinen in den Ergebnissen."></canvas>
+                    <canvas id="statikCanvas" width="900" height="900" role="img" aria-describedby="output rechenweg" aria-label="Einfeldträger mit Lasten sowie Querkraft- und Biegemomentdiagrammen. Auflagerkräfte, Querkraft und Moment erscheinen in den Ergebnissen."></canvas>
                     <!-- Schwebendes Sonden-Overlay für Echtzeit-Werte -->
                     <div id="sondeTooltip" class="absolute hidden bg-slate-900/95 text-white p-3 rounded-lg text-xs shadow-xl border border-slate-700 pointer-events-none space-y-1.5 w-64 z-50">
                         <div class="font-bold border-b border-slate-700 pb-1 flex justify-between">
@@ -296,10 +307,33 @@
                 </div>
             </div>
         </div>
+        <section id="teacherPrintSheet" class="hidden" aria-hidden="true">
+            <h1>Bautechnik-Labor – Unterrichtsblatt</h1>
+            <p id="teacherPrintDate"></p>
+            <h2 id="teacherPrintScenario"></h2>
+            <p id="teacherPrintNotes"></p>
+            <h3>System und Belastung</h3>
+            <table><tbody id="teacherPrintInputs"></tbody></table>
+            <figure id="teacherPrintFigure">
+                <img id="teacherPrintDiagram" alt="Berechnetes Trägersystem sowie Querkraft- und Momentenverlauf">
+                <figcaption>Trägersystem mit Querkraft- und Momentenverlauf</figcaption>
+            </figure>
+            <section id="teacherPrintSolution">
+                <h3>Ergebnisse</h3>
+                <table><tbody id="teacherPrintResults"></tbody></table>
+            </section>
+            <section id="teacherPrintWorkArea">
+                <h3>Arbeitsbereich</h3>
+                <p>Auflagerkräfte: A = ____________________ kN &nbsp; B = ____________________ kN</p>
+                <p>Maximale Querkraft: Q<sub>max</sub> = ____________________ kN</p>
+                <p>Maximales Biegemoment: M<sub>max</sub> = ____________________ kNm</p>
+                <div class="teacher-print-lines"></div>
+            </section>
+        </section>
     </div>
 
     <script src="labor.js?v=2026-10-01"></script>
-    <script src="statik-core.js?v=2026-10-01"></script>
+    <script src="statik-core.js?v=2026-10-01-teacher"></script>
     <script>
         const canvas = document.getElementById('statikCanvas');
         const ctx = canvas.getContext('2d');
@@ -371,7 +405,7 @@
                 let error = '';
                 if (!Number.isFinite(value)) {
                     error = `${label}: Bitte eine gültige Zahl eingeben.`;
-                } else if (value < min || value > max) {
+                } else if (!istImWertebereich(value, min, max)) {
                     error = `${label}: Wert muss zwischen ${fmt(min)} und ${fmt(max)} liegen.`;
                 }
                 if (error) {
@@ -410,83 +444,138 @@
             return errors;
         }
 
-        // Szenarien (Presets) laden
-        document.getElementById('presetSelect').addEventListener('change', function() {
-            const val = this.value;
-            if (val === 'custom') return;
+        const scenarios = {
+            einfeld: {
+                values: { length: 10, f1: 20, x1: 5 },
+                toggles: { enable_q1: false, enable_q2: false, enable_f1: true, enable_f2: false }
+            },
+            gleichlast: {
+                values: { length: 10, q1: 4, q1_start: 0, q1_end: 10 },
+                toggles: { enable_q1: true, enable_q2: false, enable_f1: false, enable_f2: false }
+            },
+            doppelkragarm: {
+                values: { length: 10, length_kl: 2.5, length_kr: 2.5, q1: 3, q1_start: -2.5, q1_end: 12.5, f1: 15, x1: -2.5, f2: 15, x2: 12.5 },
+                toggles: { enable_kl: true, enable_kr: true, enable_q1: true, enable_q2: false, enable_f1: true, enable_f2: true }
+            },
+            pruefung: {
+                values: { length: 12, length_kl: 2, q1: 5, q1_start: -2, q1_end: 4, q2: 2.5, q2_start: 4, q2_end: 12, f1: 12, x1: 2, f2: 8, x2: 9 },
+                toggles: { enable_kl: true, enable_kr: false, enable_q1: true, enable_q2: true, enable_f1: true, enable_f2: true }
+            }
+        };
 
-            // Zurücksetzen der Kragarme
-            document.getElementById('enable_kl').checked = false;
-            document.getElementById('enable_kr').checked = false;
-            document.getElementById('kl_container').classList.add('hidden');
-            document.getElementById('kr_container').classList.add('hidden');
+        function resetBeamInputs() {
+            const panel = document.getElementById('controlPanel');
+            panel.querySelectorAll('input[type="number"], input[type="range"]').forEach(input => {
+                input.value = input.defaultValue;
+            });
+            panel.querySelectorAll('input[type="checkbox"]:not(#teacherShowSolution)').forEach(input => {
+                input.checked = input.defaultChecked;
+            });
+        }
+
+        function updateBeamInputVisibility() {
+            document.getElementById('kl_container').classList.toggle('hidden', !document.getElementById('enable_kl').checked);
+            document.getElementById('kr_container').classList.toggle('hidden', !document.getElementById('enable_kr').checked);
+            updateInputVisualStates();
+        }
+
+        function applyScenario(name) {
+            const scenario = scenarios[name];
+            if (!scenario) return;
+            resetBeamInputs();
+            Object.entries(scenario.values).forEach(([id, value]) => {
+                document.getElementById(id).value = value;
+            });
+            Object.entries(scenario.toggles).forEach(([id, value]) => {
+                document.getElementById(id).checked = value;
+            });
             document.getElementById('alpha1').value = 90;
             document.getElementById('alpha2').value = 90;
+            updateBeamInputVisibility();
+            calculate();
+        }
 
-            if (val === 'einfeld') {
-                document.getElementById('length').value = 10;
-                document.getElementById('enable_q1').checked = false;
-                document.getElementById('enable_q2').checked = false;
-                document.getElementById('enable_f1').checked = true;
-                document.getElementById('f1').value = 20;
-                document.getElementById('x1').value = 5;
-                document.getElementById('enable_f2').checked = false;
-            } else if (val === 'gleichlast') {
-                document.getElementById('length').value = 10;
-                document.getElementById('enable_q1').checked = true;
-                document.getElementById('q1').value = 4;
-                document.getElementById('q1_start').value = 0;
-                document.getElementById('q1_end').value = 10;
-                document.getElementById('enable_q2').checked = false;
-                document.getElementById('enable_f1').checked = false;
-                document.getElementById('enable_f2').checked = false;
-            } else if (val === 'doppelkragarm') {
-                document.getElementById('length').value = 10;
-                document.getElementById('enable_kl').checked = true;
-                document.getElementById('length_kl').value = 2.5;
-                document.getElementById('kl_container').classList.remove('hidden');
-                document.getElementById('enable_kr').checked = true;
-                document.getElementById('length_kr').value = 2.5;
-                document.getElementById('kr_container').classList.remove('hidden');
+        document.getElementById('presetSelect').addEventListener('change', function() {
+            if (this.value !== 'custom') applyScenario(this.value);
+        });
 
-                document.getElementById('enable_q1').checked = true;
-                document.getElementById('q1').value = 3;
-                document.getElementById('q1_start').value = -2.5;
-                document.getElementById('q1_end').value = 12.5;
-                document.getElementById('enable_q2').checked = false;
+        document.getElementById('btnDemoReset').addEventListener('click', () => {
+            resetBeamInputs();
+            document.getElementById('presetSelect').value = 'custom';
+            updateBeamInputVisibility();
+            calculate();
+            document.getElementById('teacherToolStatus').innerText = 'Das Vorführsystem entspricht wieder den Startwerten.';
+        });
 
-                document.getElementById('enable_f1').checked = true;
-                document.getElementById('f1').value = 15;
-                document.getElementById('x1').value = -2.5;
-                document.getElementById('enable_f2').checked = true;
-                document.getElementById('f2').value = 15;
-                document.getElementById('x2').value = 12.5;
-            } else if (val === 'pruefung') {
-                document.getElementById('length').value = 12;
-                document.getElementById('enable_kl').checked = true;
-                document.getElementById('length_kl').value = 2;
-                document.getElementById('kl_container').classList.remove('hidden');
+        function fillPrintTable(tableId, rows) {
+            const table = document.getElementById(tableId);
+            table.replaceChildren();
+            rows.forEach(([label, value]) => {
+                const row = document.createElement('tr');
+                const heading = document.createElement('th');
+                const cell = document.createElement('td');
+                heading.scope = 'row';
+                heading.textContent = label;
+                cell.textContent = value;
+                row.append(heading, cell);
+                table.appendChild(row);
+            });
+        }
 
-                document.getElementById('enable_q1').checked = true;
-                document.getElementById('q1').value = 5;
-                document.getElementById('q1_start').value = -2;
-                document.getElementById('q1_end').value = 4;
-
-                document.getElementById('enable_q2').checked = true;
-                document.getElementById('q2').value = 2.5;
-                document.getElementById('q2_start').value = 4;
-                document.getElementById('q2_end').value = 12;
-
-                document.getElementById('enable_f1').checked = true;
-                document.getElementById('f1').value = 12;
-                document.getElementById('x1').value = 2;
-                document.getElementById('enable_f2').checked = true;
-                document.getElementById('f2').value = 8;
-                document.getElementById('x2').value = 9;
+        function printWorksheet() {
+            calculate();
+            const validationError = document.querySelector('#output .lab-validation-error');
+            if (validationError) {
+                document.getElementById('teacherToolStatus').innerText = 'Bitte zuerst die markierten Eingaben korrigieren; das Arbeitsblatt wurde nicht geöffnet.';
+                document.querySelector('[aria-invalid="true"]')?.focus();
+                return;
             }
 
-            updateInputVisualStates();
-            calculate();
+            const rows = [['Hauptfeldlänge', `${fmt(getVal('length'))} m`]];
+            if (document.getElementById('enable_kl').checked) rows.push(['Linker Kragarm', `${fmt(getVal('length_kl'))} m`]);
+            if (document.getElementById('enable_kr').checked) rows.push(['Rechter Kragarm', `${fmt(getVal('length_kr'))} m`]);
+            [['q1', 'q₁'], ['q2', 'q₂']].forEach(([id, label]) => {
+                if (document.getElementById(`enable_${id}`).checked) {
+                    rows.push([`Streckenlast ${label}`, `${fmt(getVal(id))} kN/m von x = ${fmt(getVal(`${id}_start`))} m bis ${fmt(getVal(`${id}_end`))} m`]);
+                }
+            });
+            [['f1', 'F₁', 'alpha1'], ['f2', 'F₂', 'alpha2']].forEach(([id, label, angleId]) => {
+                if (document.getElementById(`enable_${id}`).checked) {
+                    rows.push([`Einzellast ${label}`, `${fmt(getVal(id))} kN bei x = ${fmt(getVal(`x${id.slice(1)}`))} m, α = ${fmt(getVal(angleId))}°`]);
+                }
+            });
+
+            const includeSolution = document.getElementById('teacherShowSolution').checked;
+            const selected = document.getElementById('presetSelect');
+            document.getElementById('teacherPrintDate').textContent = `Datum: ${new Date().toLocaleDateString('de-DE')}`;
+            document.getElementById('teacherPrintScenario').textContent =
+                selected.value === 'custom' ? 'Eigenes Trägersystem' : selected.options[selected.selectedIndex].text;
+            document.getElementById('teacherPrintNotes').textContent = document.getElementById('teacherNotes').value.trim();
+            fillPrintTable('teacherPrintInputs', rows);
+            fillPrintTable('teacherPrintResults', [
+                ['Auflagerkraft A', `${fmt(A, 2)} kN`],
+                ['Horizontalauflager Aₕ', `${fmt(A_h_global, 2)} kN`],
+                ['Auflagerkraft B', `${fmt(B, 2)} kN`],
+                ['Maximale Querkraft |Q|max', `${fmt(Math.abs(maxQ_global), 2)} kN`],
+                ['Maximales Biegemoment |M|max', `${fmt(Math.abs(maxM_global), 2)} kNm bei x = ${fmt(maxX0_global, 2)} m`]
+            ]);
+            document.getElementById('teacherPrintSolution').hidden = !includeSolution;
+            document.getElementById('teacherPrintWorkArea').hidden = includeSolution;
+            document.getElementById('teacherPrintFigure').hidden = !includeSolution;
+            document.getElementById('teacherPrintDiagram').src = canvas.toDataURL('image/png');
+
+            const sheet = document.getElementById('teacherPrintSheet');
+            sheet.classList.remove('hidden');
+            sheet.setAttribute('aria-hidden', 'false');
+            document.getElementById('teacherToolStatus').innerText = 'Druckansicht geöffnet. Im Druckdialog kannst du auch „Als PDF speichern“ wählen.';
+            window.print();
+        }
+
+        document.getElementById('btnPrintWorksheet').addEventListener('click', printWorksheet);
+        window.addEventListener('afterprint', () => {
+            const sheet = document.getElementById('teacherPrintSheet');
+            sheet.classList.add('hidden');
+            sheet.setAttribute('aria-hidden', 'true');
         });
 
         // Bild-Export (hochauflösender weißer Hintergrund + angehängte Werte-Tabelle)
@@ -787,7 +876,7 @@
             maxM_global = maxM;
             // Übergabe an Modul 5: |M|max als URL-Parameter (auf 2 Nachkommastellen gerundet)
             document.getElementById('btnToModul5').href =
-                'modul-5-spannungsnachweis.html?M=' + (Math.round(Math.abs(maxM) * 100) / 100);
+                'modul-5-spannungsnachweis.html?M=' + momentParameterwert(Math.abs(maxM));
             maxX0_global = maxX0;
             maxQ_global = maxQ;
             totalLoad_global = totalLoad;
