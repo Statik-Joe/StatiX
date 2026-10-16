@@ -112,11 +112,27 @@ function extremwerte(traeger, xmin, xmax, step = 0.01) {
     return { maxM, xMaxM, maxQ };
 }
 
+// Auswertungsstellen für Q- und M-Diagramme im Bereich [xmin, xmax]: gleichmäßiges Raster plus je ein
+// Punkt direkt links und rechts jeder Sprungstelle (Auflager, Einzellasten, Ränder der Streckenlasten).
+// So wird ein Querkraftsprung senkrecht gezeichnet und nicht als schräge Linie zum nächsten Rasterpunkt.
+function diagrammStellen(traeger, xmin, xmax, step = 0.05) {
+    const n = Math.max(1, Math.round((xmax - xmin) / step));
+    const d = 1e-6 * Math.max(1, xmax - xmin);
+    const stellen = [];
+    for (let i = 0; i <= n; i++) stellen.push(i === n ? xmax : xmin + (i / n) * (xmax - xmin));   // Endpunkt exakt
+    traeger.kritischeStellen.forEach(x => stellen.push(x - d, x + d));
+    return stellen
+        .filter(x => x >= xmin && x <= xmax)
+        .sort((a, b) => a - b)
+        .filter((x, i, arr) => i === 0 || x - arr[i - 1] > d / 2);
+}
+
 // Für die automatischen Tests unter Node.js exportieren (im Browser ohne Wirkung)
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
         berechneTraeger,
         extremwerte,
+        diagrammStellen,
         zerlegeKraft,
         istImWertebereich,
         momentParameterwert,

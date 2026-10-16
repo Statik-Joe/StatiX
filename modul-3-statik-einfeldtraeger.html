@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modul 3: Schnittgrößen (Einfeldträger) | Bautechnik-Labor</title>
-    <link rel="stylesheet" href="tailwind.min.css?v=2026-09-29">
-    <link rel="stylesheet" href="labor.css?v=2026-10-01-classroom">
+    <link rel="stylesheet" href="tailwind.min.css?v=2026-10-16">
+    <link rel="stylesheet" href="labor.css?v=2026-10-16-classroom">
 </head>
 <body data-modul="3" class="bg-slate-50 min-h-screen p-4 md:p-6 font-sans text-slate-800">
     <div class="max-w-7xl mx-auto bg-white p-6 rounded-2xl shadow-xl border border-slate-100">
@@ -13,7 +13,7 @@
         <!-- Header inkl. Navigation -->
         <header class="mb-6 border-b pb-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
-                <div class="flex items-center gap-3 mb-1">
+                <div class="flex flex-wrap items-center gap-x-3 gap-y-1 mb-1">
                     <a href="index.html" class="lab-back">
                         <span>&larr;</span> Zurück zum Menü
                     </a>
@@ -333,7 +333,8 @@
     </div>
 
     <script src="labor.js?v=2026-10-01"></script>
-    <script src="statik-core.js?v=2026-10-01-teacher"></script>
+    <script src="version.js?v=1.8"></script>
+    <script src="statik-core.js?v=2026-10-16"></script>
     <script>
         const canvas = document.getElementById('statikCanvas');
         const ctx = canvas.getContext('2d');
@@ -886,7 +887,9 @@
             generateDidacticPathway(L, L_kl, L_kr, kl_active, kr_active, F1, x1, alpha1, f1_active, F2, x2, alpha2, f2_active, q1_val, q1_start, q1_end, q1_active, q2_val, q2_start, q2_end, q2_active, A_rnd, B_rnd, A_h, maxM, maxX0);
 
             // Canvas zeichnen
-            drawSystem(L, L_kl, L_kr, kl_active, kr_active, F1, x1, alpha1, f1_active, F2, x2, alpha2, f2_active, q1_val, q1_start, q1_end, q1_active, q2_val, q2_start, q2_end, q2_active, getSchnittgroessen, maxM, maxX0);
+            // Stützstellen der Diagramme inkl. Punkten direkt neben jeder Sprungstelle (senkrechte Q-Sprünge)
+            const diagrammX = diagrammStellen(traeger, -L_kl, L + L_kr, 0.05);
+            drawSystem(L, L_kl, L_kr, kl_active, kr_active, F1, x1, alpha1, f1_active, F2, x2, alpha2, f2_active, q1_val, q1_start, q1_end, q1_active, q2_val, q2_start, q2_end, q2_active, getSchnittgroessen, maxM, maxX0, diagrammX);
         }
 
         // Didaktischen Rechenweg generieren
@@ -972,7 +975,7 @@
 
         const BASE_CANVAS_HEIGHT = 900; // Höhe ohne zusätzlichen Platz für gestapelte Lasten
 
-        function drawSystem(L, L_kl, L_kr, kl_active, kr_active, F1, x1, alpha1, f1_active, F2, x2, alpha2, f2_active, q1_val, q1_start, q1_end, q1_active, q2_val, q2_start, q2_end, q2_active, getSchnittgroessen, maxM, maxX0) {
+        function drawSystem(L, L_kl, L_kr, kl_active, kr_active, F1, x1, alpha1, f1_active, F2, x2, alpha2, f2_active, q1_val, q1_start, q1_end, q1_active, q2_val, q2_start, q2_end, q2_active, getSchnittgroessen, maxM, maxX0, diagrammX) {
             const totalLength = L_kl + L + L_kr;
             const paddingX = 80;
             const drawWidth = canvas.width - 2 * paddingX;
@@ -1209,7 +1212,7 @@
 
             // Skalierung Querkraftdiagramm bestimmen (max Kraftwert mappen auf 80px Höhe)
             let maxQForScale = 10;
-            for (let x = -L_kl; x <= L + L_kr; x += 0.1) {
+            for (const x of diagrammX) {
                 const val = Math.abs(getSchnittgroessen(x).Q);
                 if (val > maxQForScale) maxQForScale = val;
             }
@@ -1220,21 +1223,20 @@
             ctx.lineWidth = 3;
             ctx.beginPath();
             
-            // Startpunkt ganz links
-            let sStart = getSchnittgroessen(-L_kl);
-            ctx.moveTo(getPixelX(-L_kl), qDiagramY - sStart.Q * qScaleFactor);
-
-            for (let x = -L_kl; x <= L + L_kr; x += 0.05) {
+            // Die Querkraftfläche beginnt und endet auf der Nulllinie: Start- und Endsprung senkrecht
+            ctx.moveTo(getPixelX(-L_kl), qDiagramY);
+            for (const x of diagrammX) {
                 const s = getSchnittgroessen(x);
                 ctx.lineTo(getPixelX(x), qDiagramY - s.Q * qScaleFactor);
             }
+            ctx.lineTo(getPixelX(L + L_kr), qDiagramY);
             ctx.stroke();
 
             // Flächenschraffur
             ctx.fillStyle = '#0284c711';
             ctx.beginPath();
             ctx.moveTo(getPixelX(-L_kl), qDiagramY);
-            for (let x = -L_kl; x <= L + L_kr; x += 0.05) {
+            for (const x of diagrammX) {
                 ctx.lineTo(getPixelX(x), qDiagramY - getSchnittgroessen(x).Q * qScaleFactor);
             }
             ctx.lineTo(getPixelX(L + L_kr), qDiagramY);
@@ -1262,7 +1264,7 @@
 
             // Skalierung Momentenkurve bestimmen
             let maxMForScale = 10;
-            for (let x = -L_kl; x <= L + L_kr; x += 0.1) {
+            for (const x of diagrammX) {
                 const val = Math.abs(getSchnittgroessen(x).M);
                 if (val > maxMForScale) maxMForScale = val;
             }
@@ -1276,7 +1278,7 @@
             let mStart = getSchnittgroessen(-L_kl);
             ctx.moveTo(getPixelX(-L_kl), mDiagramY + mStart.M * mScaleFactor);
 
-            for (let x = -L_kl; x <= L + L_kr; x += 0.05) {
+            for (const x of diagrammX) {
                 const s = getSchnittgroessen(x);
                 ctx.lineTo(getPixelX(x), mDiagramY + s.M * mScaleFactor);
             }
@@ -1286,7 +1288,7 @@
             ctx.fillStyle = '#ea580c11';
             ctx.beginPath();
             ctx.moveTo(getPixelX(-L_kl), mDiagramY);
-            for (let x = -L_kl; x <= L + L_kr; x += 0.05) {
+            for (const x of diagrammX) {
                 ctx.lineTo(getPixelX(x), mDiagramY + getSchnittgroessen(x).M * mScaleFactor);
             }
             ctx.lineTo(getPixelX(L + L_kr), mDiagramY);
