@@ -534,6 +534,7 @@
         function drawSlopeArrow(ctx, fromx, fromy, tox, toy, color, width) {
             const headlen = 11;
             const dx = tox - fromx, dy = toy - fromy;
+            if (Math.hypot(dx, dy) < 1) return;   // Komponente ist null (z. B. Fₓ bei β = 0°): keine einzelne Pfeilspitze zeichnen
             const angle = Math.atan2(dy, dx);
             ctx.strokeStyle = color;
             ctx.fillStyle = color;
@@ -578,9 +579,13 @@
         function drawSlope(F, beta, betaDeg, F_y, F_x, cm_f, cm_fy, cm_fx) {
             const ctx = slopeCtx;
             ctx.clearRect(0, 0, slopeCanvas.width, slopeCanvas.height);
-            const P = { x: 340, y: 300 };
-            const forceScale = 4.2; // px pro kN (rein für die Bildschirmdarstellung, unabhängig vom Kräftemaßstab in cm)
-            const groundHalfLen = 160;
+            const P = { x: 340, y: 310 };
+            // Zeichenmaßstab passt sich automatisch an: Die Last F ist immer gleich lang gezeichnet,
+            // damit das Kräftedreieck auch bei kleinen Kräften gut erkennbar bleibt. Die Beträge stehen
+            // in den Beschriftungen, die Größenordnung zeigt der Maßstabsbalken (unabhängig vom cm-Maßstab).
+            const drawLenF = 230;                               // px für die Last F
+            const forceScale = F > 0 ? drawLenF / F : 0;        // px pro kN
+            const groundHalfLen = 260;
 
             ctx.save();
             ctx.translate(P.x, P.y);
@@ -601,6 +606,16 @@
                 ctx.moveTo(x, 2);
                 ctx.lineTo(x - 9, 16);
                 ctx.stroke();
+            }
+
+            // Ohne Last gibt es kein Kräftedreieck – Hinweis statt übereinanderliegender Beschriftungen
+            if (F <= 0) {
+                ctx.fillStyle = '#64748b';
+                ctx.font = 'bold 14px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('Keine Last (F = 0 kN) – Betrag F mit dem Regler einstellen', 0, -60);
+                ctx.restore();
+                return;
             }
 
             // Referenzlinie für β (Flächennormale, lokal -y)
@@ -648,9 +663,46 @@
             drawSlopeArrow(ctx, C.x, C.y, A.x, A.y, '#0d9488', 3.5);
             ctx.fillStyle = '#0d9488';
             ctx.font = 'bold 13px sans-serif';
-            ctx.textAlign = 'left';
-            ctx.fillText(`F = ${fmt(F, 1)} kN (${fmt(cm_f, 1)} cm)`, C.x / 2 + 14, C.y / 2 + 4);
+            const fText = `F = ${fmt(F, 1)} kN (${fmt(cm_f, 1)} cm)`;
+            if (fyLen < 24) {
+                // Last fast waagerecht: Beschriftung unter die Fläche, sonst kollidiert sie mit Fₓ
+                ctx.textAlign = 'center';
+                ctx.fillText(fText, fxLen / 2, 36);
+            } else {
+                // rechts neben die Mitte der Hypotenuse, vom Dreieck weg versetzt
+                ctx.textAlign = 'left';
+                ctx.fillText(fText, C.x / 2 + 14 + 10 * Math.sin(beta), C.y / 2 + 4);
+            }
 
+            ctx.restore();
+
+            if (F > 0) drawScaleBar(ctx, forceScale);
+        }
+
+        // Maßstabsbalken unten links: ein „runder“ Kraftwert (1, 2 oder 5 · 10ⁿ kN) in der aktuellen Zeichengröße
+        function drawScaleBar(ctx, pxPerKN) {
+            const targetPx = 90;
+            const raw = targetPx / pxPerKN;
+            const pow = Math.pow(10, Math.floor(Math.log10(raw)));
+            const nice = [1, 2, 5, 10].map(m => m * pow).reduce((best, v) =>
+                Math.abs(v * pxPerKN - targetPx) < Math.abs(best * pxPerKN - targetPx) ? v : best);
+            const len = nice * pxPerKN;
+            const x0 = 30, y0 = slopeCanvas.height - 30;
+            ctx.save();
+            ctx.strokeStyle = '#334155';
+            ctx.fillStyle = '#334155';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(x0, y0); ctx.lineTo(x0 + len, y0);
+            ctx.moveTo(x0, y0 - 6); ctx.lineTo(x0, y0 + 6);
+            ctx.moveTo(x0 + len, y0 - 6); ctx.lineTo(x0 + len, y0 + 6);
+            ctx.stroke();
+            ctx.font = 'bold 12px sans-serif';
+            ctx.textAlign = 'left';
+            ctx.fillText(`${fmt(nice)} kN`, x0 + len + 8, y0 + 4);
+            ctx.fillStyle = '#64748b';
+            ctx.font = '11px sans-serif';
+            ctx.fillText('Zeichenmaßstab (passt sich automatisch an)', x0, y0 - 12);
             ctx.restore();
         }
 

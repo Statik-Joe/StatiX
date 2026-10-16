@@ -137,7 +137,8 @@ test('Schräge Einzellast nach oben erzeugt negative Vertikalreaktionen', () => 
     nah(components.vertical, -8);
     nah(t.A, -4);
     nah(t.B, -4);
-    nah(t.A + t.B + components.vertical, 0);
+    // Gleichgewicht ΣV = 0: Auflagerkräfte (nach oben positiv) = Lastkomponente (nach unten positiv)
+    nah(t.A + t.B - components.vertical, 0);
 });
 
 test('Eingabegrenzen sind inklusiv und weisen ungültige Werte zurück', () => {
