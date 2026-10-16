@@ -5,6 +5,7 @@ const assert = require('node:assert/strict');
 const {
     berechneTraeger,
     extremwerte,
+    diagrammStellen,
     zerlegeKraft,
     istImWertebereich,
     momentParameterwert,
@@ -162,4 +163,21 @@ test('M_max-Übergabe von Modul 3 nach Modul 5 rundet und lehnt ungültige Werte
 test('Quiz-Punktestand zählt jeden Versuch, aber nur richtige Antworten als Punkt', () => {
     assert.deepEqual(erhoeheQuizPunktestand(2, 3, true), { punkte: 3, versuche: 4 });
     assert.deepEqual(erhoeheQuizPunktestand(2, 3, false), { punkte: 2, versuche: 4 });
+});
+
+test('Diagrammstellen: Querkraftsprünge an Auflager und Einzellast werden senkrecht abgebildet', () => {
+    // Einzellast bewusst zwischen zwei Rasterpunkten (Raster 0,05 m), Kragarm links 1,13 m
+    const L = 7, F = 18, a = 3.33;
+    const t = berechneTraeger({ L, pointLoads: [{ F, x: a }], udls: [{ q: 4, start: -1.13, end: L }] });
+    const xs = diagrammStellen(t, -1.13, L, 0.05);
+    assert.ok(xs.every((x, i) => i === 0 || x > xs[i - 1]), 'Stellen aufsteigend und ohne Doppelte');
+    assert.equal(xs[0], -1.13);
+    assert.equal(xs[xs.length - 1], L);
+    // An jeder Sprungstelle liegen zwei Punkte so dicht beieinander, dass der Sprung senkrecht erscheint
+    for (const [stelle, sprung] of [[0, t.A], [a, -F]]) {
+        const links = xs.filter(x => x < stelle).pop();
+        const rechts = xs.find(x => x > stelle);
+        assert.ok(rechts - links < 1e-4, `Punkte an x = ${stelle} liegen ${rechts - links} m auseinander`);
+        nah(t.schnitt(rechts).Q - t.schnitt(links).Q, sprung, 0.01);
+    }
 });
