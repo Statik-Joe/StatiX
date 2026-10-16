@@ -142,6 +142,15 @@ input[type="number"]:focus, input[type="text"]:focus, select:focus {
     accent-color: var(--mod-600);
 }
 
+/* ---------- Versionsangabe neben dem Modul-Badge (Inhalt aus version.js) ---------- */
+.lab-version {
+    display: inline-block;
+    font-size: 0.75rem;
+    line-height: 1rem;
+    color: #64748b;
+    white-space: nowrap;
+}
+
 /* ---------- Präsentationsmodus (Beamer, Tafel) ---------- */
 /* Tailwind rechnet alle Größen in rem – eine größere Grundschrift vergrößert die ganze Oberfläche */
 html.lab-present {

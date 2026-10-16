@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Virtuelles Bautechnik-Labor | FOS 12</title>
-    <link rel="stylesheet" href="tailwind.min.css?v=2026-09-29">
+    <link rel="stylesheet" href="tailwind.min.css?v=2026-10-16">
     <style>
         .module-card {
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -64,6 +64,7 @@
                         <p class="text-slate-500 text-sm leading-relaxed">
                             Untersuche das Zusammenwirken von Kräften im Raum. Konstruiere Kräfteparallelogramme zeichnerisch und berechne die resultierende Gesamtkraft per Vektorzerlegung.
                         </p>
+                        <p class="text-xs text-slate-400 mt-3" data-version-modul="1"></p>
                     </div>
                 </div>
                 <div class="p-6 pt-0">
@@ -90,6 +91,7 @@
                         <p class="text-slate-500 text-sm leading-relaxed">
                             Bringe zweiseitige Wippen und einseitige Hebel (Schubkarren-Prinzip) ins Drehmomentengleichgewicht. Erfahre spielerisch das mathematische Prinzip von Kraft mal Hebelarm.
                         </p>
+                        <p class="text-xs text-slate-400 mt-3" data-version-modul="2"></p>
                     </div>
                 </div>
                 <div class="p-6 pt-0">
@@ -116,6 +118,7 @@
                         <p class="text-slate-500 text-sm leading-relaxed">
                             Berechne detailliert Auflagerkräfte, Querkraftverlauf (Q) und Biegemomentenverlauf (M) für Träger mit Kragarmen, wandernden Einzellasten und Streckenlasten.
                         </p>
+                        <p class="text-xs text-slate-400 mt-3" data-version-modul="3"></p>
                     </div>
                 </div>
                 <div class="p-6 pt-0">
@@ -142,6 +145,7 @@
                         <p class="text-slate-500 text-sm leading-relaxed">
                             Ordne dem gezeigten System die passende Momenten- oder Querkraftlinie zu. Mit typischen Fehlerdistraktoren (Vorzeichen, Position) und Punktestand.
                         </p>
+                        <p class="text-xs text-slate-400 mt-3" data-version-modul="4"></p>
                     </div>
                 </div>
                 <div class="p-6 pt-0">
@@ -168,6 +172,7 @@
                         <p class="text-slate-500 text-sm leading-relaxed">
                             Berechne Trägheitsmoment und Widerstandsmoment für Rechteck, Kreis und I-Profil und weise die Biegespannung σ = M / W gegen die zulässige Spannung nach.
                         </p>
+                        <p class="text-xs text-slate-400 mt-3" data-version-modul="5"></p>
                     </div>
                 </div>
                 <div class="p-6 pt-0">
@@ -183,7 +188,10 @@
     <!-- Footer -->
     <footer class="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-400">
         <p>&copy; 2026 Virtuelles Bautechnik-Labor | Fachoberschule Hessen</p>
+        <p id="laborVersion" class="mt-1"></p>
     </footer>
+
+    <script src="version.js?v=1.8"></script>
 
 </body>
 </html>

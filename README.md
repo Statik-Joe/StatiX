@@ -48,17 +48,32 @@ Die Tests prüfen den gemeinsamen Statik-Rechenkern gegen bekannte Tabellenwerte
    - `tailwind.min.css`
    - `labor.css` und `labor.js`
    - `statik-core.js`
+   - `version.js`
 3. Den Ausgabeordner als ZIP komprimieren. `node_modules`, Git-Dateien, `src`, `tests` und Build-Konfigurationen werden für den Unterricht nicht benötigt.
 4. Das ZIP testweise entpacken und `index.html` sowie jedes Modul öffnen. Prüfen, dass alle Seiten und Styles geladen werden und die gewünschten Browser lokale Fortschritte speichern können.
 
 Alle oben aufgeführten Laufzeitdateien müssen im selben Verzeichnis liegen. Nach Änderungen an `labor.css`, `labor.js` oder `statik-core.js` die zugehörigen `?v=…`-Versionsparameter in den HTML-Dateien aktualisieren, damit Browser keine veralteten Dateien aus dem Cache laden. Bei Änderungen an Tailwind-Klassen `npm run build:css` ausführen und `tailwind.min.css` mit ins Paket aufnehmen.
+
+## Versionen
+
+Jedes Modul zeigt neben dem Modul-Badge seine Versionsnummer und das Datum der letzten Aktualisierung, die Startseite zusätzlich an jeder Kachel und in der Fußzeile die Gesamtversion des Labors. Alle Angaben stehen nur in `version.js`.
+
+Bei einer Aktualisierung:
+
+1. In `version.js` beim geänderten Modul `version` erhöhen und `stand` auf das aktuelle Datum setzen (Format `JJJJ-MM-TT`).
+2. Die Gesamtversion `LABOR_VERSION.version` und ihr `stand` ebenfalls anpassen.
+3. In allen HTML-Dateien `version.js?v=…` auf die neue Gesamtversion setzen. `npm test` prüft, dass keine Seite vergessen wurde.
+
+Schema: kleine Verbesserungen und Fehlerbehebungen erhöhen die Unterversion (1.8 → 1.9), große Umbauten oder neue Teilbereiche die Hauptversion (1.9 → 2.0).
 
 ## Gemeinsame Bausteine
 
 - `labor.css` und `labor.js` – Modulfarben, Präsentationsmodus, Vollbild für Zeichnungen, Zahlenformatierung, Protokoll-Export und lokales Speichern des Lernfortschritts
 - `statik-core.js` – gemeinsamer Statik-Rechenkern für Modul 3 und Modul 4 sowie getestete Validierungs-, Quiz- und Übergabehelfer
 - `src/tailwind.css`, `tailwind.config.js`, `package.json` und `package-lock.json` – CSS-Build-Konfiguration für die Entwicklung
+- `version.js` – Versionsnummern und Aktualisierungsdatum aller Module und der Startseite
 - `tests/statik-core.test.js` – automatisierte Tests des Statik-Rechenkerns
+- `tests/version.test.js` – prüft Versionsangaben und den Cache-Schutz von `version.js`
 
 ## Einheitliche Konventionen
 
