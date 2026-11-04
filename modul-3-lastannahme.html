@@ -405,14 +405,50 @@
             ctx.save(); ctx.font = font; ctx.fillStyle = farbe; ctx.textAlign = align; fillTextSub(ctx, t, x, y); ctx.restore();
         }
 
-        // Schnitt durch die Decke mit beschrifteten Schichten (Beschriftung rechts mit Hinweislinien)
+        // Maßstab der Holzbalkendecke allein aus der Breite (gleicher Maßstab waagerecht und senkrecht)
+        function holzMassstab(W, decke) {
+            const schmal = W < 600, b = decke.balken;
+            const swMax = Math.round(W * (schmal ? 0.62 : 0.46));
+            const rand = Math.max(0.1 * b.e, b.b / 2 + 1);   // Abstand vom Rand bis zur Mitte des ersten Balkens
+            const proCm = Math.min(9, swMax / (2 * rand + 2 * b.e));
+            const schnitt = decke.schichten.reduce((a, s) => a + Math.max(s.d * proCm, 5), 0) + b.h * proCm;
+            return { swMax, rand, proCm, schnitt };
+        }
+
+        // Höhe der Zeichenfläche: Stahlbeton fest, Holzbalkendecke passend zum maßstäblichen Schnitt
+        function deckenHoehe(W, decke) {
+            const schmal = W < 600;
+            if (decke.typ !== 'holz') return schmal ? 440 : 380;
+            const { schnitt } = holzMassstab(W, decke);
+            const marken = decke.schichten.length + 1;
+            return schmal
+                ? Math.round(78 + schnitt + 56 + marken * 20 + 40)                 // Schnitt, Einzugsbreite, Legende, g_k, Hinweis
+                : Math.round(Math.max(78 + schnitt + 50, 78 + marken * 18 + 10) + 24);
+        }
+
+        // Schnitt durch die Decke mit beschrifteten Schichten (Beschriftung rechts mit Hinweislinien,
+        // bei der Holzbalkendecke auf dem Handy als Legende unter der Zeichnung)
         function zeichneDecke(ctx, W, H, decke) {
             const r = rechne(decke);
             const holz = decke.typ === 'holz';
             const schmal = W < 600;
-            const x0 = 14, sw = Math.round(W * (schmal ? 0.42 : 0.46));
-            const lastOben = 22, lastUnten = 64, top = 78, verfuegbar = H - top - (holz ? 44 : 16) - (schmal ? 30 : 0);
-            const kurz = name => (schmal ? name.split(' (')[0] : name);   // Handy: Zusatz in Klammern weglassen
+            const x0 = 14, swMax = holz ? holzMassstab(W, decke).swMax : Math.round(W * (schmal ? 0.42 : 0.46));
+            const legende = holz && schmal;
+            const lastOben = 22, lastUnten = 64, top = 78, verfuegbar = holz ? H - top : H - top - 16 - (schmal ? 30 : 0);
+            const kurz = name => (W < 760 ? name.split(' (')[0] : name);   // wenig Platz: Zusatz in Klammern weglassen
+
+            // Maßstab: Bei der Holzbalkendecke gilt derselbe Maßstab waagerecht und senkrecht, damit die Balken
+            // im richtigen Verhältnis b : h erscheinen. Gezeigt werden drei Balken; der mittlere mit seiner
+            // vollen Einzugsbreite e. Die Breite der Zeichnung ergibt sich daraus.
+            const gesamtCm = decke.schichten.reduce((a, s) => a + s.d, 0) + (holz ? decke.balken.h : 0);
+            let proCm = Math.min(9, verfuegbar / Math.max(gesamtCm, 1));
+            let sw = swMax, rand = 0;
+            if (holz) {
+                const b = decke.balken, m = holzMassstab(W, decke);
+                rand = m.rand;
+                proCm = Math.min(proCm, m.proCm);
+                sw = (2 * rand + 2 * b.e) * proCm;
+            }
 
             // Nutzlast als Pfeile, Eigengewicht als Text
             pfeilReihe(ctx, x0, x0 + sw, lastOben + 18, lastUnten, '#e11d48');
@@ -422,9 +458,7 @@
 
             const oben = holz ? decke.schichten.filter(s => baustoff(s.id).gruppe !== UNTER_BALKEN) : decke.schichten;
             const unten = holz ? decke.schichten.filter(s => baustoff(s.id).gruppe === UNTER_BALKEN) : [];
-            const gesamtCm = decke.schichten.reduce((a, s) => a + s.d, 0) + (holz ? decke.balken.h : 0);
-            const proCm = Math.min(9, verfuegbar / Math.max(gesamtCm, 1));
-            const mindest = 7;
+            const mindest = holz ? 5 : 7;
             let ueberhoeht = false;
             const hoehe = d => { const h = d * proCm; if (h < mindest) { ueberhoeht = true; return mindest; } return h; };
 
@@ -433,16 +467,16 @@
             oben.forEach(s => {
                 const h = hoehe(s.d);
                 schichtFlaeche(ctx, s.id, x0, y, sw, h);
-                marken.push({ y: y + h / 2, t1: `${kurz(s.name)}, ${fmt(s.d)} cm`, t2: `${fmt(s.d / 100 * s.gamma, 3)} kN/m²` });
+                marken.push({ y: y + h / 2, id: s.id, t1: `${kurz(s.name)}, ${fmt(s.d)} cm`, t2: `${fmt(s.d / 100 * s.gamma, 3)} kN/m²` });
                 y += h;
             });
+            let einzug = null;
             if (holz) {
                 const b = decke.balken;
-                const hb = hoehe(b.h);
-                // horizontal: etwa 2,6 Balkenabstände über die Breite, Balken maßstäblich zur Balkenbreite
-                const proCmX = sw / (2.6 * b.e);
-                const bw = Math.max(6, b.b * proCmX);
-                const mitten = [0.3, 1.3, 2.3].map(k => x0 + k * b.e * proCmX);
+                const hb = b.h * proCm;                              // Balken immer maßstäblich (b und h gleicher Maßstab)
+                const proCmX = proCm;
+                const bw = b.b * proCm;
+                const mitten = [0, 1, 2].map(k => x0 + (rand + k * b.e) * proCm);
                 // Einzugsbreite des mittleren Balkens
                 ctx.save();
                 ctx.fillStyle = 'rgba(132, 204, 22, 0.18)';
@@ -451,27 +485,44 @@
                 ctx.save(); ctx.strokeStyle = '#cbd5e1'; ctx.setLineDash([4, 4]);
                 ctx.beginPath(); ctx.moveTo(x0, y); ctx.lineTo(x0, y + hb); ctx.moveTo(x0 + sw, y); ctx.lineTo(x0 + sw, y + hb); ctx.stroke(); ctx.restore();
                 mitten.forEach(m => schichtFlaeche(ctx, 'nadelholz', m - bw / 2, y, bw, hb));
-                marken.push({ y: y + hb / 2, t1: `Holzbalken ${fmt(b.b)}/${fmt(b.h)} cm`, t2: `${fmt(r.gBalkenFlaeche, 3)} kN/m² (über e verteilt)` });
-                // Bemaßung e unter der Decke
-                const yE = top + verfuegbar + 30;
-                ctx.save(); ctx.strokeStyle = '#4d7c0f'; ctx.fillStyle = '#4d7c0f'; ctx.lineWidth = 1.2;
-                const e0 = mitten[1] - b.e * proCmX / 2, e1 = mitten[1] + b.e * proCmX / 2;
-                ctx.beginPath(); ctx.moveTo(e0, yE); ctx.lineTo(e1, yE); ctx.moveTo(e0, yE - 5); ctx.lineTo(e0, yE + 5); ctx.moveTo(e1, yE - 5); ctx.lineTo(e1, yE + 5); ctx.stroke();
-                ctx.restore();
-                text(ctx, `Einzugsbreite e = ${fmt(b.e, 1)} cm`, (e0 + e1) / 2, yE - 6, { farbe: '#3f6212', font: 'bold 11px sans-serif', align: 'center' });
+                marken.push({ y: y + hb / 2, id: 'nadelholz', t1: `Holzbalken ${fmt(b.b)}/${fmt(b.h)} cm`, t2: `${fmt(r.gBalkenFlaeche, 3)} kN/m²${schmal ? '' : ' (über e verteilt)'}` });
+                einzug = [mitten[1] - b.e * proCmX / 2, mitten[1] + b.e * proCmX / 2];
                 y += hb;
             }
             unten.forEach(s => {
                 const h = hoehe(s.d);
                 schichtFlaeche(ctx, s.id, x0, y, sw, h);
-                marken.push({ y: y + h / 2, t1: `${kurz(s.name)}, ${fmt(s.d)} cm`, t2: `${fmt(s.d / 100 * s.gamma, 3)} kN/m²` });
+                marken.push({ y: y + h / 2, id: s.id, t1: `${kurz(s.name)}, ${fmt(s.d)} cm`, t2: `${fmt(s.d / 100 * s.gamma, 3)} kN/m²` });
                 y += h;
             });
+
+            // Bemaßung der Einzugsbreite direkt unter dem Schnitt
+            if (einzug) {
+                const yE = y + 30, [e0, e1] = einzug;
+                ctx.save(); ctx.strokeStyle = '#4d7c0f'; ctx.lineWidth = 1.2;
+                ctx.beginPath(); ctx.moveTo(e0, yE); ctx.lineTo(e1, yE); ctx.moveTo(e0, yE - 5); ctx.lineTo(e0, yE + 5); ctx.moveTo(e1, yE - 5); ctx.lineTo(e1, yE + 5); ctx.stroke();
+                ctx.restore();
+                text(ctx, `Einzugsbreite e = ${fmt(decke.balken.e, 1)} cm`, (e0 + e1) / 2, yE - 6, { farbe: '#3f6212', font: 'bold 11px sans-serif', align: 'center' });
+                y = yE + 6;
+            }
+
+            // Handy, Holzbalkendecke: Legende mit Farbfeldern unter der Zeichnung
+            if (legende) {
+                marken.forEach((m, i) => {
+                    const ly = y + 24 + i * 20;
+                    schichtFlaeche(ctx, m.id, x0, ly - 11, 14, 14);
+                    text(ctx, `${m.t1}:`, x0 + 22, ly, { font: '11px sans-serif' });
+                    ctx.save(); ctx.font = '11px sans-serif'; const w1 = ctx.measureText(`${m.t1}: `).width; ctx.restore();
+                    text(ctx, m.t2, x0 + 22 + w1, ly, { font: 'bold 11px sans-serif', farbe: '#3f6212' });
+                });
+                if (ueberhoeht) text(ctx, 'Dünne Schichten überhöht dargestellt', x0, H - 4, { farbe: '#94a3b8', font: 'italic 11px sans-serif' });
+                return;
+            }
 
             // Beschriftungen gleichmäßig verteilen, aber möglichst auf Höhe der Schicht
             const zeile = schmal ? 30 : 18;
             const lx = x0 + sw + 26;
-            const lMin = top + 6, lMax = Math.max(lMin + zeile * (marken.length - 1), top + verfuegbar - 4);
+            const lMin = top + 6, lMax = Math.max(lMin + zeile * (marken.length - 1), holz ? y : top + verfuegbar - 4);
             const pos = marken.map(m => m.y);
             for (let i = 1; i < pos.length; i++) pos[i] = Math.max(pos[i], pos[i - 1] + zeile);
             for (let i = pos.length - 1; i >= 0; i--) {
@@ -610,7 +661,7 @@
 
         // ================= Teil 2: Rechner =================
         let decke = ausVorlage('beton-wohnung');
-        const deckenZeichnung = responsiveCanvas(document.getElementById('deckenCanvas'), W => (W < 600 ? 440 : 380),
+        const deckenZeichnung = responsiveCanvas(document.getElementById('deckenCanvas'), W => deckenHoehe(W, decke),
             (ctx, W, H) => { if (!rechnerFehler) zeichneDecke(ctx, W, H, decke); });
         let rechnerFehler = false;
 
