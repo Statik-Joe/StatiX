@@ -345,7 +345,7 @@ test('Tabellenwerte Lastannahme: Nutzlast A2 = 1,5, C1 = 3,0 kN/m², Trennwandzu
     assert.equal(nl('C1'), 3.0);
     assert.deepEqual(TRENNWANDZUSCHLAEGE.map(t => t.wert), [0, 0.8, 1.2]);
     assert.equal(LAST_BAUSTOFFE.find(b => b.id === 'stahlbeton').gamma, 25);
-    LAST_BAUSTOFFE.forEach(b => assert.ok(b.gamma > 0, b.name));
+    LAST_BAUSTOFFE.forEach(b => assert.ok(b.gamma > 0 || (b.flaeche >= 0 && b.dicke > 0), b.name));
     assert.equal(new Set(LAST_BAUSTOFFE.map(b => b.id)).size, LAST_BAUSTOFFE.length);
 });
 
@@ -372,4 +372,21 @@ test('Stahlbetondecke: Lage „zwischen“ hat ohne Balken keine Wirkung', () =>
     const r = berechneDeckenlast({ schichten: [{ name: 'Dämmung', d: 0.1, gamma: 1, lage: 'zwischen' }] });
     nah(r.gk, 0.1, 1e-9);
     assert.equal(r.gefachanteil, 1);
+});
+
+test('Gründach extensiv auf Stahlbetondecke: Substrat wassergesättigt, Vlies und Bewuchs als Flächenlast', () => {
+    const katalog = id => LAST_BAUSTOFFE.find(b => b.id === id);
+    const r = berechneDeckenlast({
+        schichten: [
+            { name: 'Vegetation', g: katalog('vegetation-extensiv').flaeche },
+            { name: 'Substrat', d: 0.10, gamma: katalog('substrat-extensiv').gamma },
+            { name: 'Filtervlies', g: katalog('filtervlies').flaeche },
+            { name: 'Drainage', g: katalog('drainage-element').flaeche },
+            { name: 'Stahlbeton', d: 0.20, gamma: 25 }
+        ],
+        nutzlast: NUTZLASTEN.find(n => n.kat === 'H').qk
+    });
+    nah(r.gk, 0.10 + 1.40 + 0.01 + 0.10 + 5.0, 1e-9);
+    nah(r.qk, 0, 1e-9);
+    assert.ok(NUTZLASTEN.find(n => n.kat === 'H').dach);
 });

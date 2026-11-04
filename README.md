@@ -7,7 +7,7 @@ Interaktive Statik- und Mechanik-Lernmodule für die Fachoberschule (FOS 12, Hes
 - `index.html` – Startseite mit den sieben Lernmodulen
 - `modul-1-kraefteaddition.html` – Kräfteaddition, Vektorzerlegung und schräge Last auf einer Fläche
 - `modul-2-hebelgesetz.html` – Hebelgesetz, Drehmomente und interaktive Wippe
-- `modul-3-lastannahme.html` – Lastannahme für Decken: Eigengewicht aus dem Schichtaufbau (bei Holzbalkendecken auch Dämmung oder Schüttung zwischen den Balken mit dem Gefachanteil (e − b) / e), Nutzlast und Trennwandzuschlag nach DIN EN 1991-1-1 mit NA, Umrechnung auf die Streckenlast eines Balkens bzw. 1-m-Deckenstreifens, Übergabe an Modul 4
+- `modul-3-lastannahme.html` – Lastannahme für Decken: Eigengewicht aus dem Schichtaufbau (bei Holzbalkendecken auch Dämmung oder Schüttung zwischen den Balken mit dem Gefachanteil (e − b) / e), Gründach und Dachgarten mit wassergesättigten Schichten nach FLL, Nutzlast und Trennwandzuschlag nach DIN EN 1991-1-1 mit NA, Umrechnung auf die Streckenlast eines Balkens bzw. 1-m-Deckenstreifens, Übergabe an Modul 4
 - `modul-4-statik-einfeldtraeger.html` – Auflagerkräfte, Querkraft und Biegemoment für Einfeldträger mit Kragarmen, Einzel- und Streckenlasten
 - `modul-5-diagramme-zuordnen.html` – Quiz zum Zuordnen von Systemen und Schnittgrößendiagrammen
 - `modul-6-spannungsnachweis.html` – Querschnittswerte und Biegespannungsnachweis
@@ -100,7 +100,7 @@ Schema: kleine Verbesserungen und Fehlerbehebungen erhöhen die Unterversion (1.
 - Kräfte in kN, Momente in kNm, Streckenlasten in kN/m und Längen in m
 - Zahlen werden mit deutschem Dezimalkomma und Einheiten mit Leerzeichen dargestellt, zum Beispiel `2,5 kN`
 - In Modul 4 wird der Winkel schräger Einzelkräfte von der Trägerachse aus gemessen: 0° nach rechts, 90° nach unten, 180° nach links und 270° nach oben
-- In Modul 3 werden Schichtdicken in cm eingegeben und für die Rechnung in m umgerechnet; Wichten in kN/m³, Flächenlasten in kN/m², Streckenlasten in kN/m. Lastwerte als Richtwerte nach DIN EN 1991-1-1 mit NA; jede Wichte lässt sich ändern
+- In Modul 3 werden Schichtdicken in cm eingegeben und für die Rechnung in m umgerechnet; Wichten in kN/m³, Flächenlasten in kN/m², Streckenlasten in kN/m. Lastwerte als Richtwerte nach DIN EN 1991-1-1 mit NA, Gründachschichten wassergesättigt nach den FLL-Dachbegrünungsrichtlinien; dünne Lagen (Vlies, Abdichtung, Bewuchs) als Flächenlast in kN/m². Jede Wichte und Flächenlast lässt sich ändern. Die Schneelast ist nicht enthalten
 - Modul 3 übergibt g_k und q_k als Streckenlasten q₁ und q₂ an Modul 4 (`?g=…&q=…&L=…`), Modul 4 übergibt |M|max an Modul 6 (`?M=…`)
 - In Modul 2 werden Massen in kg eingegeben und die Gewichtskraft mit `F = m · g` berechnet
 - In Modul 6 werden Querschnittsmaße in cm, Querschnittswerte in cm³ und cm⁴ und Spannungen in N/mm² angegeben, wie in den Bautabellen

@@ -303,6 +303,20 @@ const LAST_BAUSTOFFE = [
     { id: 'sandkies', name: 'Sand, Kies (Schüttung, trocken)', gamma: 16.0, gruppe: 'Dämmung und Schüttung' },
     { id: 'kalkzementputz', name: 'Kalkzementputz', gamma: 20.0, gruppe: 'Putz und Bekleidung' },
     { id: 'gipskarton', name: 'Gipskartonplatte', gamma: 9.0, gruppe: 'Putz und Bekleidung' },
+    // Gründach und Flachdach: Substrat und Drainage wassergesättigt (für die Statik maßgebend, FLL-Dachbegrünungsrichtlinien).
+    // Dünne Lagen und Bewuchs als Flächenlast g in kN/m²; dicke = übliche Dicke in cm, nur für die Zeichnung.
+    { id: 'vegetation-extensiv', name: 'Vegetation extensiv (Moos, Sedum, Kräuter)', flaeche: 0.10, dicke: 3, gruppe: 'Gründach und Flachdach' },
+    { id: 'vegetation-rasen', name: 'Vegetation Rasen', flaeche: 0.05, dicke: 3, gruppe: 'Gründach und Flachdach' },
+    { id: 'vegetation-straeucher', name: 'Vegetation Stauden und Sträucher bis 1,5 m', flaeche: 0.20, dicke: 5, gruppe: 'Gründach und Flachdach' },
+    { id: 'substrat-extensiv', name: 'Extensivsubstrat (wassergesättigt)', gamma: 14.0, gruppe: 'Gründach und Flachdach' },
+    { id: 'substrat-intensiv', name: 'Intensivsubstrat (wassergesättigt)', gamma: 16.0, gruppe: 'Gründach und Flachdach' },
+    { id: 'filtervlies', name: 'Filtervlies', flaeche: 0.01, dicke: 0.3, gruppe: 'Gründach und Flachdach' },
+    { id: 'drainage-kies', name: 'Drainageschicht Kies (wassergesättigt)', gamma: 18.0, gruppe: 'Gründach und Flachdach' },
+    { id: 'drainage-blaehschiefer', name: 'Drainageschicht Blähschiefer (wassergesättigt)', gamma: 10.0, gruppe: 'Gründach und Flachdach' },
+    { id: 'drainage-element', name: 'Drainageelement Kunststoff (gefüllt)', flaeche: 0.10, dicke: 2.5, gruppe: 'Gründach und Flachdach' },
+    { id: 'schutzvlies', name: 'Schutz- und Speichervlies (wassergesättigt)', flaeche: 0.05, dicke: 0.5, gruppe: 'Gründach und Flachdach' },
+    { id: 'abdichtung-bitumen', name: 'Abdichtung Bitumen (2-lagig, wurzelfest)', flaeche: 0.10, dicke: 1, gruppe: 'Gründach und Flachdach' },
+    { id: 'dampfsperre', name: 'Dampfsperre', flaeche: 0.05, dicke: 0.5, gruppe: 'Gründach und Flachdach' },
     { id: 'eigen', name: 'Eigener Baustoff', gamma: 10.0, gruppe: 'Sonstiges' }
 ];
 
@@ -319,7 +333,10 @@ const NUTZLASTEN = [
     { kat: 'D1', name: 'Verkaufsräume bis 50 m² in Wohn- und Bürogebäuden', qk: 2.0 },
     { kat: 'D2', name: 'Flächen in Einzelhandelsgeschäften und Warenhäusern', qk: 5.0 },
     { kat: 'T1', name: 'Treppen und Podeste in Wohngebäuden', qk: 3.0 },
-    { kat: 'Z', name: 'Balkone, Dachterrassen, Laubengänge', qk: 4.0 }
+    { kat: 'Z', name: 'Balkone, Dachterrassen, Laubengänge', qk: 4.0 },
+    // Dächer (DIN EN 1991-1-1/NA, Tabelle 6.10DE): nicht begehbar, nur Wartung – keine Flächenlast, Einzellast Q_k = 1 kN,
+    // nicht gleichzeitig mit Schnee. Ein Dachgarten, den man betritt, zählt als Dachterrasse (Kategorie Z).
+    { kat: 'H', name: 'Nicht begehbare Dächer (nur Wartung)', qk: 0.0, dach: true }
 ];
 
 // Zuschlag für leichte, unbelastete Trennwände (DIN EN 1991-1-1/NA, 6.3.1.2(8)); zählt zur Nutzlast
