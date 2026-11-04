@@ -332,12 +332,19 @@ const TRENNWANDZUSCHLAEGE = [
 const TEILSICHERHEIT = { G: 1.35, Q: 1.5 };
 
 // Deckenlast aus dem Schichtaufbau.
-//   schichten: [{ name, d (Dicke in m), gamma (kN/m³) }]  – oder { name, g } mit fester Flächenlast in kN/m²
+//   schichten: [{ name, d (Dicke in m), gamma (kN/m³), lage }]  – oder { name, g } mit fester Flächenlast in kN/m²
 //   balken (nur Holzbalkendecke): { b, h (m), gamma (kN/m³), e (Balkenabstand in m) }
 //   nutzlast, trennwand: in kN/m²;  breite: Einzugsbreite in m (ohne Balken: 1-m-Deckenstreifen)
 // Rückgabe: Flächenlasten g_k und q_k in kN/m², Streckenlasten in kN/m und Bemessungswerte (1,35 · g + 1,5 · q).
+//   Holzbalkendecke: Schichten mit lage: 'zwischen' (z. B. Dämmung oder Schüttung im Gefach) liegen nur
+//   zwischen den Balken. Ihr Gewicht wird deshalb mit dem Gefachanteil (e − b) / e abgemindert.
 function berechneDeckenlast({ schichten = [], balken = null, nutzlast = 0, trennwand = 0, breite } = {}) {
-    const liste = schichten.map(s => ({ ...s, g: s.g !== undefined ? s.g : s.d * s.gamma }));
+    const gefachanteil = balken ? (balken.e - balken.b) / balken.e : 1;
+    const liste = schichten.map(s => {
+        const faktor = balken && s.lage === 'zwischen' ? gefachanteil : 1;
+        const gVoll = s.g !== undefined ? s.g : s.d * s.gamma;
+        return { ...s, faktor, g: gVoll * faktor };
+    });
     const gSchichten = liste.reduce((summe, s) => summe + s.g, 0);
     const gBalkenStrecke = balken ? balken.b * balken.h * balken.gamma : 0;          // kN/m je Balken
     const einzugsbreite = balken ? balken.e : (breite || 1);
@@ -347,7 +354,7 @@ function berechneDeckenlast({ schichten = [], balken = null, nutzlast = 0, trenn
     const gStrecke = gSchichten * einzugsbreite + gBalkenStrecke;                       // = gk · e
     const qStrecke = qk * einzugsbreite;
     return {
-        schichten: liste, gSchichten, gBalkenStrecke, gBalkenFlaeche, gk, qk,
+        schichten: liste, gefachanteil, gSchichten, gBalkenStrecke, gBalkenFlaeche, gk, qk,
         einzugsbreite, gStrecke, qStrecke, gesamtStrecke: gStrecke + qStrecke,
         qdFlaeche: TEILSICHERHEIT.G * gk + TEILSICHERHEIT.Q * qk,
         qdStrecke: TEILSICHERHEIT.G * gStrecke + TEILSICHERHEIT.Q * qStrecke

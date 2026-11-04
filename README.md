@@ -7,7 +7,7 @@ Interaktive Statik- und Mechanik-Lernmodule für die Fachoberschule (FOS 12, Hes
 - `index.html` – Startseite mit den sieben Lernmodulen
 - `modul-1-kraefteaddition.html` – Kräfteaddition, Vektorzerlegung und schräge Last auf einer Fläche
 - `modul-2-hebelgesetz.html` – Hebelgesetz, Drehmomente und interaktive Wippe
-- `modul-3-lastannahme.html` – Lastannahme für Decken: Eigengewicht aus dem Schichtaufbau, Nutzlast und Trennwandzuschlag nach DIN EN 1991-1-1 mit NA, Umrechnung auf die Streckenlast eines Balkens bzw. 1-m-Deckenstreifens, Übergabe an Modul 4
+- `modul-3-lastannahme.html` – Lastannahme für Decken: Eigengewicht aus dem Schichtaufbau (bei Holzbalkendecken auch Dämmung oder Schüttung zwischen den Balken mit dem Gefachanteil (e − b) / e), Nutzlast und Trennwandzuschlag nach DIN EN 1991-1-1 mit NA, Umrechnung auf die Streckenlast eines Balkens bzw. 1-m-Deckenstreifens, Übergabe an Modul 4
 - `modul-4-statik-einfeldtraeger.html` – Auflagerkräfte, Querkraft und Biegemoment für Einfeldträger mit Kragarmen, Einzel- und Streckenlasten
 - `modul-5-diagramme-zuordnen.html` – Quiz zum Zuordnen von Systemen und Schnittgrößendiagrammen
 - `modul-6-spannungsnachweis.html` – Querschnittswerte und Biegespannungsnachweis

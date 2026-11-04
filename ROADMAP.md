@@ -17,6 +17,7 @@ Geplante Erweiterungen in der Reihenfolge, in der sie umgesetzt werden sollen. E
 
 ## Erledigt
 
+- [x] **Modul 3: Dämmung und Schüttung zwischen den Balken** – Lage je Schicht wählbar (über, zwischen, unter den Balken); Schichten im Gefach zählen mit (e − b) / e, Prüfung gegen die Balkenhöhe, Vorlagen, Übung und Selbstlernpfad ergänzt – Modul 3 Version 1.1 / Labor 3.1
 - [x] **Neues Modul 3: Lastannahme für Decken** – Selbstlernpfad mit Grafiken (Deckenschnitt, g = d · γ, Einzugsbreite), Rechner für Stahlbeton- und Holzbalkendecken mit Schichtaufbau, Nutzlast nach Kategorie und Trennwandzuschlag, Übung mit Selbstkontrolle und Protokoll, Übergabe von g_k und q_k an Modul 4. Die bisherigen Module 3–6 sind zu 4–7 geworden; alte Adressen leiten weiter, gespeicherter Fortschritt wird übernommen – Labor 3.0
 
 > Hinweis: Die Einträge unten verwenden bereits die Modulnummern ab Labor 3.0.
