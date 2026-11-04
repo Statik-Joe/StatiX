@@ -2,7 +2,7 @@
    Gemeinsames Stylesheet für alle Module des Virtuellen Bautechnik-Labors.
    Ergänzt tailwind.min.css um die Bausteine, die in jedem Modul gleich
    aussehen sollen (Kopfzeile, Canvas, Beschriftungen, Umschalter).
-   Die Modulfarbe wird über <body data-modul="1..6"> gesetzt; dazu Präsentationsmodus
+   Die Modulfarbe wird über <body data-modul="1..7"> gesetzt; dazu Präsentationsmodus
    und Vollbild für Zeichenflächen (siehe Ende der Datei und labor.js) und passt zur
    jeweiligen Kachel im Hauptmenü.
    ========================================================================== */
@@ -31,7 +31,15 @@ body[data-modul="2"] { /* Sky – Hebelgesetz */
     --mod-700: #0369a1;
     --mod-800: #075985;
 }
-body[data-modul="3"] { /* Teal – Schnittgrößen */
+body[data-modul="3"] { /* Lime – Lastannahme */
+    --mod-50: #f7fee7;
+    --mod-100: #ecfccb;
+    --mod-500: #65a30d;
+    --mod-600: #4d7c0f;   /* eine Stufe dunkler als Tailwind lime-600: weiße Schrift auf Umschaltern gut lesbar */
+    --mod-700: #3f6212;
+    --mod-800: #365314;
+}
+body[data-modul="4"] { /* Teal – Schnittgrößen */
     --mod-50: #f0fdfa;
     --mod-100: #ccfbf1;
     --mod-500: #14b8a6;
@@ -39,7 +47,7 @@ body[data-modul="3"] { /* Teal – Schnittgrößen */
     --mod-700: #0f766e;
     --mod-800: #115e59;
 }
-body[data-modul="4"] { /* Amber – Diagramme zuordnen */
+body[data-modul="5"] { /* Amber – Diagramme zuordnen */
     --mod-50: #fffbeb;
     --mod-100: #fef3c7;
     --mod-500: #f59e0b;
@@ -47,7 +55,7 @@ body[data-modul="4"] { /* Amber – Diagramme zuordnen */
     --mod-700: #b45309;
     --mod-800: #92400e;
 }
-body[data-modul="5"] { /* Violet – Spannungsnachweis */
+body[data-modul="6"] { /* Violet – Spannungsnachweis */
     --mod-50: #f5f3ff;
     --mod-100: #ede9fe;
     --mod-500: #8b5cf6;
@@ -55,7 +63,7 @@ body[data-modul="5"] { /* Violet – Spannungsnachweis */
     --mod-700: #6d28d9;
     --mod-800: #5b21b6;
 }
-body[data-modul="6"] { /* Rose – Durchlaufträger */
+body[data-modul="7"] { /* Rose – Durchlaufträger */
     --mod-50: #fff1f2;
     --mod-100: #ffe4e6;
     --mod-500: #f43f5e;
@@ -232,7 +240,7 @@ html.lab-present {
     color: #be123c;
 }
 
-/* ---------- Validierungsmeldungen in Modul 3 ---------- */
+/* ---------- Validierungsmeldungen in Modul 4 ---------- */
 #output .lab-validation-error {
     padding: 0.75rem;
     border: 1px solid #fecdd3;
@@ -280,7 +288,7 @@ input[aria-invalid="true"] {
 }
 .lab-fs-host:fullscreen {
     display: flex;
-    flex-direction: column;   /* Beschriftung (z. B. Modul 4) über der Zeichnung */
+    flex-direction: column;   /* Beschriftung (z. B. Modul 5) über der Zeichnung */
     align-items: center;
     justify-content: center;
     background: #ffffff;
@@ -288,7 +296,7 @@ input[aria-invalid="true"] {
 }
 .lab-fs-host:-webkit-full-screen {
     display: flex;
-    flex-direction: column;   /* Beschriftung (z. B. Modul 4) über der Zeichnung */
+    flex-direction: column;   /* Beschriftung (z. B. Modul 5) über der Zeichnung */
     align-items: center;
     justify-content: center;
     background: #ffffff;
@@ -314,7 +322,7 @@ input[aria-invalid="true"] {
     right: 1rem;
 }
 
-/* ---------- Lehrkraft-Druckansicht in Modul 3 ---------- */
+/* ---------- Lehrkraft-Druckansicht in Modul 4 ---------- */
 .lab-sr-only {
     position: absolute;
     width: 1px;
@@ -429,16 +437,16 @@ input[aria-invalid="true"] {
         margin: 14mm;
     }
 
-    body[data-modul="3"] * {
+    body[data-modul="4"] * {
         visibility: hidden !important;
     }
 
-    body[data-modul="3"] #teacherPrintSheet,
-    body[data-modul="3"] #teacherPrintSheet * {
+    body[data-modul="4"] #teacherPrintSheet,
+    body[data-modul="4"] #teacherPrintSheet * {
         visibility: visible !important;
     }
 
-    body[data-modul="3"] #teacherPrintSheet {
+    body[data-modul="4"] #teacherPrintSheet {
         position: absolute;
         inset: 0;
         display: block !important;
@@ -449,50 +457,50 @@ input[aria-invalid="true"] {
         font-size: 10pt;
     }
 
-    body[data-modul="3"] #teacherPrintSolution[hidden],
-    body[data-modul="3"] #teacherPrintWorkArea[hidden],
-    body[data-modul="3"] #teacherPrintFigure[hidden] {
+    body[data-modul="4"] #teacherPrintSolution[hidden],
+    body[data-modul="4"] #teacherPrintWorkArea[hidden],
+    body[data-modul="4"] #teacherPrintFigure[hidden] {
         display: none !important;
     }
 
-    body[data-modul="3"] #teacherPrintSheet h1 {
+    body[data-modul="4"] #teacherPrintSheet h1 {
         margin: 0 0 0.5rem;
         font-size: 20pt;
     }
 
-    body[data-modul="3"] #teacherPrintSheet h2 {
+    body[data-modul="4"] #teacherPrintSheet h2 {
         margin: 1rem 0 0.5rem;
         font-size: 15pt;
     }
 
-    body[data-modul="3"] #teacherPrintSheet h3 {
+    body[data-modul="4"] #teacherPrintSheet h3 {
         margin: 0.75rem 0 0.35rem;
         font-size: 12pt;
     }
 
-    body[data-modul="3"] #teacherPrintSheet table {
+    body[data-modul="4"] #teacherPrintSheet table {
         width: 100%;
         border-collapse: collapse;
     }
 
-    body[data-modul="3"] #teacherPrintSheet th,
-    body[data-modul="3"] #teacherPrintSheet td {
+    body[data-modul="4"] #teacherPrintSheet th,
+    body[data-modul="4"] #teacherPrintSheet td {
         padding: 0.25rem 0.4rem;
         border: 1px solid #cbd5e1;
         text-align: left;
     }
 
-    body[data-modul="3"] #teacherPrintSheet th {
+    body[data-modul="4"] #teacherPrintSheet th {
         width: 38%;
         background: #f1f5f9;
     }
 
-    body[data-modul="3"] #teacherPrintFigure {
+    body[data-modul="4"] #teacherPrintFigure {
         margin: 0.6rem 0;
         text-align: center;
     }
 
-    body[data-modul="3"] #teacherPrintDiagram {
+    body[data-modul="4"] #teacherPrintDiagram {
         width: 100%;
         max-height: 11cm;
         object-fit: contain;
@@ -500,16 +508,16 @@ input[aria-invalid="true"] {
         box-shadow: none;
     }
 
-    body[data-modul="3"] #teacherPrintFigure figcaption {
+    body[data-modul="4"] #teacherPrintFigure figcaption {
         font-size: 8pt;
         color: #475569;
     }
 
-    body[data-modul="3"] #teacherPrintWorkArea {
+    body[data-modul="4"] #teacherPrintWorkArea {
         break-inside: avoid;
     }
 
-    body[data-modul="3"] .teacher-print-lines {
+    body[data-modul="4"] .teacher-print-lines {
         min-height: 5cm;
         margin-top: 0.5rem;
         background: repeating-linear-gradient(to bottom, transparent 0, transparent 0.8cm, #cbd5e1 0.82cm);
@@ -564,10 +572,10 @@ input[aria-invalid="true"] {
 
 }
 
-/* Modul 3: Unterhalb der Desktop-Breite stehen Eingaben und Zeichnung untereinander.
+/* Modul 4: Unterhalb der Desktop-Breite stehen Eingaben und Zeichnung untereinander.
    Dann kein eigener Scrollbereich für die Eingaben (verschachteltes Scrollen ist per Finger mühsam). */
 @media (max-width: 1023px) {
-    body[data-modul="3"] #controlPanel {
+    body[data-modul="4"] #controlPanel {
         max-height: none;
         overflow: visible;
         padding-right: 0;
@@ -633,7 +641,7 @@ input[aria-invalid="true"] {
 }
 
 @media (min-width: 560px) and (max-width: 767px) {
-    body[data-modul="4"] .lab-quiz-options {
+    body[data-modul="5"] .lab-quiz-options {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }

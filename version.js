@@ -12,15 +12,16 @@
 // Datum im Format JJJJ-MM-TT.
 // ==========================================================================
 const LABOR_VERSION = {
-    version: '2.2',
+    version: '3.0',
     stand: '2026-11-04',
     module: {
         1: { version: '1.11', stand: '2026-11-04' },   // Kräfteaddition & Vektoren
         2: { version: '1.9',  stand: '2026-11-04' },   // Hebelgesetz & Drehmoment
-        3: { version: '1.13', stand: '2026-11-04' },   // Schnittgrößen (Einfeldträger)
-        4: { version: '1.10', stand: '2026-11-04' },   // Diagramme zuordnen
-        5: { version: '1.8',  stand: '2026-11-04' },   // Spannungsnachweis
-        6: { version: '1.1',  stand: '2026-11-04' }    // Durchlaufträger (Selbstlernmodul)
+        3: { version: '1.0',  stand: '2026-11-04' },   // Lastannahme für Decken (neu)
+        4: { version: '1.14', stand: '2026-11-04' },   // Schnittgrößen (Einfeldträger), bis Labor 2.2 Modul 3
+        5: { version: '1.11', stand: '2026-11-04' },   // Diagramme zuordnen, bis Labor 2.2 Modul 4
+        6: { version: '1.9',  stand: '2026-11-04' },   // Spannungsnachweis, bis Labor 2.2 Modul 5
+        7: { version: '1.2',  stand: '2026-11-04' }    // Durchlaufträger (Selbstlernmodul), bis Labor 2.2 Modul 6
     }
 };
 

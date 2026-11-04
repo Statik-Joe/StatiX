@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Virtuelles Bautechnik-Labor | FOS 12</title>
-    <link rel="stylesheet" href="tailwind.min.css?v=2026-11-04c">
+    <link rel="stylesheet" href="tailwind.min.css?v=2026-11-04d">
     <style>
         .module-card {
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -101,7 +101,40 @@
                 </div>
             </div>
 
-            <!-- Modul 3: Statik-Tool (Einfeldträger) -->
+            <!-- Modul 3: Lastannahme für Decken -->
+            <div class="module-card bg-white border border-slate-200 rounded-2xl overflow-hidden flex flex-col justify-between shadow-md">
+                <div>
+                    <div class="h-44 bg-gradient-to-br from-lime-50 to-slate-50 flex items-center justify-center border-b border-slate-100 relative overflow-hidden">
+                        <svg class="w-24 h-20 text-lime-700" fill="none" stroke="currentColor" viewBox="0 0 32 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <!-- Deckenaufbau: Lastpfeile, Belag, Estrich, Dämmung, Decke -->
+                            <path stroke-linecap="round" stroke-width="1.4" d="M6 1v4m5-4v4m5-4v4m5-4v4m5-4v4"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4" d="M4.5 4l1.5 1.5L7.5 4m2 0L11 5.5 12.5 4m2 0L16 5.5 17.5 4m2 0L21 5.5 22.5 4m2 0L26 5.5 27.5 4"></path>
+                            <rect x="2" y="8" width="28" height="2" rx="0.4" stroke-width="1.2"></rect>
+                            <rect x="2" y="10" width="28" height="3" stroke-width="1.2"></rect>
+                            <path stroke-width="1" d="M3 13.5c1.5 1 2.5-1 4 0s2.5-1 4 0 2.5-1 4 0 2.5-1 4 0 2.5-1 4 0 2.5-1 4 0"></path>
+                            <rect x="2" y="15" width="28" height="6" stroke-width="1.4"></rect>
+                        </svg>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs font-bold text-lime-700 uppercase tracking-wider">Modul 3</span>
+                            <span class="text-xs text-slate-400 font-mono">Lasten</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-800 mb-2">Lastannahme für Decken</h3>
+                        <p class="text-slate-500 text-sm leading-relaxed">
+                            Berechne Eigengewicht und Nutzlast von Stahlbeton- und Holzbalkendecken aus dem Schichtaufbau und rechne die Flächenlast in die Streckenlast für einen Balken um – mit Übergabe an Modul 4.
+                        </p>
+                        <p class="text-xs text-slate-400 mt-3" data-version-modul="3"></p>
+                    </div>
+                </div>
+                <div class="p-6 pt-0">
+                    <a href="modul-3-lastannahme.html" class="block text-center w-full bg-lime-700 hover:bg-lime-600 text-white font-bold py-2.5 rounded-lg transition-colors shadow-md">
+                        Lasten ermitteln &rarr;
+                    </a>
+                </div>
+            </div>
+
+            <!-- Modul 4: Statik-Tool (Einfeldträger) -->
             <div class="module-card bg-white border border-slate-200 rounded-2xl overflow-hidden flex flex-col justify-between shadow-md">
                 <div>
                     <div class="h-44 bg-gradient-to-br from-teal-50 to-slate-50 flex items-center justify-center border-b border-slate-100 relative overflow-hidden">
@@ -111,24 +144,24 @@
                     </div>
                     <div class="p-6">
                         <div class="flex justify-between items-center mb-2">
-                            <span class="text-xs font-bold text-teal-600 uppercase tracking-wider">Modul 3</span>
+                            <span class="text-xs font-bold text-teal-600 uppercase tracking-wider">Modul 4</span>
                             <span class="text-xs text-slate-400 font-mono">Baustatik</span>
                         </div>
                         <h3 class="text-xl font-bold text-slate-800 mb-2">Schnittgrößen (Einfeldträger)</h3>
                         <p class="text-slate-500 text-sm leading-relaxed">
                             Berechne detailliert Auflagerkräfte, Querkraftverlauf (Q) und Biegemomentenverlauf (M) für Träger mit Kragarmen, wandernden Einzellasten und Streckenlasten.
                         </p>
-                        <p class="text-xs text-slate-400 mt-3" data-version-modul="3"></p>
+                        <p class="text-xs text-slate-400 mt-3" data-version-modul="4"></p>
                     </div>
                 </div>
                 <div class="p-6 pt-0">
-                    <a href="modul-3-statik-einfeldtraeger.html" class="block text-center w-full bg-teal-600 hover:bg-teal-500 text-white font-bold py-2.5 rounded-lg transition-colors shadow-md">
+                    <a href="modul-4-statik-einfeldtraeger.html" class="block text-center w-full bg-teal-600 hover:bg-teal-500 text-white font-bold py-2.5 rounded-lg transition-colors shadow-md">
                         Labor starten &rarr;
                     </a>
                 </div>
             </div>
 
-            <!-- Modul 4: Diagramme zuordnen (Quiz) -->
+            <!-- Modul 5: Diagramme zuordnen (Quiz) -->
             <div class="module-card bg-white border border-slate-200 rounded-2xl overflow-hidden flex flex-col justify-between shadow-md">
                 <div>
                     <div class="h-44 bg-gradient-to-br from-amber-50 to-slate-50 flex items-center justify-center border-b border-slate-100 relative overflow-hidden">
@@ -138,24 +171,24 @@
                     </div>
                     <div class="p-6">
                         <div class="flex justify-between items-center mb-2">
-                            <span class="text-xs font-bold text-amber-600 uppercase tracking-wider">Modul 4</span>
+                            <span class="text-xs font-bold text-amber-600 uppercase tracking-wider">Modul 5</span>
                             <span class="text-xs text-slate-400 font-mono">Quiz</span>
                         </div>
                         <h3 class="text-xl font-bold text-slate-800 mb-2">Diagramme zuordnen</h3>
                         <p class="text-slate-500 text-sm leading-relaxed">
                             Ordne dem gezeigten System die passende Momenten- oder Querkraftlinie zu. Mit typischen Fehlerdistraktoren (Vorzeichen, Position) und Punktestand.
                         </p>
-                        <p class="text-xs text-slate-400 mt-3" data-version-modul="4"></p>
+                        <p class="text-xs text-slate-400 mt-3" data-version-modul="5"></p>
                     </div>
                 </div>
                 <div class="p-6 pt-0">
-                    <a href="modul-4-diagramme-zuordnen.html" class="block text-center w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-2.5 rounded-lg transition-colors shadow-md">
+                    <a href="modul-5-diagramme-zuordnen.html" class="block text-center w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-2.5 rounded-lg transition-colors shadow-md">
                         Quiz starten &rarr;
                     </a>
                 </div>
             </div>
 
-            <!-- Modul 5: Spannungsnachweis -->
+            <!-- Modul 6: Spannungsnachweis -->
             <div class="module-card bg-white border border-slate-200 rounded-2xl overflow-hidden flex flex-col justify-between shadow-md">
                 <div>
                     <div class="h-44 bg-gradient-to-br from-violet-50 to-slate-50 flex items-center justify-center border-b border-slate-100 relative overflow-hidden">
@@ -165,24 +198,24 @@
                     </div>
                     <div class="p-6">
                         <div class="flex justify-between items-center mb-2">
-                            <span class="text-xs font-bold text-violet-600 uppercase tracking-wider">Modul 5</span>
+                            <span class="text-xs font-bold text-violet-600 uppercase tracking-wider">Modul 6</span>
                             <span class="text-xs text-slate-400 font-mono">Bemessung</span>
                         </div>
                         <h3 class="text-xl font-bold text-slate-800 mb-2">Spannungsnachweis</h3>
                         <p class="text-slate-500 text-sm leading-relaxed">
                             Berechne Trägheitsmoment und Widerstandsmoment für Rechteck, Kreis und I-Profil und weise die Biegespannung σ = M / W gegen die zulässige Spannung nach.
                         </p>
-                        <p class="text-xs text-slate-400 mt-3" data-version-modul="5"></p>
+                        <p class="text-xs text-slate-400 mt-3" data-version-modul="6"></p>
                     </div>
                 </div>
                 <div class="p-6 pt-0">
-                    <a href="modul-5-spannungsnachweis.html" class="block text-center w-full bg-violet-600 hover:bg-violet-500 text-white font-bold py-2.5 rounded-lg transition-colors shadow-md">
+                    <a href="modul-6-spannungsnachweis.html" class="block text-center w-full bg-violet-600 hover:bg-violet-500 text-white font-bold py-2.5 rounded-lg transition-colors shadow-md">
                         Nachweis starten &rarr;
                     </a>
                 </div>
             </div>
 
-            <!-- Modul 6: Durchlaufträger (Selbstlernmodul) -->
+            <!-- Modul 7: Durchlaufträger (Selbstlernmodul) -->
             <div class="module-card bg-white border border-slate-200 rounded-2xl overflow-hidden flex flex-col justify-between shadow-md">
                 <div>
                     <div class="h-44 bg-gradient-to-br from-rose-50 to-slate-50 flex items-center justify-center border-b border-slate-100 relative overflow-hidden">
@@ -192,18 +225,18 @@
                     </div>
                     <div class="p-6">
                         <div class="flex justify-between items-center mb-2">
-                            <span class="text-xs font-bold text-rose-600 uppercase tracking-wider">Modul 6</span>
+                            <span class="text-xs font-bold text-rose-600 uppercase tracking-wider">Modul 7</span>
                             <span class="text-xs text-slate-400 font-mono">Ausblick · Selbstlernen</span>
                         </div>
                         <h3 class="text-xl font-bold text-slate-800 mb-2">Durchlaufträger</h3>
                         <p class="text-slate-500 text-sm leading-relaxed">
                             Zwei- und Dreifeldträger Schritt für Schritt mit Tabellenwerten berechnen, das Verfahren an Übungsaufgaben prüfen und eigene Systeme mit freien Stützweiten und Lasten durchrechnen.
                         </p>
-                        <p class="text-xs text-slate-400 mt-3" data-version-modul="6"></p>
+                        <p class="text-xs text-slate-400 mt-3" data-version-modul="7"></p>
                     </div>
                 </div>
                 <div class="p-6 pt-0">
-                    <a href="modul-6-durchlauftraeger.html" class="block text-center w-full bg-rose-600 hover:bg-rose-500 text-white font-bold py-2.5 rounded-lg transition-colors shadow-md">
+                    <a href="modul-7-durchlauftraeger.html" class="block text-center w-full bg-rose-600 hover:bg-rose-500 text-white font-bold py-2.5 rounded-lg transition-colors shadow-md">
                         Selbstlernmodul starten &rarr;
                     </a>
                 </div>
@@ -218,7 +251,7 @@
         <p id="laborVersion" class="mt-1"></p>
     </footer>
 
-    <script src="version.js?v=2.2"></script>
+    <script src="version.js?v=3.0"></script>
 
 </body>
 </html>

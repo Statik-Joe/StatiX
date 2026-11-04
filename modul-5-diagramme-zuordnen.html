@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modul 5: Diagramme zuordnen | Bautechnik-Labor</title>
+    <link rel="stylesheet" href="tailwind.min.css?v=2026-11-04d">
+    <link rel="stylesheet" href="labor.css?v=2026-11-04d">
+    <style>
+        .option-card {
+            display: block;
+            width: 100%;
+            text-align: left;
+            transition: all 0.2s ease;
+        }
+        .option-card-label {
+            display: block;
+            margin-bottom: 0.25rem;
+            color: #64748b;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-align: center;
+        }
+        .option-card-caption {
+            display: block;
+            min-height: 2.5em;
+            margin-top: 0.5rem;
+            font-size: 0.75rem;
+            text-align: center;
+        }
+        .option-card:hover {
+            transform: translateY(-2px);
+        }
+        .option-card:focus-visible {
+            outline: 3px solid #0f766e;
+            outline-offset: 3px;
+        }
+    </style>
+</head>
+<body data-modul="5" class="bg-slate-50 min-h-screen p-4 md:p-6 font-sans text-slate-800">
+    <div class="max-w-7xl mx-auto bg-white p-6 rounded-2xl shadow-xl border border-slate-100">
+
+        <!-- Header inkl. Navigation -->
+        <header class="mb-6 border-b pb-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+                <div class="flex flex-wrap items-center gap-x-3 gap-y-1 mb-1">
+                    <a href="index.html" class="lab-back">
+                        <span>&larr;</span> Zurück zum Menü
+                    </a>
+                    <span class="lab-badge">Modul 5</span>
+                </div>
+                <h1 class="text-3xl font-extrabold text-slate-800">Diagramme zuordnen</h1>
+                <p class="text-sm text-slate-500 mt-1">Ordne dem gezeigten System bzw. der gezeigten Linie den passenden Momenten- oder Querkraftverlauf zu.</p>
+            </div>
+            <div class="flex gap-3">
+                <div class="bg-indigo-50 border border-indigo-100 px-4 py-2 rounded-lg text-center">
+                    <div class="text-xs font-bold text-indigo-700 uppercase tracking-wide">🅰️ Teil A</div>
+                    <div class="text-lg font-extrabold text-indigo-800"><span id="scoreCorrectA">0</span> / <span id="scoreTotalA">0</span></div>
+                </div>
+                <div class="bg-amber-50 border border-amber-100 px-4 py-2 rounded-lg text-center">
+                    <div class="text-xs font-bold text-amber-700 uppercase tracking-wide">🅱️ Teil B</div>
+                    <div class="text-lg font-extrabold text-amber-800"><span id="scoreCorrectB">0</span> / <span id="scoreTotalB">0</span></div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Umschalter Teil A / Teil B -->
+        <div class="flex gap-2 mb-3">
+            <button id="btnPartA" class="lab-tab is-active">
+                🅰️ Teil A: System → Linie
+            </button>
+            <button id="btnPartB" class="lab-tab">
+                🅱️ Teil B: M ↔ Q direkt
+            </button>
+        </div>
+
+        <label class="flex items-center gap-2 mb-6 text-xs font-semibold text-slate-500 cursor-pointer w-fit">
+            <input type="checkbox" id="qFlipToggle" class="w-4 h-4 rounded">
+            🔄 Andere Q-Vorzeichenkonvention (positive Querkraft nach unten statt nach oben)
+        </label>
+
+        <!-- ================= TEIL A ================= -->
+        <div id="partA" class="bg-indigo-50/40 border-2 border-indigo-100 rounded-2xl p-4">
+        <!-- Aufgabenstellung -->
+        <div class="bg-indigo-50/60 border border-indigo-100 rounded-xl p-4 mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+            <p id="taskPrompt" class="font-bold text-indigo-900 text-lg" aria-live="polite">Lade die erste Aufgabe …</p>
+            <button id="btnNewTask" class="text-sm font-bold bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg transition-colors whitespace-nowrap">
+                🎲 Neue Aufgabe
+            </button>
+        </div>
+
+        <details class="mb-4 rounded-lg border border-indigo-200 bg-white p-3">
+            <summary class="cursor-pointer font-bold text-indigo-900">Schrittweise Hinweise zu Teil A</summary>
+            <ol class="mt-2 list-decimal space-y-1 pl-5 text-sm text-slate-700">
+                <li>Suche zuerst die Stelle, an der eine Einzellast oder das Ende einer Streckenlast liegt.</li>
+                <li>Eine Einzellast erzeugt einen Sprung in Q und einen Knick in M. Eine Streckenlast macht Q schräg und M gekrümmt.</li>
+                <li>Vergleiche danach die Lage der Sprünge und Knicke sowie das Vorzeichen auf beiden Seiten der Nulllinie.</li>
+            </ol>
+        </details>
+
+        <!-- System -->
+        <div class="mb-6">
+            <canvas id="systemCanvas" width="900" height="200" data-responsive="1" role="img" aria-label="Systemzeichnung der aktuellen Aufgabe."></canvas>
+        </div>
+
+        <!-- Antwortoptionen -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 lab-quiz-options">
+            <button type="button" class="option-card bg-white border-2 border-slate-200 rounded-xl p-3 cursor-pointer" data-idx="0" aria-pressed="false">
+                <span class="option-card-label">Diagramm A</span>
+                <canvas id="ans0" width="280" height="160" data-responsive="1" aria-hidden="true"></canvas>
+                <span id="summary0" class="lab-sr-only"></span>
+                <span id="cap0" class="option-card-caption"></span>
+            </button>
+            <button type="button" class="option-card bg-white border-2 border-slate-200 rounded-xl p-3 cursor-pointer" data-idx="1" aria-pressed="false">
+                <span class="option-card-label">Diagramm B</span>
+                <canvas id="ans1" width="280" height="160" data-responsive="1" aria-hidden="true"></canvas>
+                <span id="summary1" class="lab-sr-only"></span>
+                <span id="cap1" class="option-card-caption"></span>
+            </button>
+            <button type="button" class="option-card bg-white border-2 border-slate-200 rounded-xl p-3 cursor-pointer" data-idx="2" aria-pressed="false">
+                <span class="option-card-label">Diagramm C</span>
+                <canvas id="ans2" width="280" height="160" data-responsive="1" aria-hidden="true"></canvas>
+                <span id="summary2" class="lab-sr-only"></span>
+                <span id="cap2" class="option-card-caption"></span>
+            </button>
+        </div>
+
+        <div id="feedbackBox" class="hidden text-center font-bold p-4 rounded-xl mb-4" role="status" aria-live="polite"></div>
+
+        <div class="text-center mb-6">
+            <button id="btnNext" class="hidden bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-6 py-2.5 rounded-lg transition-colors">
+                Nächste Aufgabe &rarr;
+            </button>
+        </div>
+
+        <p class="text-xs text-slate-400 text-center mb-6">💡 Merke: An einer Einzellast macht Q einen Sprung, M einen Knick. Bei einer Streckenlast ist Q linear (schräge Gerade) und M eine Parabel.</p>
+        </div>
+
+        <!-- ================= TEIL B ================= -->
+        <div id="partB" class="hidden bg-amber-50/40 border-2 border-amber-100 rounded-2xl p-4">
+        <!-- Aufgabenstellung -->
+        <div class="bg-amber-50/60 border border-amber-100 rounded-xl p-4 mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+            <p id="taskPromptB" class="font-bold text-amber-900 text-lg" aria-live="polite">Lade die erste Aufgabe …</p>
+            <button id="btnNewTaskB" class="text-sm font-bold bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg transition-colors whitespace-nowrap">
+                🎲 Neue Aufgabe
+            </button>
+        </div>
+
+        <details class="mb-4 rounded-lg border border-amber-200 bg-white p-3">
+            <summary class="cursor-pointer font-bold text-amber-900">Schrittweise Hinweise zu Teil B</summary>
+            <ol class="mt-2 list-decimal space-y-1 pl-5 text-sm text-slate-700">
+                <li>Q beschreibt die Steigung des Momentenverlaufs: M'(x) = Q(x).</li>
+                <li>Wo Q null wird und das Vorzeichen wechselt, liegt bei M ein Hoch- oder Tiefpunkt.</li>
+                <li>Ein Sprung in Q durch eine Einzellast entspricht einem Knick in M. Achte zusätzlich auf das Vorzeichen.</li>
+            </ol>
+        </details>
+
+        <!-- Gegebene Linie -->
+        <div class="mb-6">
+            <div class="text-center text-xs font-bold text-slate-500 mb-1" id="givenLabel">Gegeben</div>
+            <canvas id="givenCanvas" width="900" height="170" data-responsive="1" role="img" aria-label="Vorgegebener Schnittgrößenverlauf."></canvas>
+        </div>
+
+        <!-- Antwortoptionen -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 lab-quiz-options">
+            <button type="button" class="option-card bg-white border-2 border-slate-200 rounded-xl p-3 cursor-pointer" data-bidx="0" aria-pressed="false">
+                <span class="option-card-label">Kandidat A</span>
+                <canvas id="ansB0" width="280" height="160" data-responsive="1" aria-hidden="true"></canvas>
+                <span id="summaryB0" class="lab-sr-only"></span>
+                <span id="capB0" class="option-card-caption"></span>
+            </button>
+            <button type="button" class="option-card bg-white border-2 border-slate-200 rounded-xl p-3 cursor-pointer" data-bidx="1" aria-pressed="false">
+                <span class="option-card-label">Kandidat B</span>
+                <canvas id="ansB1" width="280" height="160" data-responsive="1" aria-hidden="true"></canvas>
+                <span id="summaryB1" class="lab-sr-only"></span>
+                <span id="capB1" class="option-card-caption"></span>
+            </button>
+            <button type="button" class="option-card bg-white border-2 border-slate-200 rounded-xl p-3 cursor-pointer" data-bidx="2" aria-pressed="false">
+                <span class="option-card-label">Kandidat C</span>
+                <canvas id="ansB2" width="280" height="160" data-responsive="1" aria-hidden="true"></canvas>
+                <span id="summaryB2" class="lab-sr-only"></span>
+                <span id="capB2" class="option-card-caption"></span>
+            </button>
+        </div>
+
+        <div id="feedbackBoxB" class="hidden text-center font-bold p-4 rounded-xl mb-4" role="status" aria-live="polite"></div>
+
+        <div class="text-center mb-6">
+            <button id="btnNextB" class="hidden bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-6 py-2.5 rounded-lg transition-colors">
+                Nächste Aufgabe &rarr;
+            </button>
+        </div>
+
+        <p class="text-xs text-slate-400 text-center mb-6">💡 Merke: M'(x) = Q(x). Wo Q = 0 ist, hat M ein Extremum (Hoch-/Tiefpunkt). Wo Q springt (Einzellast), hat M einen Knick.</p>
+        </div>
+
+        <!-- Protokoll-Export -->
+        <div class="border-t border-slate-200 pt-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+            <input type="text" id="studentName4" placeholder="Name (optional)" class="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm">
+            <button id="btnExportLog4" class="text-sm font-bold bg-slate-700 hover:bg-slate-800 text-white px-4 py-2 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed" disabled>
+                📄 Protokoll exportieren (<span id="logCount4">0</span>)
+            </button>
+        </div>
+    </div>
+
+    <script src="labor.js?v=2026-11-04d"></script>
+    <script src="version.js?v=3.0"></script>
+    <script src="statik-core.js?v=2026-11-04d"></script>
+    <script>
+        // ================= Physik: geschlossene Formeln pro Systemtyp =================
+        // Konvention wie in Modul 4: Q positiv nach oben, M positiv nach unten (Zugseite) aufgetragen.
+
+        function computeSeries(task) {
+            const { L, L_kl, L_kr, pointLoads, udls } = task;
+            const xmin = -L_kl;
+            const xmax = L + L_kr;
+            const domainLength = xmax - xmin;
+            const eps = domainLength * 0.0015;
+
+            // Stützstellen-Raster inkl. "kritischer" Punkte für saubere Sprünge/Knicke
+            // (an beiden Auflagern sowie an jeder Einzellast- und Streckenlast-Grenze)
+            let xs = [];
+            const N = 140;
+            for (let i = 0; i <= N; i++) xs.push(xmin + (i / N) * domainLength);
+            let critical = [0 - eps, 0 + eps, L - eps, L + eps];
+            pointLoads.forEach(p => { critical.push(p.x - eps, p.x, p.x + eps); });
+            udls.forEach(u => { critical.push(u.start, u.end); });
+            xs = xs.concat(critical).filter(x => x >= xmin - 1e-9 && x <= xmax + 1e-9);
+            xs = xs.map(x => Math.max(xmin, Math.min(xmax, x)));
+            xs = [...new Set(xs.map(x => Math.round(x * 100000) / 100000))].sort((x1, x2) => x1 - x2);
+
+            // Auflagerkräfte und Schnittgrößen aus dem gemeinsamen Rechenkern (statik-core.js, wie Modul 4)
+            const traeger = berechneTraeger({ L, pointLoads, udls });
+            const R_A = traeger.A;
+            const R_B = traeger.B;
+            const getSchnitt = traeger.schnitt;
+
+            const Qs = [], Ms = [];
+            xs.forEach(x => {
+                const s = getSchnitt(x);
+                Qs.push({ x, y: s.Q });
+                Ms.push({ x, y: s.M });
+            });
+
+            return { xs, Qs, Ms, R_A, R_B, xmin, xmax };
+        }
+
+        function interpolateSeries(series, xq, xmin, xmax) {
+            if (xq <= xmin) return series[0].y;
+            if (xq >= xmax) return series[series.length - 1].y;
+            for (let i = 0; i < series.length - 1; i++) {
+                const p0 = series[i], p1 = series[i + 1];
+                if (xq >= p0.x && xq <= p1.x) {
+                    if (p1.x - p0.x < 1e-9) return p1.y;
+                    const t = (xq - p0.x) / (p1.x - p0.x);
+                    return p0.y + t * (p1.y - p0.y);
+                }
+            }
+            return series[series.length - 1].y;
+        }
+
+        function shuffle(arr) {
+            const a = arr.slice();
+            for (let i = a.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [a[i], a[j]] = [a[j], a[i]];
+            }
+            return a;
+        }
+
+        function rnd(min, max, step) {
+            const n = Math.round((min + Math.random() * (max - min)) / step) * step;
+            return Math.round(n * 100) / 100;
+        }
+
+        function weightedPick(items, weights) {
+            const total = weights.reduce((a, b) => a + b, 0);
+            let r = Math.random() * total;
+            for (let i = 0; i < items.length; i++) {
+                if (r < weights[i]) return items[i];
+                r -= weights[i];
+            }
+            return items[items.length - 1];
+        }
+
+        // Erzeugt zufällig eines von mehreren Lastbild-Szenarien:
+        // kein/linker/rechter/beidseitiger Kragarm, kombiniert mit 1-2 Einzellasten
+        // und/oder einer Streckenlast im Feld (inkl. Streckenlast + Kragarm-Spitzenlast).
+        function randomSystemParams() {
+            const L = rnd(6, 10, 0.5);
+            const cantChoice = weightedPick(['none', 'left', 'right', 'both'], [0.30, 0.20, 0.20, 0.30]);
+            const L_kl = (cantChoice === 'left' || cantChoice === 'both') ? rnd(1.5, 3, 0.5) : 0;
+            const L_kr = (cantChoice === 'right' || cantChoice === 'both') ? rnd(1.5, 3, 0.5) : 0;
+            const hasCantilever = L_kl > 0 || L_kr > 0;
+
+            const pointLoads = [];
+            const udls = [];
+            if (L_kl > 0) pointLoads.push({ F: rnd(10, 55, 5), x: -L_kl });
+            if (L_kr > 0) pointLoads.push({ F: rnd(10, 55, 5), x: L + L_kr });
+
+            const feldOptions = hasCantilever
+                ? ['einzellast', 'zwei_einzellasten', 'streckenlast', 'streckenlast_einzellast', 'keine']
+                : ['einzellast', 'zwei_einzellasten', 'streckenlast', 'streckenlast_einzellast'];
+            const feldWeights = hasCantilever ? [0.22, 0.18, 0.28, 0.22, 0.10] : [0.30, 0.20, 0.30, 0.20];
+            const feldTyp = weightedPick(feldOptions, feldWeights);
+
+            if (feldTyp === 'einzellast' || feldTyp === 'streckenlast_einzellast') {
+                pointLoads.push({ F: rnd(15, 60, 5), x: rnd(L * 0.2, L * 0.8, 0.1) });
+            }
+            if (feldTyp === 'zwei_einzellasten') {
+                pointLoads.push({ F: rnd(15, 50, 5), x: rnd(L * 0.15, L * 0.45, 0.1) });
+                pointLoads.push({ F: rnd(15, 50, 5), x: rnd(L * 0.55, L * 0.85, 0.1) });
+            }
+            if (feldTyp === 'streckenlast' || feldTyp === 'streckenlast_einzellast') {
+                udls.push({ q: rnd(5, 22, 1), start: 0, end: L });
+            }
+            return { L, L_kl, L_kr, pointLoads, udls };
+        }
+
+        // Menschenlesbare Kurzbeschreibung eines Systems (für Aufgabentext/Protokoll)
+        function describeSystem(task) {
+            const parts = [];
+            if (task.L_kl > 0 && task.L_kr > 0) parts.push(`Kragarm beidseitig (links ${fmt(task.L_kl)} m / rechts ${fmt(task.L_kr)} m)`);
+            else if (task.L_kl > 0) parts.push(`Kragarm links (${fmt(task.L_kl)} m)`);
+            else if (task.L_kr > 0) parts.push(`Kragarm rechts (${fmt(task.L_kr)} m)`);
+
+            const feldLasten = task.pointLoads.filter(p => p.x >= -1e-6 && p.x <= task.L + 1e-6);
+            const kragLasten = task.pointLoads.filter(p => p.x < -1e-6 || p.x > task.L + 1e-6);
+
+            if (feldLasten.length === 1) parts.push(`1 Einzellast im Feld (F = ${fmt(feldLasten[0].F)} kN)`);
+            if (feldLasten.length >= 2) parts.push(`${feldLasten.length} Einzellasten im Feld`);
+            if (task.udls.length > 0) parts.push(`Streckenlast q = ${fmt(task.udls[0].q)} kN/m`);
+            if (kragLasten.length > 0) parts.push(`Kragarm-Spitzenlast: ${kragLasten.map(p => fmt(p.F) + ' kN').join(' / ')}`);
+
+            return parts.length ? parts.join(' + ') : 'Unbelasteter Einfeldträger';
+        }
+
+        function describeSystemDetails(task) {
+            const pointLoads = task.pointLoads.map((load, i) =>
+                `Einzellast ${i + 1}: ${fmt(load.F)} kN bei x = ${fmt(load.x)} m`
+            );
+            const distributedLoads = task.udls.map((load, i) =>
+                `Streckenlast ${i + 1}: ${fmt(load.q)} kN/m von x = ${fmt(load.start)} m bis ${fmt(load.end)} m`
+            );
+            const details = pointLoads.concat(distributedLoads);
+            return details.length ? `${describeSystem(task)}. ${details.join('. ')}.` : describeSystem(task);
+        }
+
+        // Baut 3 Antwortoptionen (1 korrekt + 2 Distraktoren: Vorzeichenfehler, Positionsfehler)
+        // aus einer gegebenen "wahren" Kurve. Wiederverwendbar für Teil A und Teil B.
+        function buildOptions(trueSeries, xmin, xmax) {
+            const flipped = trueSeries.map(p => ({ x: p.x, y: -p.y }));
+
+            const domainLength = xmax - xmin;
+            const dir = Math.random() < 0.5 ? 1 : -1;
+            const shiftAmount = dir * domainLength * (0.18 + Math.random() * 0.14);
+            const shifted = trueSeries.map(p => ({
+                x: p.x,
+                y: interpolateSeries(trueSeries, p.x - shiftAmount, xmin, xmax)
+            }));
+
+            return shuffle([
+                { curve: trueSeries, kind: 'correct' },
+                { curve: flipped, kind: 'sign' },
+                { curve: shifted, kind: 'position' }
+            ]);
+        }
+
+        // ================= Aufgaben-Generator: Teil A (System → Linie) =================
+        let currentTask = null;
+        let answered = false;
+        let qSignFlipped = false;
+        let sessionLog4 = [];
+
+        function generateTask() {
+            const task = randomSystemParams();
+            const computed = computeSeries(task);
+            task.computed = computed;
+            task.diagramType = Math.random() < 0.5 ? 'M' : 'Q';
+            const trueSeries = task.diagramType === 'M' ? computed.Ms : computed.Qs;
+
+            const options = buildOptions(trueSeries, computed.xmin, computed.xmax);
+
+            task.options = options;
+            task.correctIndex = options.findIndex(o => o.kind === 'correct');
+            return task;
+        }
+
+        // ================= Zeichnen: System =================
+        // Liefert eine deduplizierte, sortierte Liste aller x-Positionen von Auflagern und Lasten
+        function getMarkerXs(task) {
+            const xs = [0, task.L];
+            task.pointLoads.forEach(p => xs.push(p.x));
+            task.udls.forEach(u => { xs.push(u.start); xs.push(u.end); });
+            xs.sort((a, b) => a - b);
+            const deduped = [];
+            const eps = (task.computed.xmax - task.computed.xmin) * 0.005;
+            xs.forEach(x => {
+                if (deduped.length === 0 || Math.abs(x - deduped[deduped.length - 1]) > eps) {
+                    deduped.push(x);
+                }
+            });
+            return deduped;
+        }
+
+        // Alle Zeichnungen wachsen mit der Bildschirmbreite mit (labor.js); die zuletzt gezeichnete
+        // Aufgabe wird bei einer Größenänderung automatisch neu gezeichnet.
+        const zeichnungen = {};
+        function zeichnungFuer(id) {
+            if (!zeichnungen[id]) {
+                const c = document.getElementById(id);
+                const klein = c.width < 700;   // Antwortkarten
+                zeichnungen[id] = responsiveCanvas(c, c.height, null,
+                    klein ? { minBreite: 160, maxBreite: 320 } : { maxBreite: 900 });
+            }
+            return zeichnungen[id];
+        }
+
+        function drawSystem(task) {
+            zeichnungFuer('systemCanvas').setze((ctx, W, H) => drawSystemAuf(ctx, W, H, task));
+        }
+
+        function drawSystemAuf(ctx, W, H, task) {
+            const { xmin, xmax } = task.computed;
+            const padding = W < 600 ? 40 : 70;
+            const beamY = 100;
+            const scaleX = (W - 2 * padding) / (xmax - xmin);
+            const px = x => padding + (x - xmin) * scaleX;
+
+            // Hilfslinien an allen Auflager-/Lastpositionen (zuerst gezeichnet, liegen im Hintergrund)
+            ctx.strokeStyle = '#cbd5e1';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([4, 4]);
+            getMarkerXs(task).forEach(x => {
+                const cx = px(x);
+                ctx.beginPath();
+                ctx.moveTo(cx, 15);
+                ctx.lineTo(cx, beamY + 34);
+                ctx.stroke();
+            });
+            ctx.setLineDash([]);
+
+            // Balken (gleiche Darstellung wie in Modul 4)
+            ctx.strokeStyle = '#334155';
+            ctx.lineWidth = 6;
+            ctx.lineCap = 'round';
+            ctx.beginPath();
+            ctx.moveTo(px(xmin), beamY);
+            ctx.lineTo(px(xmax), beamY);
+            ctx.stroke();
+            ctx.lineCap = 'butt';
+
+            drawSupport(ctx, px(0), beamY + 3, 'fest');
+            drawSupport(ctx, px(task.L), beamY + 3, 'los');
+
+            function drawLoadArrow(x, label, raised) {
+                const cx = px(x);
+                const topY = raised ? beamY - 72 : beamY - 55;
+                ctx.strokeStyle = '#dc2626';
+                ctx.fillStyle = '#dc2626';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(cx, topY);
+                ctx.lineTo(cx, beamY - 4);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(cx, beamY);
+                ctx.lineTo(cx - 6, beamY - 12);
+                ctx.lineTo(cx + 6, beamY - 12);
+                ctx.closePath();
+                ctx.fill();
+                ctx.font = 'bold 13px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(label, cx, topY - 6);
+            }
+
+            // Streckenlasten
+            task.udls.forEach(u => {
+                ctx.strokeStyle = '#dc2626';
+                ctx.fillStyle = '#dc2626';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(px(u.start), beamY - 40);
+                ctx.lineTo(px(u.end), beamY - 40);
+                ctx.stroke();
+                const steps = Math.max(4, Math.round((u.end - u.start) / task.L * 8));
+                for (let i = 0; i <= steps; i++) {
+                    const x = u.start + (i / steps) * (u.end - u.start);
+                    const cx = px(x);
+                    ctx.beginPath();
+                    ctx.moveTo(cx, beamY - 40);
+                    ctx.lineTo(cx, beamY - 4);
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.moveTo(cx, beamY);
+                    ctx.lineTo(cx - 5, beamY - 10);
+                    ctx.lineTo(cx + 5, beamY - 10);
+                    ctx.closePath();
+                    ctx.fill();
+                }
+                ctx.font = 'bold 13px sans-serif';
+                ctx.textAlign = 'left';
+                ctx.fillText(`q = ${fmt(u.q)} kN/m`, px(u.start), beamY - 48);
+            });
+
+            // Einzellasten (ggf. angehoben, falls sie mit einer Streckenlast überlappen)
+            task.pointLoads.forEach(p => {
+                const onUdl = task.udls.some(u => p.x >= u.start - 1e-6 && p.x <= u.end + 1e-6);
+                drawLoadArrow(p.x, `F = ${fmt(p.F)} kN`, onUdl);
+            });
+
+            // Beschriftung Spannweite(n)
+            ctx.fillStyle = '#475569';
+            ctx.font = '12px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(`L = ${fmt(task.L)} m`, px(task.L / 2), beamY + 55);
+            if (task.L_kl > 0) ctx.fillText(`Kragarm ${fmt(task.L_kl)} m`, px(-task.L_kl / 2), beamY + 55);
+            if (task.L_kr > 0) ctx.fillText(`Kragarm ${fmt(task.L_kr)} m`, px(task.L + task.L_kr / 2), beamY + 55);
+        }
+
+        // ================= Zeichnen: Antwort-Diagramme =================
+        function drawDiagram(canvasId, ...werte) {
+            zeichnungFuer(canvasId).setze((ctx, W, H) => drawDiagramAuf(ctx, W, H, ...werte));
+        }
+
+        function drawDiagramAuf(ctx, W, H, curve, isM, xmin, xmax, sharedMax, highlightColor, markerXs) {
+            const padding = 20;
+            const axisY = H / 2;
+            const scaleX = (W - 2 * padding) / (xmax - xmin);
+            const scaleY = sharedMax > 0 ? (H / 2 - 15) / sharedMax : 1;
+            const px = x => padding + (x - xmin) * scaleX;
+            // Bei Q entscheidet der Schalter, auf welcher Seite positive Werte landen (echte Konvention,
+            // keine Wertverfälschung). Ohne Schalter: oben=+. Mit Schalter: unten=+ (wie beim Moment).
+            const flipQAxis = !isM && qSignFlipped;
+            const py = y => (isM || flipQAxis) ? axisY + y * scaleY : axisY - y * scaleY;
+
+            // Hilfslinien an Auflager-/Lastpositionen (passend zum System-Bild, im Hintergrund)
+            if (markerXs && markerXs.length) {
+                ctx.strokeStyle = '#e2e8f0';
+                ctx.lineWidth = 1;
+                ctx.setLineDash([3, 3]);
+                markerXs.forEach(x => {
+                    const cx = px(x);
+                    ctx.beginPath();
+                    ctx.moveTo(cx, 4);
+                    ctx.lineTo(cx, H - 4);
+                    ctx.stroke();
+                });
+                ctx.setLineDash([]);
+            }
+
+            // Nulllinie
+            ctx.strokeStyle = '#cbd5e1';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(padding, axisY);
+            ctx.lineTo(W - padding, axisY);
+            ctx.stroke();
+
+            // Kurve in Segmente gleichen Vorzeichens zerlegen (Nulldurchgänge werden exakt eingefügt)
+            const posColor = '#059669'; // emerald - positiver Bereich
+            const negColor = '#e11d48'; // rose - negativer Bereich
+            const segments = [];
+            let seg = [curve[0]];
+            for (let i = 1; i < curve.length; i++) {
+                const prev = curve[i - 1], cur = curve[i];
+                if ((prev.y >= 0) !== (cur.y >= 0) && prev.y !== cur.y) {
+                    const t = prev.y / (prev.y - cur.y);
+                    const zeroPt = { x: prev.x + t * (cur.x - prev.x), y: 0 };
+                    seg.push(zeroPt);
+                    segments.push(seg);
+                    seg = [zeroPt];
+                }
+                seg.push(cur);
+            }
+            segments.push(seg);
+
+            // Füllung pro Segment (farbcodiert nach Vorzeichen)
+            segments.forEach(s => {
+                const segSign = s.reduce((sum, p) => sum + p.y, 0) >= 0 ? 1 : -1;
+                ctx.beginPath();
+                s.forEach((p, i) => {
+                    const X = px(p.x), Y = py(p.y);
+                    if (i === 0) ctx.moveTo(X, Y); else ctx.lineTo(X, Y);
+                });
+                ctx.lineTo(px(s[s.length - 1].x), axisY);
+                ctx.lineTo(px(s[0].x), axisY);
+                ctx.closePath();
+                ctx.fillStyle = (segSign > 0 ? posColor : negColor) + '33';
+                ctx.fill();
+            });
+
+            // Kurvenlinie (durchgehend; Standardfarben wie in Modul 4: Q blau, M orange)
+            ctx.strokeStyle = highlightColor || (isM ? '#ea580c' : '#0284c7');
+            ctx.lineWidth = 2.5;
+            ctx.beginPath();
+            curve.forEach((p, i) => {
+                const X = px(p.x), Y = py(p.y);
+                if (i === 0) ctx.moveTo(X, Y); else ctx.lineTo(X, Y);
+            });
+            ctx.stroke();
+
+            // "+" / "–" Beschriftung mittig in jedem ausreichend breiten Segment
+            segments.forEach(s => {
+                const segSign = s.reduce((sum, p) => sum + p.y, 0) >= 0 ? 1 : -1;
+                const xStart = px(s[0].x), xEnd = px(s[s.length - 1].x);
+                if (Math.abs(xEnd - xStart) < 16) return; // zu schmal für lesbare Beschriftung
+                const midX = (xStart + xEnd) / 2;
+                const peak = s.reduce((m, p) => Math.abs(p.y) > Math.abs(m.y) ? p : m, s[0]);
+                const peakPixelY = py(peak.y);
+                const labelY = axisY + (peakPixelY - axisY) * 0.55;
+                ctx.fillStyle = segSign > 0 ? posColor : negColor;
+                ctx.font = 'bold 15px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(segSign > 0 ? '+' : '–', midX, labelY);
+            });
+        }
+
+        // ================= Rendering & Interaktion =================
+        function describeCurve(series) {
+            const first = series[0];
+            const last = series[series.length - 1];
+            const min = series.reduce((best, point) => point.y < best.y ? point : best, first);
+            const max = series.reduce((best, point) => point.y > best.y ? point : best, first);
+            return `Start bei x = ${fmt(first.x)} m mit ${fmt(first.y)}; Ende bei x = ${fmt(last.x)} m mit ${fmt(last.y)}. Minimum ${fmt(min.y)} bei x = ${fmt(min.x)} m, Maximum ${fmt(max.y)} bei x = ${fmt(max.x)} m.`;
+        }
+
+        function resetAnswerCards(selector, summaryPrefix, captionPrefix, options, isMoment) {
+            document.querySelectorAll(selector).forEach((card, i) => {
+                const letter = String.fromCharCode(65 + i);
+                const series = options[i].curve;
+                const summary = `${letter}: ${isMoment ? 'Momentenverlauf' : 'Querkraftverlauf'}. ${describeCurve(series)}`;
+                card.disabled = false;
+                card.setAttribute('aria-pressed', 'false');
+                card.className = 'option-card bg-white border-2 border-slate-200 rounded-xl p-3 cursor-pointer';
+                document.getElementById(`${summaryPrefix}${i}`).innerText = summary;
+                document.getElementById(`${captionPrefix}${i}`).innerText = '';
+            });
+        }
+
+        function renderTask(task) {
+            drawSystem(task);
+            document.getElementById('systemCanvas').setAttribute(
+                'aria-label',
+                `Systemzeichnung. Hauptfeld ${fmt(task.L)} m. ${describeSystemDetails(task)}`
+            );
+            const trueSeries = task.diagramType === 'M' ? task.computed.Ms : task.computed.Qs;
+            const sharedMax = Math.max(...trueSeries.map(p => Math.abs(p.y)), 0.01) * 1.15;
+            const isM = task.diagramType === 'M';
+            const markerXs = getMarkerXs(task);
+            task.options.forEach((opt, i) => {
+                drawDiagram(`ans${i}`, opt.curve, isM, task.computed.xmin, task.computed.xmax, sharedMax, null, markerXs);
+            });
+            resetAnswerCards('#partA .option-card', 'summary', 'cap', task.options, isM);
+            const label = isM ? 'Momentenverlauf M(x)' : 'Querkraftverlauf Q(x)';
+            document.getElementById('taskPrompt').innerText = `Welches Diagramm zeigt den korrekten ${label} für dieses System?`;
+            document.getElementById('feedbackBox').classList.add('hidden');
+            document.getElementById('btnNext').classList.add('hidden');
+            // Wurde die Aufgabe schon beantwortet (z. B. Neuzeichnen nach Umschalten der Q-Konvention),
+            // bleibt die Auswertung sichtbar und die Aufgabe kann nicht ein zweites Mal gewertet werden.
+            answered = task.selectedIdx !== undefined;
+            if (answered) showAnswer(task.selectedIdx);
+        }
+
+        function newTask() {
+            currentTask = generateTask();
+            renderTask(currentTask);
+        }
+
+        function explainKind(kind) {
+            if (kind === 'correct') return '✅ Richtig – passt exakt zum System.';
+            if (kind === 'sign') return '❌ Vorzeichenfehler – die Form passt, aber der Verlauf liegt auf der falschen Seite der Nulllinie.';
+            if (kind === 'position') return '❌ Lagefehler – prüfe, ob Sprung, Knick oder Extremstelle mit den Lastpositionen zusammenpasst.';
+            return '';
+        }
+
+        // Markiert die gewählte und die richtige Karte und zeigt die Rückmeldung an
+        function showAnswer(idx) {
+            const isCorrect = idx === currentTask.correctIndex;
+
+            currentTask.options.forEach((opt, i) => {
+                const card = document.getElementById(`cap${i}`).parentElement;
+                if (opt.kind === 'correct') {
+                    card.className = 'option-card bg-emerald-50 border-2 border-emerald-500 rounded-xl p-3 cursor-pointer';
+                } else if (i === idx) {
+                    card.className = 'option-card bg-rose-50 border-2 border-rose-500 rounded-xl p-3 cursor-pointer';
+                } else {
+                    card.className = 'option-card bg-white border-2 border-slate-200 rounded-xl p-3 cursor-pointer opacity-60';
+                }
+                card.setAttribute('aria-pressed', String(i === idx));
+                card.disabled = true;
+                document.getElementById(`cap${i}`).innerText = explainKind(opt.kind);
+            });
+
+            const feedback = document.getElementById('feedbackBox');
+            feedback.classList.remove('hidden', 'bg-emerald-50', 'text-emerald-800', 'bg-rose-50', 'text-rose-800');
+            feedback.classList.add(isCorrect ? 'bg-emerald-50' : 'bg-rose-50', isCorrect ? 'text-emerald-800' : 'text-rose-800');
+            feedback.innerText = isCorrect ? '🎉 Richtig!' : '❌ Leider falsch – die richtige Lösung ist grün markiert.';
+            document.getElementById('btnNext').classList.remove('hidden');
+        }
+
+        function selectOption(idx) {
+            if (answered || !currentTask) return;
+            answered = true;
+            currentTask.selectedIdx = idx;
+            const isCorrect = idx === currentTask.correctIndex;
+            showAnswer(idx);
+
+            const scoreA = erhoeheQuizPunktestand(
+                Number(document.getElementById('scoreCorrectA').innerText),
+                Number(document.getElementById('scoreTotalA').innerText),
+                isCorrect
+            );
+            document.getElementById('scoreTotalA').innerText = scoreA.versuche;
+            document.getElementById('scoreCorrectA').innerText = scoreA.punkte;
+
+            sessionLog4.push({
+                zeit: new Date().toLocaleTimeString('de-DE'),
+                aufgabe: `[Teil A] L = ${fmt(currentTask.L)} m, ${describeSystem(currentTask)} → gesucht: ${currentTask.diagramType}(x)`,
+                details: [`Gewählt: ${explainKind(currentTask.options[idx].kind)}`],
+                richtig: isCorrect ? 1 : 0,
+                gesamt: 1
+            });
+            document.getElementById('logCount4').innerText = sessionLog4.length;
+            document.getElementById('btnExportLog4').disabled = false;
+            learningProgress.save();
+            document.getElementById('btnNext').focus();
+        }
+
+        document.querySelectorAll('#partA .option-card').forEach(card => {
+            card.addEventListener('click', () => selectOption(parseInt(card.dataset.idx)));
+        });
+        document.getElementById('btnNewTask').addEventListener('click', newTask);
+        document.getElementById('btnNext').addEventListener('click', () => {
+            newTask();
+            document.querySelector('#partA .option-card').focus();
+        });
+
+        document.getElementById('btnExportLog4').addEventListener('click', () => {
+            exportProtocol(5, 'Diagramme zuordnen', document.getElementById('studentName4').value, sessionLog4);
+        });
+
+        // ================= TEIL B: M ↔ Q direkt (ohne System) =================
+        let currentTaskB = null;
+        let answeredB = false;
+
+        function generateTaskB() {
+            const params = randomSystemParams();
+            const computed = computeSeries(params);
+            const givenType = Math.random() < 0.5 ? 'M' : 'Q';
+            const answerType = givenType === 'M' ? 'Q' : 'M';
+            const givenSeries = givenType === 'M' ? computed.Ms : computed.Qs;
+            const partnerSeries = answerType === 'M' ? computed.Ms : computed.Qs;
+
+            const options = buildOptions(partnerSeries, computed.xmin, computed.xmax);
+
+            return { params, computed, givenType, answerType, givenSeries, options,
+                     correctIndex: options.findIndex(o => o.kind === 'correct') };
+        }
+
+        function renderTaskB(task) {
+            const givenMax = Math.max(...task.givenSeries.map(p => Math.abs(p.y)), 0.01) * 1.15;
+            const isGivenM = task.givenType === 'M';
+            drawDiagram('givenCanvas', task.givenSeries, isGivenM, task.computed.xmin, task.computed.xmax, givenMax);
+            document.getElementById('givenLabel').innerText =
+                isGivenM ? 'Gegeben: Momentenverlauf M(x)' : 'Gegeben: Querkraftverlauf Q(x)';
+            document.getElementById('givenCanvas').setAttribute(
+                'aria-label',
+                `${isGivenM ? 'Momentenverlauf' : 'Querkraftverlauf'}. ${describeCurve(task.givenSeries)}`
+            );
+
+            const isAnswerM = task.answerType === 'M';
+            const answerMax = Math.max(...task.options.map(o => Math.max(...o.curve.map(p => Math.abs(p.y)))), 0.01) * 1.15;
+            task.options.forEach((opt, i) => {
+                drawDiagram(`ansB${i}`, opt.curve, isAnswerM, task.computed.xmin, task.computed.xmax, answerMax);
+            });
+            resetAnswerCards('#partB .option-card', 'summaryB', 'capB', task.options, isAnswerM);
+
+            const label = isAnswerM ? 'Momentenverlauf M(x)' : 'Querkraftverlauf Q(x)';
+            document.getElementById('taskPromptB').innerText = `Welcher ${label} passt zur oben gezeigten Linie (gleiches System)?`;
+            document.getElementById('feedbackBoxB').classList.add('hidden');
+            document.getElementById('btnNextB').classList.add('hidden');
+            answeredB = task.selectedIdx !== undefined;
+            if (answeredB) showAnswerB(task.selectedIdx);
+        }
+
+        function newTaskB() {
+            currentTaskB = generateTaskB();
+            renderTaskB(currentTaskB);
+        }
+
+        // Markiert die gewählte und die richtige Karte und zeigt die Rückmeldung an
+        function showAnswerB(idx) {
+            const isCorrect = idx === currentTaskB.correctIndex;
+
+            currentTaskB.options.forEach((opt, i) => {
+                const card = document.getElementById(`capB${i}`).parentElement;
+                if (opt.kind === 'correct') {
+                    card.className = 'option-card bg-emerald-50 border-2 border-emerald-500 rounded-xl p-3 cursor-pointer';
+                } else if (i === idx) {
+                    card.className = 'option-card bg-rose-50 border-2 border-rose-500 rounded-xl p-3 cursor-pointer';
+                } else {
+                    card.className = 'option-card bg-white border-2 border-slate-200 rounded-xl p-3 cursor-pointer opacity-60';
+                }
+                card.setAttribute('aria-pressed', String(i === idx));
+                card.disabled = true;
+                document.getElementById(`capB${i}`).innerText = explainKind(opt.kind);
+            });
+
+            const feedback = document.getElementById('feedbackBoxB');
+            feedback.classList.remove('hidden', 'bg-emerald-50', 'text-emerald-800', 'bg-rose-50', 'text-rose-800');
+            feedback.classList.add(isCorrect ? 'bg-emerald-50' : 'bg-rose-50', isCorrect ? 'text-emerald-800' : 'text-rose-800');
+            const sysDetail = describeSystem(currentTaskB.params);
+            feedback.innerHTML = (isCorrect ? '🎉 Richtig!' : '❌ Leider falsch – die richtige Lösung ist grün markiert.') +
+                `<div class="text-xs font-normal mt-2 opacity-80">Das zugrunde liegende System: L = ${fmt(currentTaskB.params.L)} m, ${sysDetail}</div>`;
+            document.getElementById('btnNextB').classList.remove('hidden');
+        }
+
+        function selectOptionB(idx) {
+            if (answeredB || !currentTaskB) return;
+            answeredB = true;
+            currentTaskB.selectedIdx = idx;
+            const isCorrect = idx === currentTaskB.correctIndex;
+            showAnswerB(idx);
+            const sysDetail = describeSystem(currentTaskB.params);
+
+            const scoreB = erhoeheQuizPunktestand(
+                Number(document.getElementById('scoreCorrectB').innerText),
+                Number(document.getElementById('scoreTotalB').innerText),
+                isCorrect
+            );
+            document.getElementById('scoreTotalB').innerText = scoreB.versuche;
+            document.getElementById('scoreCorrectB').innerText = scoreB.punkte;
+
+            sessionLog4.push({
+                zeit: new Date().toLocaleTimeString('de-DE'),
+                aufgabe: `[Teil B] L = ${fmt(currentTaskB.params.L)} m, ${sysDetail} → gegeben: ${currentTaskB.givenType}(x), gesucht: ${currentTaskB.answerType}(x)`,
+                details: [`Gewählt: ${explainKind(currentTaskB.options[idx].kind)}`],
+                richtig: isCorrect ? 1 : 0,
+                gesamt: 1
+            });
+            document.getElementById('logCount4').innerText = sessionLog4.length;
+            document.getElementById('btnExportLog4').disabled = false;
+            learningProgress.save();
+            document.getElementById('btnNextB').focus();
+        }
+
+        document.querySelectorAll('#partB .option-card').forEach(card => {
+            card.addEventListener('click', () => selectOptionB(parseInt(card.dataset.bidx)));
+        });
+        document.getElementById('btnNewTaskB').addEventListener('click', newTaskB);
+        document.getElementById('btnNextB').addEventListener('click', () => {
+            newTaskB();
+            document.querySelector('#partB .option-card').focus();
+        });
+
+        // ================= Umschalter Teil A / Teil B =================
+        document.getElementById('btnPartA').addEventListener('click', () => {
+            document.getElementById('partA').classList.remove('hidden');
+            document.getElementById('partB').classList.add('hidden');
+            document.getElementById('btnPartA').classList.add('is-active');
+            document.getElementById('btnPartB').classList.remove('is-active');
+            learningProgress.save();
+        });
+        document.getElementById('btnPartB').addEventListener('click', () => {
+            document.getElementById('partB').classList.remove('hidden');
+            document.getElementById('partA').classList.add('hidden');
+            document.getElementById('btnPartB').classList.add('is-active');
+            document.getElementById('btnPartA').classList.remove('is-active');
+            if (!currentTaskB) newTaskB();
+            learningProgress.save();
+        });
+
+        // Q-Vorzeichenkonvention umschalten: ändert nur die Zeichenregel (welche Seite bei Q positiv ist),
+        // die zugrunde liegenden Werte und die +/- Beschriftung bleiben immer die echten, unverfälschten.
+        document.getElementById('qFlipToggle').addEventListener('change', function() {
+            qSignFlipped = this.checked;
+            if (currentTask && currentTask.diagramType === 'Q') {
+                renderTask(currentTask);
+            }
+            if (currentTaskB && (currentTaskB.givenType === 'Q' || currentTaskB.answerType === 'Q')) {
+                renderTaskB(currentTaskB);
+            }
+            learningProgress.save();
+        });
+
+        const learningProgress = initLearningProgress(5, {
+            capture: () => ({
+                sessionLog4,
+                scoreCorrectA: document.getElementById('scoreCorrectA').innerText,
+                scoreTotalA: document.getElementById('scoreTotalA').innerText,
+                scoreCorrectB: document.getElementById('scoreCorrectB').innerText,
+                scoreTotalB: document.getElementById('scoreTotalB').innerText,
+                activePartB: !document.getElementById('partB').classList.contains('hidden')
+            }),
+            restore: state => {
+                sessionLog4 = Array.isArray(state && state.sessionLog4) ? state.sessionLog4 : [];
+                ['scoreCorrectA', 'scoreTotalA', 'scoreCorrectB', 'scoreTotalB'].forEach(id => {
+                    document.getElementById(id).innerText = Number(state && state[id]) || 0;
+                });
+                document.getElementById('logCount4').innerText = sessionLog4.length;
+                document.getElementById('btnExportLog4').disabled = sessionLog4.length === 0;
+                const partB = Boolean(state && state.activePartB);
+                qSignFlipped = document.getElementById('qFlipToggle').checked;
+                document.getElementById('partA').classList.toggle('hidden', partB);
+                document.getElementById('partB').classList.toggle('hidden', !partB);
+                document.getElementById('btnPartA').classList.toggle('is-active', !partB);
+                document.getElementById('btnPartB').classList.toggle('is-active', partB);
+                if (partB && !currentTaskB) newTaskB();
+            }
+        });
+
+        // Init
+        newTask();
+    </script>
+</body>
+</html>

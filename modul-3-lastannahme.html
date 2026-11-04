@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modul 3: Lastannahme für Decken | Bautechnik-Labor</title>
+    <link rel="stylesheet" href="tailwind.min.css?v=2026-11-04d">
+    <link rel="stylesheet" href="labor.css?v=2026-11-04d">
+    <style>
+        .la-table { border-collapse: collapse; width: 100%; font-size: 0.8125rem; }
+        .la-table th, .la-table td { border: 1px solid #e2e8f0; padding: 0.4rem 0.5rem; text-align: right; }
+        .la-table th { background: #f8fafc; color: #334155; font-weight: 700; }
+        .la-table td:first-child, .la-table th:first-child { text-align: left; }
+        .la-table tr.la-summe td { font-weight: 700; background: #f7fee7; }
+        .la-table td:not(:first-child) { white-space: nowrap; }
+        @media (max-width: 640px) {
+            .la-table { font-size: 0.75rem; }
+            .la-table th, .la-table td { padding: 0.3rem 0.35rem; }
+            .la-rechnung { display: block; color: #64748b; }   /* Rechnung über dem Ergebnis statt daneben */
+        }
+        .la-step summary { cursor: pointer; list-style: none; }
+        .la-step summary::-webkit-details-marker { display: none; }
+        .la-step[open] .la-chevron { transform: rotate(90deg); }
+        .la-chevron { transition: transform 0.15s ease-in-out; display: inline-block; }
+        .la-figur { margin: 0.75rem 0 0.25rem; }
+        .la-figur figcaption { margin-top: 0.375rem; color: #64748b; font-size: 0.75rem; line-height: 1rem; }
+        .la-figur canvas, #deckenCanvas { background: #ffffff; }
+        .la-schicht { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.5rem; align-items: end; }
+        .la-schicht > :first-child { grid-column: 1 / -1; }   /* Baustoff über die volle Breite, damit der Name lesbar bleibt */
+        .la-schicht-aktionen { display: flex; gap: 0.25rem; justify-content: flex-end; }
+        .la-mini-btn { min-width: 2rem; padding: 0.25rem 0.5rem; border: 1px solid #cbd5e1; border-radius: 0.375rem; background: #ffffff; color: #475569; font-size: 0.8125rem; font-weight: 700; }
+        .la-mini-btn:hover:not(:disabled) { border-color: var(--mod-600); color: var(--mod-700); }
+        .la-mini-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+    </style>
+</head>
+<body data-modul="3" class="bg-slate-50 min-h-screen p-4 md:p-6 font-sans text-slate-800">
+    <div class="max-w-7xl mx-auto bg-white p-6 rounded-2xl shadow-xl border border-slate-100">
+
+        <!-- Header inkl. Navigation -->
+        <header class="mb-6 border-b pb-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+                <div class="flex flex-wrap items-center gap-x-3 gap-y-1 mb-1">
+                    <a href="index.html" class="lab-back">
+                        <span>&larr;</span> Zurück zum Menü
+                    </a>
+                    <span class="lab-badge">Modul 3</span>
+                </div>
+                <h1 class="text-3xl font-extrabold text-slate-800">Lastannahme für Decken</h1>
+                <p class="text-sm text-slate-500 mt-1">Eigengewicht und Nutzlast aus dem Deckenaufbau ermitteln – für Stahlbetondecken und Holzbalkendecken – und an Modul 4 übergeben.</p>
+            </div>
+            <div class="bg-lime-50 px-4 py-2.5 rounded-lg border border-lime-200 text-lime-900 text-sm font-semibold shadow-sm">
+                📐 Werte nach DIN EN 1991-1-1 + NA
+            </div>
+        </header>
+
+        <!-- Umschalter -->
+        <div class="flex flex-col sm:flex-row gap-2 mb-6">
+            <button id="tabLernen" class="lab-tab is-active" data-tab="lernen">1️⃣ Schritt für Schritt</button>
+            <button id="tabRechner" class="lab-tab" data-tab="rechner">2️⃣ Deckenlast berechnen</button>
+            <button id="tabUebung" class="lab-tab" data-tab="uebung">3️⃣ Übung</button>
+        </div>
+
+        <!-- ================= TEIL 1: SCHRITT FÜR SCHRITT ================= -->
+        <section id="teilLernen" class="space-y-4">
+            <p class="text-sm text-slate-600">Bevor man Auflagerkräfte und Momente berechnen kann (Modul 4), muss man wissen, welche Lasten auf ein Bauteil wirken. Arbeite die Schritte der Reihe nach durch. Danach kannst du in Teil 2 eigene Decken berechnen und in Teil 3 üben.</p>
+
+            <details class="la-step bg-slate-50 border border-slate-200 rounded-xl p-4" open>
+                <summary class="font-bold text-slate-800 flex items-center gap-2"><span class="la-chevron">▶</span> Schritt 1: Welche Lasten wirken auf eine Decke?</summary>
+                <div class="mt-3 text-sm text-slate-700 space-y-2">
+                    <ul class="list-disc pl-5 space-y-1">
+                        <li><strong>Ständige Last g</strong> (Eigengewicht): das Gewicht aller Schichten der Decke – Belag, Estrich, Dämmung, Rohdecke bzw. Balken, Putz oder Bekleidung. Sie wirkt immer.</li>
+                        <li><strong>Veränderliche Last q</strong> (Nutzlast): Menschen, Möbel, Geräte. Sie hängt von der Nutzung des Raums ab und ist in der Norm festgelegt.</li>
+                    </ul>
+                    <p>Der Index <strong>k</strong> (g<sub>k</sub>, q<sub>k</sub>) steht für <em>charakteristisch</em>: Das sind die Werte aus Tabellen, noch ohne Sicherheitsbeiwerte. Bei einer Decke gibt man die Lasten als <strong>Flächenlast in kN/m²</strong> an – also „wie viel Last auf einen Quadratmeter drückt“.</p>
+                    <figure class="la-figur">
+                        <div><canvas id="figLasten" width="900" height="360" data-responsive="1" role="img" aria-label="Schnitt durch eine Stahlbetondecke mit Parkett, Estrich, Trittschalldämmung, Stahlbetonplatte und Putz. Darüber die Nutzlast als Pfeile."></canvas></div>
+                        <figcaption>Schnitt durch eine Stahlbetondecke. Jede Schicht trägt zum Eigengewicht g<sub>k</sub> bei, darüber wirkt die Nutzlast q<sub>k</sub>. Schichtdicken überhöht dargestellt.</figcaption>
+                    </figure>
+                </div>
+            </details>
+
+            <details class="la-step bg-slate-50 border border-slate-200 rounded-xl p-4">
+                <summary class="font-bold text-slate-800 flex items-center gap-2"><span class="la-chevron">▶</span> Schritt 2: Eigengewicht einer Schicht berechnen</summary>
+                <div class="mt-3 text-sm text-slate-700 space-y-2">
+                    <p>Jeder Baustoff hat eine <strong>Wichte γ</strong> (gesprochen „gamma“) in kN/m³: das Gewicht von einem Kubikmeter. Für eine Schicht der Dicke d gilt:</p>
+                    <p class="bg-white border border-slate-200 rounded-lg p-3 font-mono text-center"><strong>g = d · γ</strong> &nbsp; [m · kN/m³ = kN/m²]</p>
+                    <figure class="la-figur">
+                        <div><canvas id="figWuerfel" width="900" height="230" data-responsive="1" role="img" aria-label="Ein Quadratmeter Zementestrich mit 5 cm Dicke: Volumen 0,05 Kubikmeter, Gewicht 1,10 Kilonewton."></canvas></div>
+                        <figcaption>Warum g = d · γ? Ein Quadratmeter Estrich mit 5 cm Dicke hat das Volumen 1 m · 1 m · 0,05 m = 0,05 m³. Sein Gewicht ist 0,05 m³ · 22 kN/m³ = 1,10 kN – und das auf genau einem Quadratmeter.</figcaption>
+                    </figure>
+                    <p class="bg-amber-50 border border-amber-200 rounded-lg p-3"><strong>Häufigster Fehler:</strong> Die Dicke muss in <strong>Metern</strong> eingesetzt werden. 5 cm = 0,05 m. Wer 5 · 22 rechnet, erhält das Hundertfache.</p>
+                    <div id="baustoffTabelle" class="overflow-x-auto"></div>
+                    <p class="text-xs text-slate-500">Richtwerte nach DIN EN 1991-1-1 (Anhang A) mit Nationalem Anhang bzw. Bautabellen. Wenn ihr im Unterricht mit einer anderen Tabelle arbeitet, gilt deren Wert – in Teil 2 lässt sich jede Wichte ändern.</p>
+                </div>
+            </details>
+
+            <details class="la-step bg-slate-50 border border-slate-200 rounded-xl p-4">
+                <summary class="font-bold text-slate-800 flex items-center gap-2"><span class="la-chevron">▶</span> Schritt 3: Nutzlast und Trennwandzuschlag</summary>
+                <div class="mt-3 text-sm text-slate-700 space-y-2">
+                    <p>Die Nutzlast q<sub>k</sub> liest man nach der <strong>Nutzung des Raums</strong> aus der Norm ab (DIN EN 1991-1-1/NA, Tabelle 6.1DE). Auszug:</p>
+                    <div id="nutzlastTabelle" class="overflow-x-auto"></div>
+                    <p><strong>Leichte Trennwände</strong> (z. B. Ständerwände, die man später versetzen kann) werden nicht einzeln berechnet. Stattdessen erhöht man die Nutzlast um einen <strong>Trennwandzuschlag</strong>:</p>
+                    <ul class="list-disc pl-5 space-y-1">
+                        <li>Wände bis 3 kN/m Wandlänge: <strong>+ 0,8 kN/m²</strong></li>
+                        <li>Wände bis 5 kN/m Wandlänge: <strong>+ 1,2 kN/m²</strong></li>
+                        <li>Schwerere Wände werden als eigene Linienlast angesetzt. Bei Nutzlasten ab 5 kN/m² ist kein Zuschlag nötig.</li>
+                    </ul>
+                    <p>Der Zuschlag zählt zur <strong>veränderlichen Last q<sub>k</sub></strong>, nicht zum Eigengewicht – Trennwände kann man umstellen oder entfernen.</p>
+                </div>
+            </details>
+
+            <details class="la-step bg-slate-50 border border-slate-200 rounded-xl p-4">
+                <summary class="font-bold text-slate-800 flex items-center gap-2"><span class="la-chevron">▶</span> Schritt 4: Beispiel – Stahlbetondecke in einer Wohnung</summary>
+                <div class="mt-3 text-sm text-slate-700 space-y-2">
+                    <p>Deckenaufbau von oben nach unten (wie in der Zeichnung aus Schritt 1). Wohnraum mit leichten Trennwänden bis 3 kN/m.</p>
+                    <div id="beispielTabelle" class="overflow-x-auto"></div>
+                    <p class="text-xs text-slate-500">Tipp: Lege für die Lastannahme immer so eine Tabelle an. Dann übersiehst du keine Schicht und kannst jede Zeile einzeln kontrollieren.</p>
+                </div>
+            </details>
+
+            <details class="la-step bg-slate-50 border border-slate-200 rounded-xl p-4">
+                <summary class="font-bold text-slate-800 flex items-center gap-2"><span class="la-chevron">▶</span> Schritt 5: Von der Fläche zum Balken – die Einzugsbreite</summary>
+                <div class="mt-3 text-sm text-slate-700 space-y-2">
+                    <p>Für die Statik eines Balkens (Modul 4) braucht man eine <strong>Streckenlast in kN/m</strong>. Jeder Balken trägt den Streifen der Decke, der näher an ihm liegt als am Nachbarbalken. Die Breite dieses Streifens heißt <strong>Einzugsbreite</strong> – bei gleichen Abständen ist sie gleich dem Balkenabstand e.</p>
+                    <p class="bg-white border border-slate-200 rounded-lg p-3 font-mono text-center"><strong>Streckenlast [kN/m] = Flächenlast [kN/m²] · Einzugsbreite [m]</strong></p>
+                    <figure class="la-figur">
+                        <div><canvas id="figEinzug" width="900" height="270" data-responsive="1" role="img" aria-label="Draufsicht auf eine Holzbalkendecke. Ein Balken trägt den Deckenstreifen der Breite e. Daneben der Balken als Träger mit der Streckenlast q mal e."></canvas></div>
+                        <figcaption>Draufsicht auf eine Holzbalkendecke: Der mittlere Balken trägt den grünen Streifen der Breite e. Aus der Flächenlast wird dadurch eine Streckenlast auf dem Balken.</figcaption>
+                    </figure>
+                    <ul class="list-disc pl-5 space-y-1">
+                        <li><strong>Holzbalkendecke:</strong> Einzugsbreite = Balkenabstand e. Dazu kommt das Eigengewicht des Balkens selbst: g<sub>Balken</sub> = b · h · γ<sub>Holz</sub> in kN/m.</li>
+                        <li><strong>Stahlbetondecke:</strong> Man rechnet meist einen <strong>1 m breiten Deckenstreifen</strong>. Dann hat die Streckenlast in kN/m denselben Zahlenwert wie die Flächenlast in kN/m². Für einen Unterzug ist die Einzugsbreite der halbe Abstand zu den Nachbarauflagern auf beiden Seiten.</li>
+                    </ul>
+                </div>
+            </details>
+
+            <details class="la-step bg-slate-50 border border-slate-200 rounded-xl p-4">
+                <summary class="font-bold text-slate-800 flex items-center gap-2"><span class="la-chevron">▶</span> Schritt 6: Kontrolle und Ausblick</summary>
+                <div class="mt-3 text-sm text-slate-700 space-y-2">
+                    <p><strong>Plausibilität prüfen:</strong> Eine Stahlbetondecke im Wohnungsbau hat meist g<sub>k</sub> ≈ 5 bis 8 kN/m², eine Holzbalkendecke nur etwa 0,5 bis 2 kN/m². Liegt dein Ergebnis weit daneben, prüfe die Einheiten (cm → m).</p>
+                    <p><strong>Typische Fehler:</strong> Dicke in cm statt in m eingesetzt · Trennwandzuschlag zum Eigengewicht gezählt · Einzugsbreite vergessen · Balkeneigengewicht vergessen.</p>
+                    <p><strong>Ausblick Bemessung:</strong> Für Nachweise nach Eurocode werden die Lasten mit Teilsicherheitsbeiwerten erhöht: q<sub>d</sub> = 1,35 · g<sub>k</sub> + 1,5 · q<sub>k</sub>. Modul 4 und Modul 6 in diesem Labor rechnen mit den charakteristischen Werten g<sub>k</sub> und q<sub>k</sub>; der Bemessungswert wird in Teil 2 zur Information mit angezeigt.</p>
+                </div>
+            </details>
+        </section>
+
+        <!-- ================= TEIL 2: RECHNER ================= -->
+        <section id="teilRechner" class="hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                <div class="lg:col-span-5 space-y-4">
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 shadow-sm space-y-3">
+                        <h3 class="text-lg font-bold text-slate-700 flex items-center gap-2"><span class="lab-bar"></span> Decke</h3>
+                        <div>
+                            <label for="r_typ" class="block text-xs font-bold text-slate-500 mb-1">Deckenart</label>
+                            <select id="r_typ" class="w-full border border-slate-300 rounded-lg p-2 text-sm bg-white">
+                                <option value="beton">Stahlbetondecke</option>
+                                <option value="holz">Holzbalkendecke</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="r_vorlage" class="block text-xs font-bold text-slate-500 mb-1">Vorlage laden</label>
+                            <select id="r_vorlage" class="w-full border border-slate-300 rounded-lg p-2 text-sm bg-white">
+                                <option value="">– eigener Aufbau –</option>
+                                <option value="beton-wohnung">Stahlbetondecke, Wohnung</option>
+                                <option value="beton-schule">Stahlbetondecke, Klassenraum</option>
+                                <option value="holz-wohnung">Holzbalkendecke, Wohnung (Neubau)</option>
+                                <option value="holz-altbau">Holzbalkendecke, Altbau mit Schüttung</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="p-4 bg-white rounded-xl border border-slate-200 shadow-sm space-y-3">
+                        <h3 class="text-lg font-bold text-slate-700 flex items-center gap-2"><span class="lab-bar"></span> Schichten (von oben nach unten)</h3>
+                        <div id="schichtListe" class="space-y-3"></div>
+                        <button id="btnSchichtNeu" type="button" class="w-full text-sm font-bold border-2 border-dashed border-slate-300 hover:border-lime-600 text-slate-600 hover:text-lime-800 rounded-lg py-2 transition-colors">+ Schicht hinzufügen</button>
+                    </div>
+
+                    <div id="balkenBox" class="hidden p-4 bg-white rounded-xl border border-slate-200 shadow-sm space-y-3">
+                        <h3 class="text-lg font-bold text-slate-700 flex items-center gap-2"><span class="lab-bar"></span> Holzbalken</h3>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div><label for="r_b" class="block text-xs font-bold text-slate-500 mb-1">Breite b [cm]</label>
+                                <input type="number" id="r_b" min="1" max="60" step="1" class="w-full border border-slate-300 rounded p-1.5 text-sm"></div>
+                            <div><label for="r_h" class="block text-xs font-bold text-slate-500 mb-1">Höhe h [cm]</label>
+                                <input type="number" id="r_h" min="1" max="60" step="1" class="w-full border border-slate-300 rounded p-1.5 text-sm"></div>
+                            <div><label for="r_e" class="block text-xs font-bold text-slate-500 mb-1">Balkenabstand e [cm]</label>
+                                <input type="number" id="r_e" min="10" max="300" step="0.5" class="w-full border border-slate-300 rounded p-1.5 text-sm"></div>
+                            <div><label for="r_gh" class="block text-xs font-bold text-slate-500 mb-1">Wichte Holz γ [kN/m³]</label>
+                                <input type="number" id="r_gh" min="0.1" max="20" step="0.1" class="w-full border border-slate-300 rounded p-1.5 text-sm"></div>
+                        </div>
+                        <p class="text-xs text-slate-500">Schichten aus „Putz und Bekleidung“ werden unter den Balken gezeichnet, alle anderen darüber.</p>
+                    </div>
+
+                    <div class="p-4 bg-white rounded-xl border border-slate-200 shadow-sm space-y-3">
+                        <h3 class="text-lg font-bold text-slate-700 flex items-center gap-2"><span class="lab-bar"></span> Nutzung</h3>
+                        <div>
+                            <label for="r_nutzung" class="block text-xs font-bold text-slate-500 mb-1">Nutzungskategorie (Nutzlast q<sub>k</sub>)</label>
+                            <select id="r_nutzung" class="w-full border border-slate-300 rounded-lg p-2 text-sm bg-white"></select>
+                        </div>
+                        <div>
+                            <label for="r_trennwand" class="block text-xs font-bold text-slate-500 mb-1">Leichte Trennwände</label>
+                            <select id="r_trennwand" class="w-full border border-slate-300 rounded-lg p-2 text-sm bg-white"></select>
+                        </div>
+                        <div id="breiteBox">
+                            <label for="r_breite" class="block text-xs font-bold text-slate-500 mb-1">Einzugsbreite [m] (1,00 m = Deckenstreifen)</label>
+                            <input type="number" id="r_breite" min="0.1" max="20" step="0.05" class="w-full border border-slate-300 rounded p-1.5 text-sm">
+                        </div>
+                        <div>
+                            <label for="r_L" class="block text-xs font-bold text-slate-500 mb-1">Stützweite L [m] für Modul 4</label>
+                            <input type="number" id="r_L" min="1" max="30" step="0.1" class="w-full border border-slate-300 rounded p-1.5 text-sm">
+                        </div>
+                    </div>
+
+                    <div id="r_fehler" class="hidden text-sm p-3 rounded-lg border border-rose-200 bg-rose-50 text-rose-800" role="alert"></div>
+                </div>
+
+                <div class="lg:col-span-7 space-y-6">
+                    <div>
+                        <canvas id="deckenCanvas" width="900" height="380" data-responsive="1" role="img" aria-label="Schnitt durch die eingegebene Decke mit allen Schichten, Eigengewicht und Nutzlast. Die Werte stehen auch in der Tabelle darunter."></canvas>
+                    </div>
+                    <div class="bg-slate-50 p-4 sm:p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                        <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2"><span class="lab-bar"></span> Lastzusammenstellung</h3>
+                        <div id="r_tabelle" class="overflow-x-auto"></div>
+                        <div id="r_strecke" class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm"></div>
+                        <p id="r_hinweis" class="text-xs text-slate-500"></p>
+                        <a id="btnZuModul4" href="modul-4-statik-einfeldtraeger.html" class="block text-center w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-2.5 rounded-lg shadow transition-colors text-sm">
+                            ➡️ Lasten an Modul 4 übergeben (Auflagerkräfte und Momente)
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TEIL 3: ÜBUNG ================= -->
+        <section id="teilUebung" class="hidden space-y-6">
+            <div class="bg-white p-6 rounded-2xl border-2 border-dashed border-amber-300 shadow-sm">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-1">
+                    <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                        <span class="w-2 h-5 bg-amber-500 rounded-full"></span>
+                        Übung: Lastannahme
+                    </h3>
+                    <button id="btnNeueUebung" class="text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-lg transition-colors">
+                        🎲 Neue Aufgabe
+                    </button>
+                </div>
+                <p id="uebungText" class="text-sm text-slate-700 mt-2 mb-3"></p>
+                <div id="uebungAufbau" class="overflow-x-auto mb-4"></div>
+
+                <div class="bg-amber-50/60 p-3 rounded-lg border border-amber-100 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div class="flex items-center gap-2">
+                        <label for="ue_gk" class="text-xs font-mono w-28">g<sub>k</sub> =</label>
+                        <input type="number" id="ue_gk" step="0.01" class="w-28 border border-slate-300 rounded px-2 py-1 text-sm">
+                        <span class="text-xs">kN/m²</span><span id="fb_gk" class="text-lg"></span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <label for="ue_qk" class="text-xs font-mono w-28">q<sub>k</sub> =</label>
+                        <input type="number" id="ue_qk" step="0.01" class="w-28 border border-slate-300 rounded px-2 py-1 text-sm">
+                        <span class="text-xs">kN/m²</span><span id="fb_qk" class="text-lg"></span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <label for="ue_gs" class="text-xs font-mono w-28">g (Strecke) =</label>
+                        <input type="number" id="ue_gs" step="0.01" class="w-28 border border-slate-300 rounded px-2 py-1 text-sm">
+                        <span class="text-xs">kN/m</span><span id="fb_gs" class="text-lg"></span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <label for="ue_qs" class="text-xs font-mono w-28">q (Strecke) =</label>
+                        <input type="number" id="ue_qs" step="0.01" class="w-28 border border-slate-300 rounded px-2 py-1 text-sm">
+                        <span class="text-xs">kN/m</span><span id="fb_qs" class="text-lg"></span>
+                    </div>
+                </div>
+                <p class="text-xs text-slate-500 mt-2">Rundungstoleranz 2 %, mindestens 0,02. Dicken in Metern einsetzen!</p>
+                <button id="btnPruefen" class="w-full mt-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-lg transition-colors">Prüfen</button>
+                <div id="uebungErgebnis" class="hidden mt-4 text-sm p-3 rounded-lg"></div>
+
+                <div class="border-t border-slate-200 mt-4 pt-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                    <input type="text" id="studentName3" placeholder="Name (optional)" aria-label="Name (optional)" class="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm">
+                    <button id="btnExportLog3" class="text-sm font-bold bg-slate-700 hover:bg-slate-800 text-white px-4 py-2 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed" disabled>
+                        📄 Protokoll exportieren (<span id="logCount3">0</span>)
+                    </button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="labor.js?v=2026-11-04d"></script>
+    <script src="version.js?v=3.0"></script>
+    <script src="statik-core.js?v=2026-11-04d"></script>
+    <script>
+        const baustoff = id => LAST_BAUSTOFFE.find(b => b.id === id) || LAST_BAUSTOFFE[LAST_BAUSTOFFE.length - 1];
+        const nutzung = kat => NUTZLASTEN.find(n => n.kat === kat) || NUTZLASTEN[1];
+        const trennwand = id => TRENNWANDZUSCHLAEGE.find(t => t.id === id) || TRENNWANDZUSCHLAEGE[0];
+        const UNTER_BALKEN = 'Putz und Bekleidung';
+
+        // ================= Vorlagen =================
+        // Schichten: [Baustoff-ID, Dicke in cm] (Wichte aus dem Katalog), von oben nach unten
+        const VORLAGEN = {
+            'beton-wohnung': { typ: 'beton', schichten: [['parkett', 1.5], ['zementestrich', 5], ['mineralwolle', 3], ['stahlbeton', 18], ['kalkzementputz', 1.5]],
+                nutzung: 'A2', trennwand: 'bis3', breite: 1, L: 4.5 },
+            'beton-schule': { typ: 'beton', schichten: [['fliesen', 1], ['zementestrich', 6], ['eps', 4], ['stahlbeton', 22], ['kalkzementputz', 1.5]],
+                nutzung: 'C1', trennwand: 'bis5', breite: 1, L: 6 },
+            'holz-wohnung': { typ: 'holz', schichten: [['nadelholz', 2.4], ['holzfaser', 2], ['osb', 2.2], ['gipskarton', 1.25]],
+                balken: { b: 10, h: 22, e: 62.5, gamma: 4.2 }, nutzung: 'A2', trennwand: 'bis3', L: 4 },
+            'holz-altbau': { typ: 'holz', schichten: [['nadelholz', 2.8], ['sandkies', 6], ['kalkzementputz', 2]],
+                balken: { b: 14, h: 24, e: 80, gamma: 4.2 }, nutzung: 'A2', trennwand: 'keiner', L: 4.5 }
+        };
+        function ausVorlage(name) {
+            const v = VORLAGEN[name];
+            return {
+                typ: v.typ,
+                schichten: v.schichten.map(([id, d]) => ({ id, d, gamma: baustoff(id).gamma, name: baustoff(id).name })),
+                balken: v.balken ? { ...v.balken } : { b: 10, h: 22, e: 62.5, gamma: 4.2 },
+                nutzung: v.nutzung, trennwand: v.trennwand, breite: v.breite || 1, L: v.L
+            };
+        }
+
+        // Daten → Rechenkern (Dicken in cm → m)
+        function rechne(decke) {
+            const holz = decke.typ === 'holz';
+            return berechneDeckenlast({
+                schichten: decke.schichten.map(s => ({ name: s.name, d: s.d / 100, gamma: s.gamma })),
+                balken: holz ? { b: decke.balken.b / 100, h: decke.balken.h / 100, gamma: decke.balken.gamma, e: decke.balken.e / 100 } : null,
+                nutzlast: nutzung(decke.nutzung).qk,
+                trennwand: trennwand(decke.trennwand).wert,
+                breite: holz ? undefined : decke.breite
+            });
+        }
+
+        // Länge in m ohne überflüssige Nullen, aber genau bis 0,1 mm (1,25 cm → 0,0125)
+        const fmtM = x => String(Number(x.toFixed(4))).replace('.', ',');
+
+        // ================= Lastzusammenstellung als Tabelle =================
+        function lastTabelle(decke, r, { mitRechnung = true } = {}) {
+            const zeilen = r.schichten.map((s, i) => `<tr><td>${s.name}</td><td>${fmt(decke.schichten[i].d)} cm</td><td>${fmt(s.gamma, 1)}</td>` +
+                `<td>${mitRechnung ? `<span class="la-rechnung">${fmtM(s.d)} · ${fmt(s.gamma)} = </span>` : ''}<strong>${fmt(s.g, 3)}</strong></td></tr>`);
+            if (decke.typ === 'holz') {
+                const b = decke.balken;
+                zeilen.push(`<tr><td>Holzbalken b/h = ${fmt(b.b)}/${fmt(b.h)} cm, e = ${fmt(b.e, 1)} cm</td><td>–</td><td>${fmt(b.gamma, 1)}</td>` +
+                    `<td>${mitRechnung ? `<span class="la-rechnung">${fmtM(b.b / 100)} · ${fmtM(b.h / 100)} · ${fmt(b.gamma)} / ${fmtM(b.e / 100)} = </span>` : ''}<strong>${fmt(r.gBalkenFlaeche, 3)}</strong></td></tr>`);
+            }
+            const n = nutzung(decke.nutzung), t = trennwand(decke.trennwand);
+            return `<table class="la-table">
+                <thead><tr><th>Ständige Last</th><th>d</th><th>γ [kN/m³]</th><th>g [kN/m²]</th></tr></thead>
+                <tbody>${zeilen.join('')}
+                    <tr class="la-summe"><td colspan="3">Summe ständige Last g<sub>k</sub></td><td>${fmt(r.gk, 2)} kN/m²</td></tr>
+                    <tr><td colspan="3">Nutzlast Kategorie ${n.kat}: ${n.name}</td><td>${fmt(n.qk, 2)}</td></tr>
+                    <tr><td colspan="3">Trennwandzuschlag: ${t.name}</td><td>${fmt(t.wert, 2)}</td></tr>
+                    <tr class="la-summe"><td colspan="3">Summe veränderliche Last q<sub>k</sub></td><td>${fmt(r.qk, 2)} kN/m²</td></tr>
+                </tbody></table>`;
+        }
+
+        // ================= Zeichnen: Deckenschnitt =================
+        const FARBEN = {
+            stahlbeton: '#94a3b8', nadelholz: '#d9a35b', bsh: '#d9a35b', zementestrich: '#cbd5e1', calciumsulfatestrich: '#e2e8f0',
+            gussasphalt: '#64748b', fliesen: '#fca5a5', parkett: '#b7793f', osb: '#e0b46c', mineralwolle: '#fde68a', eps: '#e0f2fe',
+            holzfaser: '#d6c29a', sandkies: '#e7d3a7', kalkzementputz: '#f1f5f9', gipskarton: '#f8fafc', eigen: '#ddd6fe'
+        };
+
+        function pfeilReihe(ctx, x0, x1, yOben, yUnten, farbe) {
+            ctx.save();
+            ctx.strokeStyle = farbe; ctx.fillStyle = farbe; ctx.lineWidth = 1.5;
+            ctx.beginPath(); ctx.moveTo(x0, yOben); ctx.lineTo(x1, yOben); ctx.stroke();
+            const n = Math.max(3, Math.round((x1 - x0) / 24));
+            for (let i = 0; i <= n; i++) {
+                const x = x0 + (i / n) * (x1 - x0);
+                ctx.beginPath(); ctx.moveTo(x, yOben); ctx.lineTo(x, yUnten - 3); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(x, yUnten); ctx.lineTo(x - 3.5, yUnten - 7); ctx.lineTo(x + 3.5, yUnten - 7); ctx.fill();
+            }
+            ctx.restore();
+        }
+
+        function schichtFlaeche(ctx, id, x, y, w, h) {
+            ctx.save();
+            ctx.fillStyle = FARBEN[id] || '#e2e8f0';
+            ctx.fillRect(x, y, w, h);
+            ctx.beginPath(); ctx.rect(x, y, w, h); ctx.clip();
+            ctx.strokeStyle = 'rgba(51, 65, 85, 0.35)';
+            ctx.fillStyle = 'rgba(51, 65, 85, 0.35)';
+            ctx.lineWidth = 1;
+            if (id === 'stahlbeton') {            // Punkte und Dreiecke (Beton)
+                for (let px = x + 6; px < x + w; px += 14) for (let py = y + 5; py < y + h; py += 11) {
+                    ctx.beginPath(); ctx.arc(px + ((py / 11) % 2) * 5, py, 1.2, 0, Math.PI * 2); ctx.fill();
+                }
+            } else if (id === 'mineralwolle' || id === 'holzfaser') {   // Wellenlinie (Dämmung)
+                ctx.beginPath();
+                for (let px = x; px <= x + w; px += 2) ctx.lineTo(px, y + h / 2 + Math.sin((px - x) / 4) * Math.min(h / 2 - 1, 5));
+                ctx.stroke();
+            } else if (id === 'sandkies') {
+                for (let px = x + 3; px < x + w; px += 7) for (let py = y + 3; py < y + h; py += 6) {
+                    ctx.beginPath(); ctx.arc(px + (py % 2) * 3, py, 0.9, 0, Math.PI * 2); ctx.fill();
+                }
+            } else if (['nadelholz', 'bsh', 'parkett', 'osb'].includes(id)) {   // Holzmaserung
+                for (let py = y + 3; py < y + h; py += 4) {
+                    ctx.beginPath(); ctx.moveTo(x, py); ctx.lineTo(x + w, py + 1); ctx.stroke();
+                }
+            } else if (id === 'zementestrich' || id === 'calciumsulfatestrich') {
+                for (let px = x + 4; px < x + w; px += 9) { ctx.beginPath(); ctx.arc(px, y + h / 2, 0.8, 0, Math.PI * 2); ctx.fill(); }
+            }
+            ctx.restore();
+            ctx.save();
+            ctx.strokeStyle = '#475569'; ctx.lineWidth = 1;
+            ctx.strokeRect(x, y, w, h);
+            ctx.restore();
+        }
+
+        function text(ctx, t, x, y, { farbe = '#334155', font = '12px sans-serif', align = 'left' } = {}) {
+            ctx.save(); ctx.font = font; ctx.fillStyle = farbe; ctx.textAlign = align; fillTextSub(ctx, t, x, y); ctx.restore();
+        }
+
+        // Maßstab der Holzbalkendecke allein aus der Breite (gleicher Maßstab waagerecht und senkrecht)
+        function holzMassstab(W, decke) {
+            const schmal = W < 600, b = decke.balken;
+            const swMax = Math.round(W * (schmal ? 0.62 : 0.46));
+            const rand = Math.max(0.1 * b.e, b.b / 2 + 1);   // Abstand vom Rand bis zur Mitte des ersten Balkens
+            const proCm = Math.min(9, swMax / (2 * rand + 2 * b.e));
+            const schnitt = decke.schichten.reduce((a, s) => a + Math.max(s.d * proCm, 5), 0) + b.h * proCm;
+            return { swMax, rand, proCm, schnitt };
+        }
+
+        // Höhe der Zeichenfläche: Stahlbeton fest, Holzbalkendecke passend zum maßstäblichen Schnitt
+        function deckenHoehe(W, decke) {
+            const schmal = W < 600;
+            if (decke.typ !== 'holz') return schmal ? 440 : 380;
+            const { schnitt } = holzMassstab(W, decke);
+            const marken = decke.schichten.length + 1;
+            return schmal
+                ? Math.round(78 + schnitt + 56 + marken * 20 + 40)                 // Schnitt, Einzugsbreite, Legende, g_k, Hinweis
+                : Math.round(Math.max(78 + schnitt + 50, 78 + marken * 18 + 10) + 24);
+        }
+
+        // Schnitt durch die Decke mit beschrifteten Schichten (Beschriftung rechts mit Hinweislinien,
+        // bei der Holzbalkendecke auf dem Handy als Legende unter der Zeichnung)
+        function zeichneDecke(ctx, W, H, decke) {
+            const r = rechne(decke);
+            const holz = decke.typ === 'holz';
+            const schmal = W < 600;
+            const x0 = 14, swMax = holz ? holzMassstab(W, decke).swMax : Math.round(W * (schmal ? 0.42 : 0.46));
+            const legende = holz && schmal;
+            const lastOben = 22, lastUnten = 64, top = 78, verfuegbar = holz ? H - top : H - top - 16 - (schmal ? 30 : 0);
+            const kurz = name => (W < 760 ? name.split(' (')[0] : name);   // wenig Platz: Zusatz in Klammern weglassen
+
+            // Maßstab: Bei der Holzbalkendecke gilt derselbe Maßstab waagerecht und senkrecht, damit die Balken
+            // im richtigen Verhältnis b : h erscheinen. Gezeigt werden drei Balken; der mittlere mit seiner
+            // vollen Einzugsbreite e. Die Breite der Zeichnung ergibt sich daraus.
+            const gesamtCm = decke.schichten.reduce((a, s) => a + s.d, 0) + (holz ? decke.balken.h : 0);
+            let proCm = Math.min(9, verfuegbar / Math.max(gesamtCm, 1));
+            let sw = swMax, rand = 0;
+            if (holz) {
+                const b = decke.balken, m = holzMassstab(W, decke);
+                rand = m.rand;
+                proCm = Math.min(proCm, m.proCm);
+                sw = (2 * rand + 2 * b.e) * proCm;
+            }
+
+            // Nutzlast als Pfeile, Eigengewicht als Text
+            pfeilReihe(ctx, x0, x0 + sw, lastOben + 18, lastUnten, '#e11d48');
+            text(ctx, `Nutzlast q_{k} = ${fmt(r.qk, 2)} kN/m²`, x0, lastOben + 10, { farbe: '#be123c', font: 'bold 12px sans-serif' });
+            // Eigengewicht: auf dem Handy unter der Zeichnung, sonst neben der Nutzlast
+            text(ctx, `Eigengewicht g_{k} = ${fmt(r.gk, 2)} kN/m²`, schmal ? x0 : x0 + sw + 14, schmal ? H - 22 : lastOben + 10, { farbe: '#334155', font: 'bold 12px sans-serif' });
+
+            const oben = holz ? decke.schichten.filter(s => baustoff(s.id).gruppe !== UNTER_BALKEN) : decke.schichten;
+            const unten = holz ? decke.schichten.filter(s => baustoff(s.id).gruppe === UNTER_BALKEN) : [];
+            const mindest = holz ? 5 : 7;
+            let ueberhoeht = false;
+            const hoehe = d => { const h = d * proCm; if (h < mindest) { ueberhoeht = true; return mindest; } return h; };
+
+            const marken = [];   // { y (Mitte), text1, text2 } für die Beschriftung
+            let y = top;
+            oben.forEach(s => {
+                const h = hoehe(s.d);
+                schichtFlaeche(ctx, s.id, x0, y, sw, h);
+                marken.push({ y: y + h / 2, id: s.id, t1: `${kurz(s.name)}, ${fmt(s.d)} cm`, t2: `${fmt(s.d / 100 * s.gamma, 3)} kN/m²` });
+                y += h;
+            });
+            let einzug = null;
+            if (holz) {
+                const b = decke.balken;
+                const hb = b.h * proCm;                              // Balken immer maßstäblich (b und h gleicher Maßstab)
+                const proCmX = proCm;
+                const bw = b.b * proCm;
+                const mitten = [0, 1, 2].map(k => x0 + (rand + k * b.e) * proCm);
+                // Einzugsbreite des mittleren Balkens
+                ctx.save();
+                ctx.fillStyle = 'rgba(132, 204, 22, 0.18)';
+                ctx.fillRect(mitten[1] - b.e * proCmX / 2, y, b.e * proCmX, hb);
+                ctx.restore();
+                ctx.save(); ctx.strokeStyle = '#cbd5e1'; ctx.setLineDash([4, 4]);
+                ctx.beginPath(); ctx.moveTo(x0, y); ctx.lineTo(x0, y + hb); ctx.moveTo(x0 + sw, y); ctx.lineTo(x0 + sw, y + hb); ctx.stroke(); ctx.restore();
+                mitten.forEach(m => schichtFlaeche(ctx, 'nadelholz', m - bw / 2, y, bw, hb));
+                marken.push({ y: y + hb / 2, id: 'nadelholz', t1: `Holzbalken ${fmt(b.b)}/${fmt(b.h)} cm`, t2: `${fmt(r.gBalkenFlaeche, 3)} kN/m²${schmal ? '' : ' (über e verteilt)'}` });
+                einzug = [mitten[1] - b.e * proCmX / 2, mitten[1] + b.e * proCmX / 2];
+                y += hb;
+            }
+            unten.forEach(s => {
+                const h = hoehe(s.d);
+                schichtFlaeche(ctx, s.id, x0, y, sw, h);
+                marken.push({ y: y + h / 2, id: s.id, t1: `${kurz(s.name)}, ${fmt(s.d)} cm`, t2: `${fmt(s.d / 100 * s.gamma, 3)} kN/m²` });
+                y += h;
+            });
+
+            // Bemaßung der Einzugsbreite direkt unter dem Schnitt
+            if (einzug) {
+                const yE = y + 30, [e0, e1] = einzug;
+                ctx.save(); ctx.strokeStyle = '#4d7c0f'; ctx.lineWidth = 1.2;
+                ctx.beginPath(); ctx.moveTo(e0, yE); ctx.lineTo(e1, yE); ctx.moveTo(e0, yE - 5); ctx.lineTo(e0, yE + 5); ctx.moveTo(e1, yE - 5); ctx.lineTo(e1, yE + 5); ctx.stroke();
+                ctx.restore();
+                text(ctx, `Einzugsbreite e = ${fmt(decke.balken.e, 1)} cm`, (e0 + e1) / 2, yE - 6, { farbe: '#3f6212', font: 'bold 11px sans-serif', align: 'center' });
+                y = yE + 6;
+            }
+
+            // Handy, Holzbalkendecke: Legende mit Farbfeldern unter der Zeichnung
+            if (legende) {
+                marken.forEach((m, i) => {
+                    const ly = y + 24 + i * 20;
+                    schichtFlaeche(ctx, m.id, x0, ly - 11, 14, 14);
+                    text(ctx, `${m.t1}:`, x0 + 22, ly, { font: '11px sans-serif' });
+                    ctx.save(); ctx.font = '11px sans-serif'; const w1 = ctx.measureText(`${m.t1}: `).width; ctx.restore();
+                    text(ctx, m.t2, x0 + 22 + w1, ly, { font: 'bold 11px sans-serif', farbe: '#3f6212' });
+                });
+                if (ueberhoeht) text(ctx, 'Dünne Schichten überhöht dargestellt', x0, H - 4, { farbe: '#94a3b8', font: 'italic 11px sans-serif' });
+                return;
+            }
+
+            // Beschriftungen gleichmäßig verteilen, aber möglichst auf Höhe der Schicht
+            const zeile = schmal ? 30 : 18;
+            const lx = x0 + sw + 26;
+            const lMin = top + 6, lMax = Math.max(lMin + zeile * (marken.length - 1), holz ? y : top + verfuegbar - 4);
+            const pos = marken.map(m => m.y);
+            for (let i = 1; i < pos.length; i++) pos[i] = Math.max(pos[i], pos[i - 1] + zeile);
+            for (let i = pos.length - 1; i >= 0; i--) {
+                pos[i] = Math.min(pos[i], lMax - (pos.length - 1 - i) * zeile);
+                if (i < pos.length - 1) pos[i] = Math.min(pos[i], pos[i + 1] - zeile);
+            }
+            for (let i = 0; i < pos.length; i++) pos[i] = Math.max(pos[i], lMin + i * zeile);
+            marken.forEach((m, i) => {
+                ctx.save(); ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 1;
+                ctx.beginPath(); ctx.moveTo(x0 + sw - 6, m.y); ctx.lineTo(x0 + sw + 8, m.y); ctx.lineTo(lx - 4, pos[i] - 4); ctx.stroke();
+                ctx.restore();
+                if (schmal) {
+                    text(ctx, m.t1, lx, pos[i] - 6, { font: '11px sans-serif' });
+                    text(ctx, m.t2, lx, pos[i] + 8, { font: 'bold 11px sans-serif', farbe: '#3f6212' });
+                } else {
+                    text(ctx, `${m.t1}:`, lx, pos[i], { font: '12px sans-serif' });
+                    ctx.save(); ctx.font = '12px sans-serif'; const w1 = ctx.measureText(`${m.t1}: `).width; ctx.restore();
+                    text(ctx, m.t2, lx + w1, pos[i], { font: 'bold 12px sans-serif', farbe: '#3f6212' });
+                }
+            });
+            if (ueberhoeht) text(ctx, 'Dünne Schichten überhöht dargestellt', x0, H - (schmal ? 4 : 6), { farbe: '#94a3b8', font: 'italic 11px sans-serif' });
+        }
+
+        // Ein Quadratmeter einer Schicht (Schritt 2)
+        function figWuerfel(ctx, W, H) {
+            const schmal = W < 600;
+            const s = schmal ? 70 : 110, tiefe = s * 0.5, dicke = 22;
+            const x = schmal ? 28 : 60, y = 70;
+            ctx.save();
+            ctx.lineWidth = 1.5; ctx.strokeStyle = '#475569';
+            // Oberseite
+            ctx.fillStyle = '#e2e8f0';
+            ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + s, y); ctx.lineTo(x + s + tiefe, y - tiefe * 0.6); ctx.lineTo(x + tiefe, y - tiefe * 0.6); ctx.closePath(); ctx.fill(); ctx.stroke();
+            // Vorderseite
+            schichtFlaeche(ctx, 'zementestrich', x, y, s, dicke);
+            // Seite
+            ctx.fillStyle = '#cbd5e1';
+            ctx.beginPath(); ctx.moveTo(x + s, y); ctx.lineTo(x + s + tiefe, y - tiefe * 0.6); ctx.lineTo(x + s + tiefe, y - tiefe * 0.6 + dicke); ctx.lineTo(x + s, y + dicke); ctx.closePath(); ctx.fill(); ctx.stroke();
+            ctx.restore();
+            text(ctx, '1 m', x + s / 2, y + dicke + 16, { align: 'center', font: 'bold 12px sans-serif' });
+            text(ctx, '1 m', x + s + tiefe / 2 + 12, y - tiefe * 0.3 + dicke / 2 + 10, { font: 'bold 12px sans-serif' });
+            text(ctx, 'd = 5 cm = 0,05 m', x - 4, y - tiefe * 0.6 - 12, { font: 'bold 12px sans-serif', farbe: '#4d7c0f' });
+            // Pfeil: Gewicht
+            ctx.save(); ctx.strokeStyle = '#e11d48'; ctx.fillStyle = '#e11d48'; ctx.lineWidth = 3;
+            const ax = x + s / 2 + tiefe / 2, ay = y + dicke + 24;
+            ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(ax, ay + 34); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(ax, ay + 44); ctx.lineTo(ax - 7, ay + 32); ctx.lineTo(ax + 7, ay + 32); ctx.fill();
+            ctx.restore();
+            text(ctx, 'G = 1,10 kN', ax + 12, ay + 30, { farbe: '#be123c', font: 'bold 12px sans-serif' });
+
+            const tx = schmal ? 24 : x + s + tiefe + 70;
+            const ty = schmal ? y + dicke + 104 : 60;
+            const zeilen = [
+                ['Volumen', 'V = 1 m · 1 m · 0,05 m = 0,05 m³'],
+                ['Gewicht', 'G = V · γ = 0,05 m³ · 22 kN/m³ = 1,10 kN'],
+                ['je m²', 'g = 1,10 kN / 1 m² = 1,10 kN/m²'],
+                ['kurz', 'g = d · γ = 0,05 m · 22 kN/m³']
+            ];
+            zeilen.forEach(([a, b], i) => {
+                const yy = ty + i * (schmal ? 30 : 26);
+                if (schmal) {
+                    text(ctx, a, tx, yy, { farbe: '#64748b', font: '11px sans-serif' });
+                    text(ctx, b, tx, yy + 14, { font: (i === 3 ? 'bold ' : '') + '12px sans-serif', farbe: i === 3 ? '#3f6212' : '#334155' });
+                } else {
+                    text(ctx, a, tx, yy, { farbe: '#64748b', font: '12px sans-serif' });
+                    text(ctx, b, tx + 70, yy, { font: (i === 3 ? 'bold ' : '') + '13px sans-serif', farbe: i === 3 ? '#3f6212' : '#334155' });
+                }
+            });
+        }
+
+        // Draufsicht mit Einzugsbreite (Schritt 5)
+        function figEinzug(ctx, W, H) {
+            const schmal = W < 600;
+            const pw = schmal ? W - 28 : W * 0.5;    // Draufsicht
+            const x0 = 14, y0 = 34, ph = schmal ? 120 : 220;
+            const n = 4, e = ph / n;
+            text(ctx, 'Draufsicht', x0, 20, { font: 'bold 12px sans-serif', farbe: '#475569' });
+            // Wände links und rechts
+            ctx.save(); ctx.fillStyle = '#cbd5e1'; ctx.fillRect(x0, y0, 12, ph); ctx.fillRect(x0 + pw - 12, y0, 12, ph); ctx.restore();
+            // Einzugsstreifen des Balkens Nr. 2
+            const yb = y0 + e * 1.5;
+            ctx.save(); ctx.fillStyle = 'rgba(132, 204, 22, 0.28)'; ctx.fillRect(x0 + 12, yb - e / 2, pw - 24, e); ctx.restore();
+            ctx.save(); ctx.strokeStyle = '#65a30d'; ctx.setLineDash([5, 4]); ctx.lineWidth = 1.2;
+            ctx.strokeRect(x0 + 12, yb - e / 2, pw - 24, e); ctx.restore();
+            // Balken
+            for (let i = 0; i < n; i++) {
+                const y = y0 + e * (i + 0.5);
+                ctx.save(); ctx.fillStyle = i === 1 ? '#b7793f' : '#d9a35b'; ctx.fillRect(x0, y - 4, pw, 8);
+                ctx.strokeStyle = '#7c4a1d'; ctx.strokeRect(x0, y - 4, pw, 8); ctx.restore();
+            }
+            // Bemaßung e
+            const xm = x0 + pw - 30;
+            ctx.save(); ctx.strokeStyle = '#3f6212'; ctx.lineWidth = 1.2;
+            ctx.beginPath(); ctx.moveTo(xm, yb - e / 2); ctx.lineTo(xm, yb + e / 2);
+            ctx.moveTo(xm - 5, yb - e / 2); ctx.lineTo(xm + 5, yb - e / 2); ctx.moveTo(xm - 5, yb + e / 2); ctx.lineTo(xm + 5, yb + e / 2); ctx.stroke(); ctx.restore();
+            text(ctx, 'e', xm - 10, yb - e / 4 + 5, { farbe: '#3f6212', font: 'bold 13px sans-serif', align: 'right' });
+            if (e >= 50) {   // genug Platz für die Hälften
+                text(ctx, 'e/2', x0 + 20, yb - e / 4 + 4, { farbe: '#3f6212', font: '11px sans-serif' });
+                text(ctx, 'e/2', x0 + 20, yb + e / 4 + 4, { farbe: '#3f6212', font: '11px sans-serif' });
+            }
+
+            // Balken als Träger mit Streckenlast
+            const bx0 = schmal ? x0 + 30 : x0 + pw + 60, bx1 = schmal ? W - 30 : W - 30;
+            const by = schmal ? y0 + ph + 104 : y0 + 140;
+            text(ctx, 'Der markierte Balken als Träger', schmal ? x0 : bx0 - 20, by - 76, { font: 'bold 12px sans-serif', farbe: '#475569' });
+            pfeilReihe(ctx, bx0, bx1, by - 40, by - 5, '#4d7c0f');
+            text(ctx, 'q = Flächenlast · e  [kN/m]', (bx0 + bx1) / 2, by - 48, { farbe: '#3f6212', font: 'bold 12px sans-serif', align: 'center' });
+            ctx.save(); ctx.strokeStyle = '#7c4a1d'; ctx.lineWidth = 7; ctx.lineCap = 'round';
+            ctx.beginPath(); ctx.moveTo(bx0, by); ctx.lineTo(bx1, by); ctx.stroke(); ctx.restore();
+            drawSupport(ctx, bx0, by + 4, 'fest');
+            drawSupport(ctx, bx1, by + 4, 'los');
+            text(ctx, 'L = Stützweite', (bx0 + bx1) / 2, by + 30, { font: '11px sans-serif', align: 'center', farbe: '#475569' });
+        }
+
+        // ================= Umschalter =================
+        const teile = { lernen: 'teilLernen', rechner: 'teilRechner', uebung: 'teilUebung' };
+        function zeigeTeil(name) {
+            Object.entries(teile).forEach(([key, id]) => document.getElementById(id).classList.toggle('hidden', key !== name));
+            document.querySelectorAll('.lab-tab[data-tab]').forEach(b => b.classList.toggle('is-active', b.dataset.tab === name));
+            if (name === 'uebung' && !aufgabe) neueAufgabe();
+            window.dispatchEvent(new Event('resize'));
+        }
+        document.querySelectorAll('.lab-tab[data-tab]').forEach(b => b.addEventListener('click', () => zeigeTeil(b.dataset.tab)));
+
+        // ================= Teil 1 =================
+        const BEISPIEL = ausVorlage('beton-wohnung');
+        responsiveCanvas(document.getElementById('figLasten'), W => (W < 600 ? 400 : 360), (ctx, W, H) => zeichneDecke(ctx, W, H, BEISPIEL)).neu();
+        responsiveCanvas(document.getElementById('figWuerfel'), W => (W < 600 ? 330 : 230), figWuerfel).neu();
+        responsiveCanvas(document.getElementById('figEinzug'), W => (W < 600 ? 320 : 270), figEinzug).neu();
+
+        document.getElementById('baustoffTabelle').innerHTML = `<table class="la-table"><thead><tr><th>Baustoff</th><th>Wichte γ [kN/m³]</th></tr></thead><tbody>` +
+            LAST_BAUSTOFFE.filter(b => b.id !== 'eigen').map(b => `<tr><td>${b.name}</td><td>${fmt(b.gamma, 1)}</td></tr>`).join('') + `</tbody></table>`;
+        document.getElementById('nutzlastTabelle').innerHTML = `<table class="la-table"><thead><tr><th>Kategorie und Nutzung</th><th>q<sub>k</sub> [kN/m²]</th></tr></thead><tbody>` +
+            NUTZLASTEN.map(n => `<tr><td><strong>${n.kat}</strong> – ${n.name}</td><td>${fmt(n.qk, 1)}</td></tr>`).join('') + `</tbody></table>`;
+        document.getElementById('beispielTabelle').innerHTML = lastTabelle(BEISPIEL, rechne(BEISPIEL));
+
+        // ================= Teil 2: Rechner =================
+        let decke = ausVorlage('beton-wohnung');
+        const deckenZeichnung = responsiveCanvas(document.getElementById('deckenCanvas'), W => deckenHoehe(W, decke),
+            (ctx, W, H) => { if (!rechnerFehler) zeichneDecke(ctx, W, H, decke); });
+        let rechnerFehler = false;
+
+        document.getElementById('r_nutzung').innerHTML = NUTZLASTEN.map(n => `<option value="${n.kat}">${n.kat}: ${n.name} (${fmt(n.qk, 1)} kN/m²)</option>`).join('');
+        document.getElementById('r_trennwand').innerHTML = TRENNWANDZUSCHLAEGE.map(t => `<option value="${t.id}">${t.name} (+ ${fmt(t.wert, 1)} kN/m²)</option>`).join('');
+
+        function baustoffOptionen(auswahl) {
+            const gruppen = [...new Set(LAST_BAUSTOFFE.map(b => b.gruppe))];
+            return gruppen.map(g => `<optgroup label="${g}">` + LAST_BAUSTOFFE.filter(b => b.gruppe === g)
+                .map(b => `<option value="${b.id}"${b.id === auswahl ? ' selected' : ''}>${b.name}</option>`).join('') + `</optgroup>`).join('');
+        }
+
+        function baueSchichten() {
+            const liste = document.getElementById('schichtListe');
+            liste.innerHTML = '';
+            decke.schichten.forEach((s, i) => {
+                const box = document.createElement('div');
+                box.className = 'p-3 bg-slate-50 rounded-lg border border-slate-200 space-y-2';
+                box.innerHTML = `
+                    <div class="flex items-center justify-between gap-2">
+                        <span class="text-xs font-bold text-slate-500">Schicht ${i + 1}</span>
+                        <div class="la-schicht-aktionen">
+                            <button type="button" class="la-mini-btn" data-aktion="hoch" aria-label="Schicht ${i + 1} nach oben" ${i === 0 ? 'disabled' : ''}>↑</button>
+                            <button type="button" class="la-mini-btn" data-aktion="runter" aria-label="Schicht ${i + 1} nach unten" ${i === decke.schichten.length - 1 ? 'disabled' : ''}>↓</button>
+                            <button type="button" class="la-mini-btn" data-aktion="weg" aria-label="Schicht ${i + 1} entfernen" ${decke.schichten.length === 1 ? 'disabled' : ''}>✕</button>
+                        </div>
+                    </div>
+                    <div class="la-schicht">
+                        <div><label for="s_stoff${i}" class="block text-xs font-bold text-slate-500 mb-1">Baustoff</label>
+                            <select id="s_stoff${i}" class="w-full border border-slate-300 rounded p-1.5 text-sm bg-white">${baustoffOptionen(s.id)}</select></div>
+                        <div><label for="s_d${i}" class="block text-xs font-bold text-slate-500 mb-1">d [cm]</label>
+                            <input type="number" id="s_d${i}" min="0.1" max="100" step="0.1" value="${s.d}" class="w-full border border-slate-300 rounded p-1.5 text-sm"></div>
+                        <div><label for="s_g${i}" class="block text-xs font-bold text-slate-500 mb-1">γ [kN/m³]</label>
+                            <input type="number" id="s_g${i}" min="0.1" max="100" step="0.1" value="${s.gamma}" class="w-full border border-slate-300 rounded p-1.5 text-sm"></div>
+                    </div>
+                    ${s.id === 'eigen' ? `<div><label for="s_name${i}" class="block text-xs font-bold text-slate-500 mb-1">Bezeichnung</label>
+                        <input type="text" id="s_name${i}" value="${s.name.replace(/"/g, '&quot;')}" class="w-full border border-slate-300 rounded p-1.5 text-sm"></div>` : ''}`;
+                box.querySelector(`#s_stoff${i}`).addEventListener('change', e => {
+                    const b = baustoff(e.target.value);
+                    decke.schichten[i] = { ...decke.schichten[i], id: b.id, name: b.name, gamma: b.gamma };
+                    vorlageZuruecksetzen(); baueSchichten(); berechneRechner();
+                });
+                box.querySelector(`#s_d${i}`).addEventListener('input', e => { decke.schichten[i].d = parseFloat(e.target.value); vorlageZuruecksetzen(); berechneRechner(); });
+                box.querySelector(`#s_g${i}`).addEventListener('input', e => { decke.schichten[i].gamma = parseFloat(e.target.value); vorlageZuruecksetzen(); berechneRechner(); });
+                const name = box.querySelector(`#s_name${i}`);
+                if (name) name.addEventListener('input', e => { decke.schichten[i].name = e.target.value.trim() || 'Eigener Baustoff'; berechneRechner(); });
+                box.querySelectorAll('[data-aktion]').forEach(btn => btn.addEventListener('click', () => {
+                    const a = btn.dataset.aktion, l = decke.schichten;
+                    if (a === 'hoch' && i > 0) [l[i - 1], l[i]] = [l[i], l[i - 1]];
+                    if (a === 'runter' && i < l.length - 1) [l[i + 1], l[i]] = [l[i], l[i + 1]];
+                    if (a === 'weg' && l.length > 1) l.splice(i, 1);
+                    vorlageZuruecksetzen(); baueSchichten(); berechneRechner();
+                }));
+                liste.appendChild(box);
+            });
+        }
+
+        function vorlageZuruecksetzen() { document.getElementById('r_vorlage').value = ''; }
+
+        function formularAusDecke() {
+            document.getElementById('r_typ').value = decke.typ;
+            document.getElementById('r_b').value = decke.balken.b;
+            document.getElementById('r_h').value = decke.balken.h;
+            document.getElementById('r_e').value = decke.balken.e;
+            document.getElementById('r_gh').value = decke.balken.gamma;
+            document.getElementById('r_nutzung').value = decke.nutzung;
+            document.getElementById('r_trennwand').value = decke.trennwand;
+            document.getElementById('r_breite').value = decke.breite;
+            document.getElementById('r_L').value = decke.L;
+            baueSchichten();
+        }
+
+        function berechneRechner() {
+            const holz = decke.typ === 'holz';
+            document.getElementById('balkenBox').classList.toggle('hidden', !holz);
+            document.getElementById('breiteBox').classList.toggle('hidden', holz);
+
+            // Eingaben prüfen
+            const fehler = [];
+            const pruefe = (wert, min, max, text, id) => {
+                const ok = istImWertebereich(wert, min, max);
+                if (id) document.getElementById(id).setAttribute('aria-invalid', ok ? 'false' : 'true');
+                if (!ok) fehler.push(`${text}: Wert zwischen ${fmt(min)} und ${fmt(max)} eingeben.`);
+            };
+            decke.schichten.forEach((s, i) => {
+                pruefe(s.d, 0.1, 100, `Schicht ${i + 1} (${s.name}), Dicke in cm`, `s_d${i}`);
+                pruefe(s.gamma, 0.1, 100, `Schicht ${i + 1} (${s.name}), Wichte`, `s_g${i}`);
+            });
+            if (holz) {
+                pruefe(decke.balken.b, 1, 60, 'Balkenbreite b in cm', 'r_b');
+                pruefe(decke.balken.h, 1, 60, 'Balkenhöhe h in cm', 'r_h');
+                pruefe(decke.balken.e, 10, 300, 'Balkenabstand e in cm', 'r_e');
+                pruefe(decke.balken.gamma, 0.1, 20, 'Wichte Holz', 'r_gh');
+            } else {
+                pruefe(decke.breite, 0.1, 20, 'Einzugsbreite in m', 'r_breite');
+            }
+            pruefe(decke.L, 1, 30, 'Stützweite L in m', 'r_L');
+            const box = document.getElementById('r_fehler');
+            box.classList.toggle('hidden', fehler.length === 0);
+            box.innerHTML = fehler.length ? `<strong>Bitte Eingaben prüfen:</strong><ul class="list-disc pl-5 mt-1">${fehler.map(f => `<li>${f}</li>`).join('')}</ul>` : '';
+            rechnerFehler = fehler.length > 0;
+            document.getElementById('btnZuModul4').classList.toggle('pointer-events-none', rechnerFehler);
+            document.getElementById('btnZuModul4').classList.toggle('opacity-40', rechnerFehler);
+            if (rechnerFehler) { deckenZeichnung.zeichne(); return; }
+
+            const r = rechne(decke);
+            deckenZeichnung.zeichne();
+            document.getElementById('r_tabelle').innerHTML = lastTabelle(decke, r);
+
+            const breiteText = holz ? `Balkenabstand e = ${fmt(r.einzugsbreite, 3)} m` : `Einzugsbreite ${fmt(r.einzugsbreite, 2)} m`;
+            const gRechnung = holz
+                ? `${fmt(r.gSchichten, 3)} · ${fmt(r.einzugsbreite, 3)} + ${fmt(r.gBalkenStrecke, 3)}`
+                : `${fmt(r.gk, 2)} · ${fmt(r.einzugsbreite, 2)}`;
+            const kachel = (titel, wert, rechnung, farbe) => `<div class="p-3 rounded-lg border ${farbe}">
+                <p class="text-xs font-bold uppercase tracking-wide opacity-80">${titel}</p>
+                <p class="text-xl font-extrabold">${fmt(wert, 2)} kN/m</p>
+                <p class="text-xs font-mono mt-1">${rechnung}</p></div>`;
+            document.getElementById('r_strecke').innerHTML =
+                kachel('Streckenlast g', r.gStrecke, gRechnung, 'bg-white border-slate-200 text-slate-800') +
+                kachel('Streckenlast q', r.qStrecke, `${fmt(r.qk, 2)} · ${fmt(r.einzugsbreite, holz ? 3 : 2)}`, 'bg-rose-50 border-rose-200 text-rose-900') +
+                kachel('Summe g + q', r.gesamtStrecke, `${fmt(r.gStrecke, 2)} + ${fmt(r.qStrecke, 2)}`, 'bg-lime-50 border-lime-200 text-lime-900');
+
+            const hinweise = [`Streckenlasten für ${breiteText}${holz ? ', Balkeneigengewicht b · h · γ eingerechnet' : ''}.`,
+                `Zur Information – Bemessungswert nach Eurocode: q<sub>d</sub> = 1,35 · ${fmt(r.gStrecke, 2)} + 1,5 · ${fmt(r.qStrecke, 2)} = <strong>${fmt(r.qdStrecke, 2)} kN/m</strong>.`];
+            if (holz && r.gk > 3) hinweise.push('⚠️ Für eine Holzbalkendecke ist g<sub>k</sub> ungewöhnlich hoch. Stimmen die Dicken (in cm) und Wichten?');
+            if (!holz && (r.gk < 2 || r.gk > 12)) hinweise.push('⚠️ Für eine Stahlbetondecke liegt g<sub>k</sub> ungewöhnlich niedrig oder hoch. Stimmen die Dicken (in cm)?');
+            if (nutzung(decke.nutzung).qk >= 5 && decke.trennwand !== 'keiner') hinweise.push('Hinweis: Bei Nutzlasten ab 5 kN/m² ist laut Norm kein Trennwandzuschlag nötig.');
+            document.getElementById('r_hinweis').innerHTML = hinweise.join('<br>');
+
+            const runde = x => Math.round(x * 100) / 100;
+            document.getElementById('btnZuModul4').href =
+                `modul-4-statik-einfeldtraeger.html?g=${runde(r.gStrecke)}&q=${runde(r.qStrecke)}&L=${runde(decke.L)}`;
+        }
+
+        const zahl = id => parseFloat(document.getElementById(id).value);
+        document.getElementById('r_typ').addEventListener('change', e => {
+            const neu = e.target.value;
+            if (neu === decke.typ) return;
+            decke = ausVorlage(neu === 'holz' ? 'holz-wohnung' : 'beton-wohnung');
+            document.getElementById('r_vorlage').value = neu === 'holz' ? 'holz-wohnung' : 'beton-wohnung';
+            formularAusDecke(); berechneRechner();
+        });
+        document.getElementById('r_vorlage').addEventListener('change', e => {
+            if (!VORLAGEN[e.target.value]) return;
+            decke = ausVorlage(e.target.value);
+            formularAusDecke(); berechneRechner();
+        });
+        document.getElementById('btnSchichtNeu').addEventListener('click', () => {
+            const b = baustoff('zementestrich');
+            decke.schichten.push({ id: b.id, name: b.name, d: 5, gamma: b.gamma });
+            vorlageZuruecksetzen(); baueSchichten(); berechneRechner();
+        });
+        [['r_b', 'b'], ['r_h', 'h'], ['r_e', 'e'], ['r_gh', 'gamma']].forEach(([id, k]) =>
+            document.getElementById(id).addEventListener('input', () => { decke.balken[k] = zahl(id); vorlageZuruecksetzen(); berechneRechner(); }));
+        document.getElementById('r_nutzung').addEventListener('change', e => { decke.nutzung = e.target.value; vorlageZuruecksetzen(); berechneRechner(); });
+        document.getElementById('r_trennwand').addEventListener('change', e => { decke.trennwand = e.target.value; vorlageZuruecksetzen(); berechneRechner(); });
+        document.getElementById('r_breite').addEventListener('input', () => { decke.breite = zahl('r_breite'); vorlageZuruecksetzen(); berechneRechner(); });
+        document.getElementById('r_L').addEventListener('input', () => { decke.L = zahl('r_L'); berechneRechner(); });
+
+        document.getElementById('r_vorlage').value = 'beton-wohnung';
+        formularAusDecke();
+        berechneRechner();
+
+        // ================= Teil 3: Übung =================
+        let aufgabe = null;
+        let sessionLog3 = [];
+        const zufall = (min, max, step) => Math.round((min + Math.random() * (max - min)) / step) * step;
+        const wahl = liste => liste[Math.floor(Math.random() * liste.length)];
+        const schicht = (id, d) => ({ id, name: baustoff(id).name, d: Math.round(d * 100) / 100, gamma: baustoff(id).gamma });
+
+        function neueAufgabe() {
+            const holz = Math.random() < 0.5;
+            let d;
+            if (holz) {
+                const schichten = [schicht('nadelholz', zufall(2.2, 3.2, 0.2))];
+                schichten.push(wahl([schicht('holzfaser', zufall(2, 4, 1)), schicht('mineralwolle', zufall(2, 4, 1)), schicht('sandkies', zufall(4, 8, 1))]));
+                if (Math.random() < 0.5) schichten.push(schicht('osb', wahl([1.8, 2.2, 2.5])));
+                schichten.push(wahl([schicht('gipskarton', 1.25), schicht('kalkzementputz', zufall(1.5, 2, 0.5))]));
+                d = { typ: 'holz', schichten, balken: { b: wahl([8, 10, 12, 14]), h: wahl([18, 20, 22, 24, 26]), e: wahl([50, 62.5, 70, 80]), gamma: 4.2 },
+                    nutzung: wahl(['A2', 'A3', 'B1']), trennwand: wahl(['keiner', 'bis3', 'bis5']), breite: 1, L: 4 };
+            } else {
+                const schichten = [];
+                const belag = wahl(['fliesen', 'parkett', null]);
+                if (belag) schichten.push(schicht(belag, belag === 'fliesen' ? 1 : zufall(1, 2, 0.5)));
+                schichten.push(schicht(wahl(['zementestrich', 'calciumsulfatestrich']), zufall(4, 7, 0.5)));
+                schichten.push(schicht(wahl(['mineralwolle', 'eps']), zufall(2, 5, 1)));
+                schichten.push(schicht('stahlbeton', zufall(16, 26, 2)));
+                if (Math.random() < 0.6) schichten.push(schicht('kalkzementputz', zufall(1, 2, 0.5)));
+                const kat = wahl(['A2', 'A3', 'B1', 'C1', 'D1']);
+                d = { typ: 'beton', schichten, balken: { b: 10, h: 22, e: 62.5, gamma: 4.2 }, nutzung: kat,
+                    trennwand: wahl(['keiner', 'bis3', 'bis5']), breite: zufall(2.5, 5, 0.25), L: 5 };
+            }
+            aufgabe = { decke: d, r: rechne(d), geprueft: false };
+
+            const n = nutzung(d.nutzung), t = trennwand(d.trennwand);
+            const textBalken = holz
+                ? `Holzbalkendecke mit Balken b/h = ${fmt(d.balken.b)}/${fmt(d.balken.h)} cm (γ = ${fmt(d.balken.gamma, 1)} kN/m³) im Abstand e = ${fmt(d.balken.e, 1)} cm.`
+                : `Stahlbetondecke, die auf einem Unterzug aufliegt. Einzugsbreite des Unterzugs: ${fmt(d.breite, 2)} m (Eigengewicht des Unterzugs nicht berücksichtigen).`;
+            document.getElementById('uebungText').innerHTML = `<strong>Aufgabe:</strong> ${textBalken} Nutzung: ${n.kat} – ${n.name}. ` +
+                `Trennwände: ${t.name}. Bestimme die Flächenlasten g<sub>k</sub> und q<sub>k</sub> und die Streckenlasten g und q auf ${holz ? 'einem Balken' : 'dem Unterzug'}. ` +
+                `Die Nutzlast liest du in Teil 1, Schritt 3 ab.`;
+            document.getElementById('uebungAufbau').innerHTML = `<table class="la-table"><thead><tr><th>Schicht (von oben)</th><th>Dicke</th><th>γ [kN/m³]</th></tr></thead><tbody>` +
+                d.schichten.map(s => `<tr><td>${s.name}</td><td>${fmt(s.d)} cm</td><td>${fmt(s.gamma, 1)}</td></tr>`).join('') + `</tbody></table>`;
+            ['ue_gk', 'ue_qk', 'ue_gs', 'ue_qs'].forEach(id => { document.getElementById(id).value = ''; });
+            ['fb_gk', 'fb_qk', 'fb_gs', 'fb_qs'].forEach(id => { document.getElementById(id).textContent = ''; });
+            document.getElementById('uebungErgebnis').classList.add('hidden');
+        }
+        document.getElementById('btnNeueUebung').addEventListener('click', neueAufgabe);
+
+        document.getElementById('btnPruefen').addEventListener('click', () => {
+            if (!aufgabe) return;
+            const { decke: d, r } = aufgabe;
+            const holz = d.typ === 'holz';
+            const pruefungen = [
+                ['ue_gk', 'fb_gk', 'g_k', r.gk, 'kN/m²'],
+                ['ue_qk', 'fb_qk', 'q_k', r.qk, 'kN/m²'],
+                ['ue_gs', 'fb_gs', 'g (Strecke)', r.gStrecke, 'kN/m'],
+                ['ue_qs', 'fb_qs', 'q (Strecke)', r.qStrecke, 'kN/m']
+            ];
+            let richtig = 0;
+            const details = [];
+            pruefungen.forEach(([inputId, fbId, name, exakt, einheit]) => {
+                const v = parseFloat(document.getElementById(inputId).value);
+                const ok = !isNaN(v) && Math.abs(v - exakt) <= Math.max(0.02 * Math.abs(exakt), 0.02);
+                document.getElementById(fbId).textContent = ok ? '✅' : '❌';
+                if (ok) richtig++;
+                details.push(`${name}: eingegeben ${isNaN(v) ? '—' : fmt(v) + ' ' + einheit} / richtig ${fmt(exakt, 2)} ${einheit} ${ok ? '✅' : '❌'}`);
+            });
+            // Typischen Fehler erkennen: Dicke in cm statt m eingesetzt
+            const gEingabe = parseFloat(document.getElementById('ue_gk').value);
+            const cmFehler = !isNaN(gEingabe) && r.gSchichten > 0 && Math.abs(gEingabe / 100 - r.gk) <= 0.05 * r.gk;
+            const strecke = holz
+                ? `g = ${fmt(r.gSchichten, 3)} · ${fmt(r.einzugsbreite, 3)} + ${fmt(r.gBalkenStrecke, 3)} = <strong>${fmt(r.gStrecke, 2)} kN/m</strong> &nbsp;|&nbsp; q = ${fmt(r.qk, 2)} · ${fmt(r.einzugsbreite, 3)} = <strong>${fmt(r.qStrecke, 2)} kN/m</strong>`
+                : `g = ${fmt(r.gk, 2)} · ${fmt(r.einzugsbreite, 2)} = <strong>${fmt(r.gStrecke, 2)} kN/m</strong> &nbsp;|&nbsp; q = ${fmt(r.qk, 2)} · ${fmt(r.einzugsbreite, 2)} = <strong>${fmt(r.qStrecke, 2)} kN/m</strong>`;
+            const box = document.getElementById('uebungErgebnis');
+            box.classList.remove('hidden', 'bg-emerald-50', 'text-emerald-900', 'bg-amber-50', 'text-amber-900');
+            box.classList.add(richtig === 4 ? 'bg-emerald-50' : 'bg-amber-50', richtig === 4 ? 'text-emerald-900' : 'text-amber-900');
+            box.innerHTML = `<p class="font-bold mb-2">${richtig === 4 ? '🎉 Alles richtig!' : `${richtig}/4 richtig.`} Lösungsweg:</p>` +
+                (cmFehler ? '<p class="mb-2">💡 Dein g<sub>k</sub> ist etwa 100-mal zu groß – die Dicken müssen in Metern eingesetzt werden.</p>' : '') +
+                `<div class="overflow-x-auto mb-2">${lastTabelle(d, r)}</div>` +
+                `<p class="font-mono text-xs">${strecke}</p>`;
+
+            if (!aufgabe.geprueft) {
+                aufgabe.geprueft = true;
+                sessionLog3.push({
+                    zeit: new Date().toLocaleTimeString('de-DE'),
+                    aufgabe: `${holz ? 'Holzbalkendecke' : 'Stahlbetondecke'}: ${d.schichten.map(s => `${s.name} ${fmt(s.d)} cm`).join(', ')}; Nutzung ${d.nutzung}`,
+                    details, richtig, gesamt: 4
+                });
+                document.getElementById('logCount3').textContent = sessionLog3.length;
+                document.getElementById('btnExportLog3').disabled = false;
+                lernstand.save();
+            }
+        });
+
+        document.getElementById('btnExportLog3').addEventListener('click', () => {
+            exportProtocol(3, 'Lastannahme für Decken', document.getElementById('studentName3').value, sessionLog3);
+        });
+
+        // Lernfortschritt (optional, nur auf diesem Gerät): Deckenaufbau und abgeschlossene Übungen
+        const lernstand = initLearningProgress(3, {
+            capture: () => ({ decke, sessionLog3 }),
+            restore: data => {
+                if (data && data.decke && Array.isArray(data.decke.schichten) && data.decke.schichten.length) {
+                    decke = data.decke;
+                    document.getElementById('r_vorlage').value = '';
+                    formularAusDecke();
+                    berechneRechner();
+                }
+                sessionLog3 = Array.isArray(data && data.sessionLog3) ? data.sessionLog3 : [];
+                document.getElementById('logCount3').textContent = sessionLog3.length;
+                document.getElementById('btnExportLog3').disabled = sessionLog3.length === 0;
+            }
+        });
+    </script>
+</body>
+</html>
