@@ -2,7 +2,7 @@
    Gemeinsames Stylesheet für alle Module des Virtuellen Bautechnik-Labors.
    Ergänzt tailwind.min.css um die Bausteine, die in jedem Modul gleich
    aussehen sollen (Kopfzeile, Canvas, Beschriftungen, Umschalter).
-   Die Modulfarbe wird über <body data-modul="1..5"> gesetzt; dazu Präsentationsmodus
+   Die Modulfarbe wird über <body data-modul="1..6"> gesetzt; dazu Präsentationsmodus
    und Vollbild für Zeichenflächen (siehe Ende der Datei und labor.js) und passt zur
    jeweiligen Kachel im Hauptmenü.
    ========================================================================== */
@@ -54,6 +54,14 @@ body[data-modul="5"] { /* Violet – Spannungsnachweis */
     --mod-600: #7c3aed;
     --mod-700: #6d28d9;
     --mod-800: #5b21b6;
+}
+body[data-modul="6"] { /* Rose – Durchlaufträger */
+    --mod-50: #fff1f2;
+    --mod-100: #ffe4e6;
+    --mod-500: #f43f5e;
+    --mod-600: #e11d48;
+    --mod-700: #be123c;
+    --mod-800: #9f1239;
 }
 
 /* ---------- Kopfzeile: Zurück-Link und Modul-Badge ---------- */

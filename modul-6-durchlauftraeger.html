@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modul 6: Durchlaufträger | Bautechnik-Labor</title>
+    <link rel="stylesheet" href="tailwind.min.css?v=2026-11-04">
+    <link rel="stylesheet" href="labor.css?v=2026-11-04">
+    <style>
+        .dlt-table { border-collapse: collapse; width: 100%; font-size: 0.8125rem; }
+        .dlt-table th, .dlt-table td { border: 1px solid #e2e8f0; padding: 0.4rem 0.5rem; text-align: center; }
+        .dlt-table th { background: #f8fafc; color: #334155; font-weight: 700; }
+        .dlt-table td:first-child, .dlt-table th:first-child { text-align: left; }
+        .dlt-step summary { cursor: pointer; list-style: none; }
+        .dlt-step summary::-webkit-details-marker { display: none; }
+        .dlt-step[open] .dlt-chevron { transform: rotate(90deg); }
+        .dlt-chevron { transition: transform 0.15s ease-in-out; display: inline-block; }
+    </style>
+</head>
+<body data-modul="6" class="bg-slate-50 min-h-screen p-4 md:p-6 font-sans text-slate-800">
+    <div class="max-w-7xl mx-auto bg-white p-6 rounded-2xl shadow-xl border border-slate-100">
+
+        <!-- Header inkl. Navigation -->
+        <header class="mb-6 border-b pb-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+                <div class="flex flex-wrap items-center gap-x-3 gap-y-1 mb-1">
+                    <a href="index.html" class="lab-back">
+                        <span>&larr;</span> Zurück zum Menü
+                    </a>
+                    <span class="lab-badge">Modul 6</span>
+                </div>
+                <h1 class="text-3xl font-extrabold text-slate-800">Durchlaufträger</h1>
+                <p class="text-sm text-slate-500 mt-1">Ausblick und Selbstlernmodul: Zwei- und Dreifeldträger mit Tabellenwerten berechnen – und eigene Systeme durchrechnen.</p>
+            </div>
+            <div class="bg-rose-50 px-4 py-2.5 rounded-lg border border-rose-100 text-rose-800 text-sm font-semibold shadow-sm">
+                🎓 Selbstlernmodul
+            </div>
+        </header>
+
+        <!-- Umschalter -->
+        <div class="flex flex-col sm:flex-row gap-2 mb-6">
+            <button id="tabLernen" class="lab-tab is-active" data-tab="lernen">1️⃣ Schritt für Schritt</button>
+            <button id="tabUebung" class="lab-tab" data-tab="uebung">2️⃣ Übung mit Tabellenwerten</button>
+            <button id="tabRechner" class="lab-tab" data-tab="rechner">3️⃣ Eigenes System berechnen</button>
+        </div>
+
+        <!-- ================= TEIL 1: SCHRITT FÜR SCHRITT ================= -->
+        <section id="teilLernen" class="space-y-4">
+            <p class="text-sm text-slate-600">Arbeite die Schritte der Reihe nach durch. Jeder Schritt lässt sich auf- und zuklappen. Am Ende kannst du dein Wissen in Teil 2 überprüfen und in Teil 3 eigene Systeme berechnen.</p>
+
+            <details class="dlt-step bg-slate-50 border border-slate-200 rounded-xl p-4" open>
+                <summary class="font-bold text-slate-800 flex items-center gap-2"><span class="dlt-chevron">▶</span> Schritt 1: Was ist ein Durchlaufträger?</summary>
+                <div class="mt-3 text-sm text-slate-700 space-y-2">
+                    <p>Ein <strong>Durchlaufträger</strong> läuft ohne Unterbrechung über mehrere Felder und liegt dabei auf drei oder mehr Auflagern. Ein Zweifeldträger hat drei Auflager (A, B, C), ein Dreifeldträger vier (A, B, C, D).</p>
+                    <p>Beispiele aus der Praxis: Deckenbalken über eine Mittelwand, Pfetten im Dach, Stahlbetondecken über mehrere Räume, Brücken mit Zwischenpfeilern.</p>
+                    <p><strong>Vorteil:</strong> Die Felder „helfen sich gegenseitig“. Über dem Zwischenauflager entsteht ein negatives Stützmoment, dadurch werden die Feldmomente kleiner. Bei Gleichlast hat ein Einfeldträger max M = 0,125 · q · L², jedes Feld eines Zweifeldträgers nur noch etwa 0,070 · q · L².</p>
+                </div>
+            </details>
+
+            <details class="dlt-step bg-slate-50 border border-slate-200 rounded-xl p-4">
+                <summary class="font-bold text-slate-800 flex items-center gap-2"><span class="dlt-chevron">▶</span> Schritt 2: Warum reichen die Gleichgewichtsbedingungen nicht mehr?</summary>
+                <div class="mt-3 text-sm text-slate-700 space-y-2">
+                    <p>Aus Modul 3 kennst du die drei Gleichgewichtsbedingungen <strong>ΣF<sub>x</sub> = 0, ΣF<sub>z</sub> = 0 und ΣM = 0</strong>. Damit lassen sich höchstens drei unbekannte Auflagerkräfte bestimmen.</p>
+                    <ul class="list-disc pl-5 space-y-1">
+                        <li><strong>Einfeldträger:</strong> A<sub>h</sub>, A<sub>v</sub>, B<sub>v</sub> → 3 Unbekannte, 3 Gleichungen → <em>statisch bestimmt</em>.</li>
+                        <li><strong>Zweifeldträger:</strong> A<sub>h</sub>, A<sub>v</sub>, B<sub>v</sub>, C<sub>v</sub> → 4 Unbekannte, 3 Gleichungen → <em>1-fach statisch unbestimmt</em>.</li>
+                        <li><strong>Dreifeldträger:</strong> 5 Unbekannte → <em>2-fach statisch unbestimmt</em>.</li>
+                    </ul>
+                    <p>Die fehlenden Gleichungen erhält man nur über die <strong>Verformung</strong> des Trägers (die Biegelinie verläuft über dem Zwischenauflager ohne Knick). Das ist aufwendig. In der Praxis nutzt man deshalb <strong>Tabellen mit Beiwerten</strong> für häufige Fälle – oder ein Rechenprogramm wie Teil 3 dieses Moduls.</p>
+                </div>
+            </details>
+
+            <details class="dlt-step bg-slate-50 border border-slate-200 rounded-xl p-4">
+                <summary class="font-bold text-slate-800 flex items-center gap-2"><span class="dlt-chevron">▶</span> Schritt 3: Die Beiwert-Tabelle lesen</summary>
+                <div class="mt-3 text-sm text-slate-700 space-y-3">
+                    <p>Die Tabelle gilt nur, wenn alle drei Voraussetzungen erfüllt sind:</p>
+                    <ol class="list-decimal pl-5 space-y-1">
+                        <li>Alle Felder haben die <strong>gleiche Stützweite L</strong>.</li>
+                        <li>Der Träger hat überall den <strong>gleichen Querschnitt</strong> (gleiche Biegesteifigkeit).</li>
+                        <li>Die Belastung entspricht <strong>genau dem Lastfall</strong> in der Zeile (z. B. Gleichlast q auf allen Feldern).</li>
+                    </ol>
+                    <div id="beiwertTabelle" class="overflow-x-auto">
+                        <table class="dlt-table">
+                            <thead>
+                                <tr>
+                                    <th>System und Lastfall</th>
+                                    <th>Faktor</th>
+                                    <th>A</th>
+                                    <th>B</th>
+                                    <th>M<sub>B</sub> (Stütze)</th>
+                                    <th>max M<sub>F1</sub> (Feld 1)</th>
+                                    <th>max M<sub>F2</sub> (Feld 2)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Zweifeldträger, Gleichlast q auf beiden Feldern</td>
+                                    <td>Kräfte · q · L<br>Momente · q · L²</td>
+                                    <td>0,375</td><td>1,250</td><td>−0,125</td><td>0,070</td><td>0,070</td>
+                                </tr>
+                                <tr>
+                                    <td>Zweifeldträger, Einzellast F in jeder Feldmitte</td>
+                                    <td>Kräfte · F<br>Momente · F · L</td>
+                                    <td>0,313</td><td>1,375</td><td>−0,188</td><td>0,156</td><td>0,156</td>
+                                </tr>
+                                <tr>
+                                    <td>Dreifeldträger, Gleichlast q auf allen Feldern</td>
+                                    <td>Kräfte · q · L<br>Momente · q · L²</td>
+                                    <td>0,400</td><td>1,100</td><td>−0,100</td><td>0,080</td><td>0,025</td>
+                                </tr>
+                                <tr>
+                                    <td>Dreifeldträger, Einzellast F in jeder Feldmitte</td>
+                                    <td>Kräfte · F<br>Momente · F · L</td>
+                                    <td>0,350</td><td>1,150</td><td>−0,150</td><td>0,175</td><td>0,100</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p class="text-xs text-slate-500">Wegen der Symmetrie gilt beim Zweifeldträger C = A, beim Dreifeldträger D = A, C = B und M<sub>C</sub> = M<sub>B</sub>. Solche Beiwerte findest du auch in Bautabellen (z. B. Schneider Bautabellen); dort sind meist noch weitere Lastfälle aufgeführt. Die Werte dieser Tabelle prüfen die automatischen Tests des Labors gegen den Rechner aus Teil 3.</p>
+                </div>
+            </details>
+
+            <details class="dlt-step bg-slate-50 border border-slate-200 rounded-xl p-4">
+                <summary class="font-bold text-slate-800 flex items-center gap-2"><span class="dlt-chevron">▶</span> Schritt 4: Mit den Beiwerten rechnen – ein Beispiel</summary>
+                <div class="mt-3 text-sm text-slate-700 space-y-2">
+                    <p><strong>Aufgabe:</strong> Zweifeldträger, Stützweiten L = 5,0 m, Gleichlast q = 10 kN/m auf beiden Feldern.</p>
+                    <p><strong>Regel:</strong> Auflagerkraft = Beiwert · q · L, Moment = Beiwert · q · L². Hier ist q · L = 10 · 5 = 50 kN und q · L² = 10 · 25 = 250 kNm.</p>
+                    <div class="bg-white border border-slate-200 rounded-lg p-3 font-mono text-xs sm:text-sm space-y-1">
+                        <p>A = C = 0,375 · 50 kN = <strong>18,75 kN</strong></p>
+                        <p>B = 1,250 · 50 kN = <strong>62,50 kN</strong></p>
+                        <p>M<sub>B</sub> = −0,125 · 250 kNm = <strong>−31,25 kNm</strong></p>
+                        <p>max M<sub>F</sub> = 0,070 · 250 kNm = <strong>17,50 kNm</strong> <span class="text-slate-400">(genau 0,0703 → 17,58 kNm)</span></p>
+                    </div>
+                </div>
+            </details>
+
+            <details class="dlt-step bg-slate-50 border border-slate-200 rounded-xl p-4">
+                <summary class="font-bold text-slate-800 flex items-center gap-2"><span class="dlt-chevron">▶</span> Schritt 5: Ergebnis kontrollieren</summary>
+                <div class="mt-3 text-sm text-slate-700 space-y-2">
+                    <p>Auch beim statisch unbestimmten Träger muss das <strong>Gleichgewicht</strong> stimmen. Die Summe der Auflagerkräfte ist gleich der Gesamtlast:</p>
+                    <div class="bg-white border border-slate-200 rounded-lg p-3 font-mono text-xs sm:text-sm">
+                        <p>A + B + C = 18,75 + 62,50 + 18,75 = 100 kN</p>
+                        <p>Gesamtlast = q · 2 · L = 10 · 2 · 5 = 100 kN ✓</p>
+                    </div>
+                    <p>Stimmt die Summe nicht, wurde ein Beiwert falsch abgelesen oder mit dem falschen Faktor multipliziert (q · L statt q · L²).</p>
+                </div>
+            </details>
+
+            <details class="dlt-step bg-slate-50 border border-slate-200 rounded-xl p-4">
+                <summary class="font-bold text-slate-800 flex items-center gap-2"><span class="dlt-chevron">▶</span> Schritt 6: Querkraft- und Momentenverlauf verstehen</summary>
+                <div class="mt-3 text-sm text-slate-700 space-y-2">
+                    <ul class="list-disc pl-5 space-y-1">
+                        <li>Die <strong>Querkraft</strong> springt an jedem Auflager um die Auflagerkraft. Wo Q = 0 ist, hat das Feld sein größtes Moment – beim Zweifeldträger mit Gleichlast bei x = 0,375 · L vom Endauflager.</li>
+                        <li>Über dem Zwischenauflager ist das Moment <strong>negativ</strong> (Stützmoment). Der Träger hat dort Zug an der <strong>Oberseite</strong> – im Stahlbetonbau liegt die Bewehrung deshalb über der Stütze oben.</li>
+                        <li>Zwischen Feld und Stütze wechselt das Moment das Vorzeichen (Momentennullpunkt).</li>
+                    </ul>
+                    <div>
+                        <canvas id="beispielCanvas" width="900" height="560"></canvas>
+                    </div>
+                    <p class="text-xs text-slate-500">Positive Momente werden wie in Modul 3 nach unten (Zugseite) aufgetragen, das negative Stützmoment also nach oben.</p>
+                </div>
+            </details>
+
+            <details class="dlt-step bg-slate-50 border border-slate-200 rounded-xl p-4">
+                <summary class="font-bold text-slate-800 flex items-center gap-2"><span class="dlt-chevron">▶</span> Ausblick: Und wenn die Tabelle nicht passt?</summary>
+                <div class="mt-3 text-sm text-slate-700 space-y-2">
+                    <p>Bei ungleichen Stützweiten oder anderen Lasten hilft die Tabelle nicht weiter. Dann rechnet man mit der <strong>Dreimomentengleichung</strong> (nach Clapeyron). Für jedes Zwischenauflager i gilt eine Gleichung, in der die Stützmomente der Nachbarauflager vorkommen:</p>
+                    <p class="bg-white border border-slate-200 rounded-lg p-3 font-mono text-xs sm:text-sm text-center">M<sub>i−1</sub> · L<sub>i</sub> + 2 · M<sub>i</sub> · (L<sub>i</sub> + L<sub>i+1</sub>) + M<sub>i+1</sub> · L<sub>i+1</sub> = − (Lastglieder der beiden Felder)</p>
+                    <p>Das Lastglied ist bei Gleichlast q · L³ / 4. Aus den Stützmomenten folgen dann alle Auflagerkräfte und Verläufe. Genau so rechnet Teil 3 dieses Moduls – probiere dort aus, dass bei gleichen Stützweiten die Tabellenwerte herauskommen.</p>
+                </div>
+            </details>
+        </section>
+
+        <!-- ================= TEIL 2: ÜBUNG ================= -->
+        <section id="teilUebung" class="hidden space-y-6">
+            <div class="bg-white p-6 rounded-2xl border-2 border-dashed border-amber-300 shadow-sm">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-1">
+                    <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                        <span class="w-2 h-5 bg-amber-500 rounded-full"></span>
+                        Übung mit Tabellenwerten
+                    </h3>
+                    <button id="btnNeueUebung" class="text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-lg transition-colors">
+                        🎲 Neue Aufgabe
+                    </button>
+                </div>
+                <p id="uebungText" class="text-sm text-slate-700 mt-2 mb-4"></p>
+
+                <div class="mb-4">
+                    <canvas id="uebungCanvas" width="900" height="560"></canvas>
+                </div>
+
+                <details class="mb-4 text-sm">
+                    <summary class="cursor-pointer font-semibold text-slate-600">📋 Beiwert-Tabelle anzeigen</summary>
+                    <div id="tabelleKopie" class="mt-2"></div>
+                </details>
+
+                <div class="bg-amber-50/60 p-3 rounded-lg border border-amber-100 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div class="flex items-center gap-2">
+                        <label for="ue_A" class="text-xs font-mono w-28">A =</label>
+                        <input type="number" id="ue_A" step="0.01" class="w-28 border border-slate-300 rounded px-2 py-1 text-sm">
+                        <span class="text-xs">kN</span><span id="fb_A" class="text-lg"></span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <label for="ue_B" class="text-xs font-mono w-28">B =</label>
+                        <input type="number" id="ue_B" step="0.01" class="w-28 border border-slate-300 rounded px-2 py-1 text-sm">
+                        <span class="text-xs">kN</span><span id="fb_B" class="text-lg"></span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <label for="ue_MB" class="text-xs font-mono w-28">M<sub>B</sub> =</label>
+                        <input type="number" id="ue_MB" step="0.01" class="w-28 border border-slate-300 rounded px-2 py-1 text-sm">
+                        <span class="text-xs">kNm</span><span id="fb_MB" class="text-lg"></span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <label for="ue_MF" class="text-xs font-mono w-28">max M<sub>F1</sub> =</label>
+                        <input type="number" id="ue_MF" step="0.01" class="w-28 border border-slate-300 rounded px-2 py-1 text-sm">
+                        <span class="text-xs">kNm</span><span id="fb_MF" class="text-lg"></span>
+                    </div>
+                </div>
+                <p class="text-xs text-slate-500 mt-2">Tipp: Das Stützmoment ist negativ – Minuszeichen nicht vergessen. Rundungstoleranz 2 %.</p>
+                <button id="btnPruefen" class="w-full mt-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-lg transition-colors">Prüfen</button>
+                <div id="uebungErgebnis" class="hidden mt-4 text-sm p-3 rounded-lg"></div>
+
+                <div class="border-t border-slate-200 mt-4 pt-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                    <input type="text" id="studentName6" placeholder="Name (optional)" class="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm">
+                    <button id="btnExportLog6" class="text-sm font-bold bg-slate-700 hover:bg-slate-800 text-white px-4 py-2 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed" disabled>
+                        📄 Protokoll exportieren (<span id="logCount6">0</span>)
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TEIL 3: EIGENES SYSTEM ================= -->
+        <section id="teilRechner" class="hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                <div class="lg:col-span-4 space-y-4">
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 shadow-sm space-y-3">
+                        <h3 class="text-lg font-bold text-slate-700 flex items-center gap-2"><span class="lab-bar"></span> System</h3>
+                        <div>
+                            <label for="r_felder" class="block text-xs font-bold text-slate-500 mb-1">Anzahl der Felder</label>
+                            <select id="r_felder" class="w-full border border-slate-300 rounded-lg p-2 text-sm bg-white">
+                                <option value="2" selected>2 Felder (3 Auflager: A, B, C)</option>
+                                <option value="3">3 Felder (4 Auflager: A, B, C, D)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="r_vorlage" class="block text-xs font-bold text-slate-500 mb-1">Vorlage laden</label>
+                            <select id="r_vorlage" class="w-full border border-slate-300 rounded-lg p-2 text-sm bg-white">
+                                <option value="">– eigene Werte –</option>
+                                <option value="2q">Tabellenfall: 2 Felder, Gleichlast (L = 5 m, q = 10 kN/m)</option>
+                                <option value="3q">Tabellenfall: 3 Felder, Gleichlast (L = 4 m, q = 12 kN/m)</option>
+                                <option value="2F">Tabellenfall: 2 Felder, Einzellast in Feldmitte (L = 6 m, F = 20 kN)</option>
+                                <option value="frei">Ungleiche Felder mit gemischten Lasten</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="feldEingaben" class="space-y-4"></div>
+
+                    <div id="r_fehler" class="hidden text-sm p-3 rounded-lg border border-rose-200 bg-rose-50 text-rose-800"></div>
+                </div>
+
+                <div class="lg:col-span-8 space-y-6">
+                    <div>
+                        <canvas id="rechnerCanvas" width="900" height="560"></canvas>
+                    </div>
+                    <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200 shadow-sm">
+                        <h3 class="text-lg font-bold text-slate-800 mb-3 flex items-center gap-2">
+                            <span class="lab-bar"></span>
+                            Ergebnisse
+                        </h3>
+                        <div id="r_ergebnis" class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm"></div>
+                        <p id="r_hinweis" class="text-xs text-slate-500 mt-3"></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="labor.js?v=2026-10-01"></script>
+    <script src="version.js?v=2.0"></script>
+    <script src="statik-core.js?v=2026-11-04"></script>
+    <script>
+        const AUFLAGER = ['A', 'B', 'C', 'D', 'E'];
+
+        // ================= Zeichnen: System, Querkraft und Moment =================
+        // opts.verdeckt = true: nur System und Lasten zeichnen, Ergebnisse als „?“ (Übung vor dem Prüfen)
+        function zeichneDurchlauftraeger(canvas, dlt, opts = {}) {
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const padding = 80;
+            const beamY = 135;
+            const px = x => padding + (x / dlt.L) * (canvas.width - 2 * padding);
+
+            // Lasten
+            dlt.loads.forEach((l, j) => {
+                const x0 = px(dlt.X[j]), x1 = px(dlt.X[j + 1]);
+                let top = beamY - 6;
+                if (l.q > 0) {
+                    const h = 32;
+                    ctx.fillStyle = '#e11d4822';
+                    ctx.strokeStyle = '#e11d48';
+                    ctx.lineWidth = 2;
+                    ctx.fillRect(x0, top - h, x1 - x0, h);
+                    ctx.beginPath(); ctx.moveTo(x0, top - h); ctx.lineTo(x1, top - h); ctx.stroke();
+                    const steps = Math.max(3, Math.round((x1 - x0) / 28));
+                    for (let i = 0; i <= steps; i++) {
+                        const x = x0 + (i / steps) * (x1 - x0);
+                        ctx.beginPath(); ctx.moveTo(x, top - h); ctx.lineTo(x, top); ctx.stroke();
+                        ctx.beginPath(); ctx.moveTo(x, top); ctx.lineTo(x - 4, top - 7); ctx.lineTo(x + 4, top - 7); ctx.fill();
+                    }
+                    ctx.fillStyle = '#9f1239';
+                    ctx.font = 'bold 12px sans-serif';
+                    ctx.textAlign = 'center';
+                    fillTextSub(ctx, `q_{${j + 1}} = ${fmt(l.q)} kN/m`, (x0 + x1) / 2, top - h - 7);
+                    top -= h + 22;
+                }
+                if (l.F > 0) {
+                    const xf = px(dlt.X[j] + l.a);
+                    const len = 46;
+                    ctx.strokeStyle = '#7c3aed';
+                    ctx.fillStyle = '#7c3aed';
+                    ctx.lineWidth = 3;
+                    ctx.beginPath(); ctx.moveTo(xf, top - len); ctx.lineTo(xf, top - 2); ctx.stroke();
+                    ctx.beginPath(); ctx.moveTo(xf, top); ctx.lineTo(xf - 7, top - 12); ctx.lineTo(xf + 7, top - 12); ctx.fill();
+                    ctx.font = 'bold 12px sans-serif';
+                    ctx.textAlign = 'center';
+                    fillTextSub(ctx, `F_{${j + 1}} = ${fmt(l.F)} kN`, xf, top - len - 6);
+                }
+            });
+
+            // Träger und Auflager
+            ctx.strokeStyle = '#334155';
+            ctx.lineWidth = 8;
+            ctx.lineCap = 'round';
+            ctx.beginPath(); ctx.moveTo(px(0), beamY); ctx.lineTo(px(dlt.L), beamY); ctx.stroke();
+            ctx.lineCap = 'butt';
+            dlt.X.forEach((x, i) => {
+                drawSupport(ctx, px(x), beamY + 4, i === 0 ? 'fest' : 'los');
+                ctx.fillStyle = '#1e293b';
+                ctx.font = 'bold 13px sans-serif';
+                ctx.textAlign = 'right';
+                ctx.fillText(AUFLAGER[i], px(x) - 20, beamY + 22);
+                ctx.textAlign = 'center';
+                ctx.font = '11px sans-serif';
+                ctx.fillStyle = '#334155';
+                ctx.fillText(opts.verdeckt ? `${AUFLAGER[i]} = ?` : `${AUFLAGER[i]} = ${fmt(dlt.auflager[i], 2)} kN`, px(x), beamY + 56);
+            });
+
+            // Bemaßung der Stützweiten
+            const dimY = beamY + 78;
+            ctx.strokeStyle = '#475569';
+            ctx.lineWidth = 1.2;
+            ctx.beginPath(); ctx.moveTo(px(0), dimY); ctx.lineTo(px(dlt.L), dimY); ctx.stroke();
+            dlt.X.forEach(x => {
+                ctx.beginPath(); ctx.moveTo(px(x) - 5, dimY + 5); ctx.lineTo(px(x) + 5, dimY - 5); ctx.stroke();
+            });
+            dlt.spans.forEach((L, j) => {
+                ctx.fillStyle = '#334155';
+                ctx.font = '11px sans-serif';
+                ctx.textAlign = 'center';
+                fillTextSub(ctx, `L_{${j + 1}} = ${fmt(L, 2)} m`, (px(dlt.X[j]) + px(dlt.X[j + 1])) / 2, dimY - 6);
+            });
+
+            const qY = 320, mY = 470, amp = 60;
+            ctx.textAlign = 'left';
+            ctx.font = 'bold 13px sans-serif';
+            ctx.fillStyle = '#0284c7';
+            ctx.fillText('Querkraftverlauf Q(x) [kN]', 20, qY - amp - 14);
+            ctx.fillStyle = '#ea580c';
+            ctx.fillText('Biegemomentenverlauf M(x) [kNm]', 20, mY - amp - 14);
+
+            [qY, mY].forEach(y => {
+                ctx.strokeStyle = '#94a3b8';
+                ctx.lineWidth = 1.5;
+                ctx.beginPath(); ctx.moveTo(px(0), y); ctx.lineTo(px(dlt.L), y); ctx.stroke();
+            });
+
+            if (opts.verdeckt) {
+                ctx.fillStyle = '#94a3b8';
+                ctx.font = 'italic 13px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('Die Verläufe erscheinen nach dem Prüfen.', canvas.width / 2, qY + 24);
+                ctx.fillText('Die Verläufe erscheinen nach dem Prüfen.', canvas.width / 2, mY + 24);
+                return;
+            }
+
+            const xs = diagrammStellen(dlt, 0, dlt.L, dlt.L / 400);
+            const werte = xs.map(x => dlt.schnitt(x));
+            const maxQ = Math.max(1e-6, ...werte.map(w => Math.abs(w.Q)));
+            const maxM = Math.max(1e-6, ...werte.map(w => Math.abs(w.M)));
+            const qy = Q => qY - (Q / maxQ) * amp;          // Q positiv nach oben
+            const my = M => mY + (M / maxM) * amp;          // M positiv nach unten (Zugseite)
+
+            function kurve(yFn, wert, farbe) {
+                ctx.beginPath();
+                ctx.moveTo(px(0), yFn(0));
+                xs.forEach((x, i) => ctx.lineTo(px(x), yFn(wert(werte[i]))));
+                ctx.lineTo(px(dlt.L), yFn(0));
+                ctx.closePath();
+                ctx.fillStyle = farbe + '1a';
+                ctx.fill();
+                ctx.strokeStyle = farbe;
+                ctx.lineWidth = 2.5;
+                ctx.stroke();
+            }
+            kurve(qy, w => w.Q, '#0284c7');
+            kurve(my, w => w.M, '#ea580c');
+
+            // Stützmomente an den Zwischenauflagern
+            ctx.font = 'bold 11px sans-serif';
+            ctx.textAlign = 'center';
+            for (let i = 1; i < dlt.X.length - 1; i++) {
+                const M = dlt.stuetzmomente[i];
+                const x = px(dlt.X[i]), y = my(M);
+                ctx.fillStyle = '#ea580c';
+                ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI * 2); ctx.fill();
+                ctx.fillStyle = '#7c2d12';
+                fillTextSub(ctx, `M_{${AUFLAGER[i]}} = ${fmt(M, 2)} kNm`, x, M < 0 ? y - 9 : y + 16);
+            }
+            // Größte Feldmomente
+            feldmomente(dlt).forEach((f, j) => {
+                if (f.M <= 1e-6) return;
+                const x = px(f.x), y = my(f.M);
+                ctx.fillStyle = '#ea580c';
+                ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI * 2); ctx.fill();
+                ctx.fillStyle = '#7c2d12';
+                fillTextSub(ctx, `max M_{F${j + 1}} = ${fmt(f.M, 2)}`, x, y + 16);
+            });
+        }
+
+        // ================= Umschalter =================
+        const teile = { lernen: 'teilLernen', uebung: 'teilUebung', rechner: 'teilRechner' };
+        function zeigeTeil(name) {
+            Object.entries(teile).forEach(([key, id]) => document.getElementById(id).classList.toggle('hidden', key !== name));
+            document.querySelectorAll('.lab-tab[data-tab]').forEach(b => b.classList.toggle('is-active', b.dataset.tab === name));
+            if (name === 'uebung' && !aufgabe) neueAufgabe();
+            if (name === 'rechner') berechneEigenesSystem();
+            window.dispatchEvent(new Event('resize'));
+        }
+        document.querySelectorAll('.lab-tab[data-tab]').forEach(b => b.addEventListener('click', () => zeigeTeil(b.dataset.tab)));
+
+        // ================= Teil 1: Beispiel =================
+        zeichneDurchlauftraeger(document.getElementById('beispielCanvas'),
+            berechneDurchlauftraeger({ spans: [5, 5], loads: [{ q: 10 }, { q: 10 }] }));
+        document.getElementById('tabelleKopie').appendChild(document.getElementById('beiwertTabelle').cloneNode(true)).removeAttribute('id');
+
+        // ================= Teil 2: Übung mit Tabellenwerten =================
+        // Beiwerte wie in der Tabelle (gerundet): Kräfte · (q·L bzw. F), Momente · (q·L² bzw. F·L)
+        const TABELLE = {
+            '2q': { name: 'Zweifeldträger, Gleichlast q auf beiden Feldern', felder: 2, last: 'q', A: 0.375, B: 1.25, MB: -0.125, MF: 0.070 },
+            '2F': { name: 'Zweifeldträger, Einzellast F in jeder Feldmitte', felder: 2, last: 'F', A: 0.313, B: 1.375, MB: -0.188, MF: 0.156 },
+            '3q': { name: 'Dreifeldträger, Gleichlast q auf allen Feldern', felder: 3, last: 'q', A: 0.400, B: 1.10, MB: -0.100, MF: 0.080 },
+            '3F': { name: 'Dreifeldträger, Einzellast F in jeder Feldmitte', felder: 3, last: 'F', A: 0.350, B: 1.15, MB: -0.150, MF: 0.175 }
+        };
+        let aufgabe = null;
+        const sessionLog6 = [];
+        const zufall = (min, max, step) => Math.round((min + Math.random() * (max - min)) / step) * step;
+
+        function neueAufgabe() {
+            const key = Object.keys(TABELLE)[Math.floor(Math.random() * 4)];
+            const t = TABELLE[key];
+            const L = zufall(3, 8, 0.5);
+            const wert = t.last === 'q' ? zufall(5, 20, 1) : zufall(10, 60, 5);
+            const spans = new Array(t.felder).fill(L);
+            const loads = spans.map(() => t.last === 'q' ? { q: wert } : { F: wert, a: L / 2 });
+            const dlt = berechneDurchlauftraeger({ spans, loads });
+            aufgabe = { key, t, L, wert, dlt, f1: feldmomente(dlt)[0], geprueft: false };
+
+            const lastText = t.last === 'q' ? `Gleichlast q = ${fmt(wert)} kN/m auf allen Feldern` : `Einzellast F = ${fmt(wert)} kN in jeder Feldmitte`;
+            document.getElementById('uebungText').innerHTML =
+                `<strong>Aufgabe:</strong> ${t.felder === 2 ? 'Zweifeldträger' : 'Dreifeldträger'} mit gleichen Stützweiten L = ${fmt(L, 2)} m, ${lastText}. ` +
+                `Bestimme mit der Beiwert-Tabelle die Auflagerkräfte A und B, das Stützmoment M<sub>B</sub> und das größte Feldmoment im Feld 1.`;
+            ['ue_A', 'ue_B', 'ue_MB', 'ue_MF'].forEach(id => { document.getElementById(id).value = ''; });
+            ['fb_A', 'fb_B', 'fb_MB', 'fb_MF'].forEach(id => { document.getElementById(id).textContent = ''; });
+            document.getElementById('uebungErgebnis').classList.add('hidden');
+            zeichneDurchlauftraeger(document.getElementById('uebungCanvas'), dlt, { verdeckt: true });
+        }
+
+        document.getElementById('btnNeueUebung').addEventListener('click', neueAufgabe);
+
+        document.getElementById('btnPruefen').addEventListener('click', () => {
+            if (!aufgabe) return;
+            const { t, L, wert, dlt, f1 } = aufgabe;
+            const kraftBasis = t.last === 'q' ? wert * L : wert;           // q·L bzw. F
+            const momentBasis = t.last === 'q' ? wert * L * L : wert * L;  // q·L² bzw. F·L
+            const basisK = t.last === 'q' ? `q · L = ${fmt(wert)} · ${fmt(L, 2)} = ${fmt(kraftBasis, 2)} kN` : `F = ${fmt(wert)} kN`;
+            const basisM = t.last === 'q' ? `q · L² = ${fmt(wert)} · ${fmt(L, 2)}² = ${fmt(momentBasis, 2)} kNm` : `F · L = ${fmt(wert)} · ${fmt(L, 2)} = ${fmt(momentBasis, 2)} kNm`;
+            // Geprüft wird gegen den exakten Wert; die gerundeten Tabellenbeiwerte liegen innerhalb der Toleranz
+            const pruefungen = [
+                ['ue_A', 'fb_A', 'A', dlt.auflager[0], 'kN', t.A, kraftBasis],
+                ['ue_B', 'fb_B', 'B', dlt.auflager[1], 'kN', t.B, kraftBasis],
+                ['ue_MB', 'fb_MB', 'M_B', dlt.stuetzmomente[1], 'kNm', t.MB, momentBasis],
+                ['ue_MF', 'fb_MF', 'max M_F1', f1.M, 'kNm', t.MF, momentBasis]
+            ];
+            let richtig = 0;
+            const details = [];
+            const rechenweg = [];
+            pruefungen.forEach(([inputId, fbId, name, exakt, einheit, beiwert, basis]) => {
+                const v = parseFloat(document.getElementById(inputId).value);
+                const ok = !isNaN(v) && Math.abs(v - exakt) <= Math.max(0.02 * Math.abs(exakt), 0.05);
+                document.getElementById(fbId).textContent = ok ? '✅' : '❌';
+                if (ok) richtig++;
+                details.push(`${name}: eingegeben ${isNaN(v) ? '—' : fmt(v) + ' ' + einheit} / richtig ${fmt(exakt, 2)} ${einheit} ${ok ? '✅' : '❌'}`);
+                rechenweg.push(`${name.replace('_B', '<sub>B</sub>').replace('_F1', '<sub>F1</sub>')} = ${fmt(beiwert, 3)} · ${fmt(basis, 2)} = <strong>${fmt(beiwert * basis, 2)} ${einheit}</strong>`);
+            });
+            const box = document.getElementById('uebungErgebnis');
+            box.classList.remove('hidden', 'bg-emerald-50', 'text-emerald-900', 'bg-amber-50', 'text-amber-900');
+            box.classList.add(richtig === 4 ? 'bg-emerald-50' : 'bg-amber-50', richtig === 4 ? 'text-emerald-900' : 'text-amber-900');
+            box.innerHTML =
+                `<p class="font-bold mb-2">${richtig === 4 ? '🎉 Alles richtig!' : `${richtig}/4 richtig.`} Lösungsweg mit der Tabelle (${t.name}):</p>` +
+                `<p class="font-mono text-xs mb-1">${basisK} &nbsp;|&nbsp; ${basisM}</p>` +
+                `<div class="font-mono text-xs space-y-0.5">${rechenweg.map(r => `<p>${r}</p>`).join('')}</div>` +
+                `<p class="text-xs mt-2">Kontrolle: Summe der Auflagerkräfte = ${fmt(dlt.auflager.reduce((a, b) => a + b, 0), 2)} kN = Gesamtlast ${fmt(dlt.totalLoad, 2)} kN ✓</p>`;
+            zeichneDurchlauftraeger(document.getElementById('uebungCanvas'), dlt);
+
+            if (!aufgabe.geprueft) {
+                aufgabe.geprueft = true;
+                sessionLog6.push({
+                    zeit: new Date().toLocaleTimeString('de-DE'),
+                    aufgabe: `${t.name}, L = ${fmt(L, 2)} m, ${t.last} = ${fmt(wert)} ${t.last === 'q' ? 'kN/m' : 'kN'}`,
+                    details, richtig, gesamt: 4
+                });
+                document.getElementById('logCount6').textContent = sessionLog6.length;
+                document.getElementById('btnExportLog6').disabled = false;
+            }
+        });
+
+        document.getElementById('btnExportLog6').addEventListener('click', () => {
+            exportProtocol(6, 'Durchlaufträger', document.getElementById('studentName6').value, sessionLog6);
+        });
+
+        // ================= Teil 3: Eigenes System =================
+        const felderSelect = document.getElementById('r_felder');
+        const STANDARD = { L: 5, q: 10, F: 0, a: 2.5 };
+
+        function baueFeldEingaben() {
+            const n = parseInt(felderSelect.value, 10);
+            const container = document.getElementById('feldEingaben');
+            const alt = {};
+            container.querySelectorAll('input').forEach(i => { alt[i.id] = i.value; });
+            container.innerHTML = '';
+            for (let j = 1; j <= n; j++) {
+                const v = k => alt[`r_${k}${j}`] !== undefined ? alt[`r_${k}${j}`] : STANDARD[k];
+                const box = document.createElement('div');
+                box.className = 'p-4 bg-white rounded-xl border border-slate-200 shadow-sm';
+                box.innerHTML = `
+                    <h4 class="font-bold text-sm text-slate-700 mb-2">Feld ${j} (${AUFLAGER[j - 1]}–${AUFLAGER[j]})</h4>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div><label for="r_L${j}" class="block text-xs font-bold text-slate-500 mb-1">Stützweite L<sub>${j}</sub> [m]</label>
+                            <input type="number" id="r_L${j}" min="1" max="15" step="0.1" value="${v('L')}" class="w-full border border-slate-300 rounded p-1.5 text-sm"></div>
+                        <div><label for="r_q${j}" class="block text-xs font-bold text-slate-500 mb-1">Gleichlast q<sub>${j}</sub> [kN/m]</label>
+                            <input type="number" id="r_q${j}" min="0" max="100" step="0.5" value="${v('q')}" class="w-full border border-slate-300 rounded p-1.5 text-sm"></div>
+                        <div><label for="r_F${j}" class="block text-xs font-bold text-slate-500 mb-1">Einzellast F<sub>${j}</sub> [kN]</label>
+                            <input type="number" id="r_F${j}" min="0" max="500" step="1" value="${v('F')}" class="w-full border border-slate-300 rounded p-1.5 text-sm"></div>
+                        <div><label for="r_a${j}" class="block text-xs font-bold text-slate-500 mb-1">Abstand a<sub>${j}</sub> [m] ab ${AUFLAGER[j - 1]}</label>
+                            <input type="number" id="r_a${j}" min="0" step="0.1" value="${v('a')}" class="w-full border border-slate-300 rounded p-1.5 text-sm"></div>
+                    </div>`;
+                container.appendChild(box);
+            }
+            container.querySelectorAll('input').forEach(i => i.addEventListener('input', () => {
+                document.getElementById('r_vorlage').value = '';
+                berechneEigenesSystem();
+            }));
+        }
+
+        function berechneEigenesSystem() {
+            const n = parseInt(felderSelect.value, 10);
+            const fehler = [];
+            const spans = [], loads = [];
+            for (let j = 1; j <= n; j++) {
+                const wert = k => document.getElementById(`r_${k}${j}`).value;
+                const L = parseFloat(wert('L')), q = parseFloat(wert('q')), F = parseFloat(wert('F')), a = parseFloat(wert('a'));
+                const input = k => document.getElementById(`r_${k}${j}`);
+                const ok = {
+                    L: istImWertebereich(wert('L'), 1, 15),
+                    q: istImWertebereich(wert('q'), 0, 100),
+                    F: istImWertebereich(wert('F'), 0, 500),
+                    a: istImWertebereich(wert('a'), 0, isNaN(L) ? 0 : L)
+                };
+                Object.entries(ok).forEach(([k, gut]) => input(k).setAttribute('aria-invalid', gut ? 'false' : 'true'));
+                if (!ok.L) fehler.push(`Feld ${j}: Stützweite zwischen 1 und 15 m eingeben.`);
+                if (!ok.q) fehler.push(`Feld ${j}: Gleichlast zwischen 0 und 100 kN/m eingeben.`);
+                if (!ok.F) fehler.push(`Feld ${j}: Einzellast zwischen 0 und 500 kN eingeben.`);
+                if (ok.L && !ok.a) fehler.push(`Feld ${j}: Abstand a zwischen 0 und ${fmt(L, 2)} m eingeben.`);
+                spans.push(L);
+                loads.push({ q, F, a });
+            }
+            const fehlerBox = document.getElementById('r_fehler');
+            fehlerBox.classList.toggle('hidden', fehler.length === 0);
+            fehlerBox.innerHTML = fehler.length ? `<strong>Bitte Eingaben prüfen:</strong><ul class="list-disc pl-5 mt-1">${fehler.map(f => `<li>${f}</li>`).join('')}</ul>` : '';
+            if (fehler.length) return;
+
+            const dlt = berechneDurchlauftraeger({ spans, loads });
+            zeichneDurchlauftraeger(document.getElementById('rechnerCanvas'), dlt);
+
+            const fm = feldmomente(dlt);
+            const zeile = (name, wert, einheit) => `<div class="flex justify-between border-b border-slate-200 py-1"><span>${name}</span><strong>${fmt(wert, 2)} ${einheit}</strong></div>`;
+            const kraefte = dlt.auflager.map((R, i) => zeile(`Auflagerkraft ${AUFLAGER[i]}`, R, 'kN')).join('');
+            const stuetz = dlt.stuetzmomente.slice(1, -1).map((M, i) => zeile(`Stützmoment M<sub>${AUFLAGER[i + 1]}</sub>`, M, 'kNm')).join('');
+            const feld = fm.map((f, j) => zeile(`max M<sub>F${j + 1}</sub> (x = ${fmt(f.x, 2)} m)`, f.M, 'kNm')).join('');
+            document.getElementById('r_ergebnis').innerHTML =
+                `<div><p class="font-bold text-slate-700 mb-1">Auflagerkräfte</p>${kraefte}${zeile('Summe = Gesamtlast', dlt.auflager.reduce((a, b) => a + b, 0), 'kN')}</div>` +
+                `<div><p class="font-bold text-slate-700 mb-1">Stützmomente</p>${stuetz}</div>` +
+                `<div><p class="font-bold text-slate-700 mb-1">Größte Feldmomente</p>${feld}</div>`;
+
+            const hinweise = [];
+            if (dlt.auflager.some(R => R < -1e-6)) hinweise.push('⚠️ Eine negative Auflagerkraft bedeutet: Das Auflager muss den Träger nach unten halten (abhebende Kraft, z. B. bei Last nur in einem Feld).');
+            const gleich = spans.every(L => Math.abs(L - spans[0]) < 1e-9);
+            hinweise.push(gleich
+                ? 'Gleiche Stützweiten: Bei Gleichlast oder Einzellast in Feldmitte auf allen Feldern stimmen die Ergebnisse mit der Beiwert-Tabelle aus Teil 1 überein.'
+                : 'Ungleiche Stützweiten: Hier hilft die Tabelle nicht weiter – das Ergebnis stammt aus der Dreimomentengleichung (siehe „Ausblick“ in Teil 1).');
+            document.getElementById('r_hinweis').innerHTML = hinweise.join('<br>');
+        }
+
+        const VORLAGEN = {
+            '2q': { felder: 2, werte: [[5, 10, 0, 2.5], [5, 10, 0, 2.5]] },
+            '3q': { felder: 3, werte: [[4, 12, 0, 2], [4, 12, 0, 2], [4, 12, 0, 2]] },
+            '2F': { felder: 2, werte: [[6, 0, 20, 3], [6, 0, 20, 3]] },
+            'frei': { felder: 3, werte: [[4, 5, 12, 1.5], [6.5, 8, 0, 3], [3, 0, 20, 2]] }
+        };
+        document.getElementById('r_vorlage').addEventListener('change', function () {
+            const v = VORLAGEN[this.value];
+            if (!v) return;
+            felderSelect.value = String(v.felder);
+            baueFeldEingaben();
+            v.werte.forEach(([L, q, F, a], idx) => {
+                const j = idx + 1;
+                document.getElementById(`r_L${j}`).value = L;
+                document.getElementById(`r_q${j}`).value = q;
+                document.getElementById(`r_F${j}`).value = F;
+                document.getElementById(`r_a${j}`).value = a;
+            });
+            berechneEigenesSystem();
+        });
+        felderSelect.addEventListener('change', () => {
+            document.getElementById('r_vorlage').value = '';
+            baueFeldEingaben();
+            berechneEigenesSystem();
+        });
+
+        baueFeldEingaben();
+
+        // Lernfortschritt (optional, nur auf diesem Gerät)
+        // Die Eingaben für Feld 3 entstehen erst bei „3 Felder“ – deshalb Feldwerte selbst sichern und wiederherstellen
+        initLearningProgress(6, {
+            capture: () => {
+                const werte = {};
+                document.querySelectorAll('#feldEingaben input').forEach(i => { werte[i.id] = i.value; });
+                return { felder: felderSelect.value, werte };
+            },
+            restore: data => {
+                if (!data || !data.felder) return;
+                felderSelect.value = data.felder;
+                baueFeldEingaben();
+                Object.entries(data.werte || {}).forEach(([id, wert]) => {
+                    const input = document.getElementById(id);
+                    if (input) input.value = wert;
+                });
+            }
+        });
+        berechneEigenesSystem();
+    </script>
+</body>
+</html>

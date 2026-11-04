@@ -127,12 +127,130 @@ function diagrammStellen(traeger, xmin, xmax, step = 0.05) {
         .filter((x, i, arr) => i === 0 || x - arr[i - 1] > d / 2);
 }
 
+// ==========================================================================
+// Durchlaufträger (Zwei- und Dreifeldträger, allgemein n Felder) – Modul 6
+// ==========================================================================
+// system = { spans: [L1, L2, …], loads: [{ q, F, a }, …] } mit je einem Eintrag pro Feld:
+//   q = Gleichlast über das ganze Feld [kN/m], F = Einzellast [kN] im Abstand a [m] vom linken Auflager des Feldes.
+// Gelenkige Lagerung an allen Auflagern, Endauflager momentenfrei, konstante Biegesteifigkeit EI.
+// Die Stützmomente folgen aus der Dreimomentengleichung (Clapeyron); danach wird jedes Feld wie ein
+// Einfeldträger mit den Stützmomenten als Randmomenten behandelt.
+// Liefert Auflagerpositionen X, Stützmomente, Auflagerkräfte, schnitt(x) und kritische Stellen
+// (kompatibel mit extremwerte() und diagrammStellen()).
+function berechneDurchlauftraeger(system) {
+    const spans = system.spans;
+    const n = spans.length;
+    const loads = spans.map((_, j) => {
+        const l = (system.loads && system.loads[j]) || {};
+        const F = l.F || 0;
+        const a = Math.min(Math.max(l.a === undefined ? spans[j] / 2 : l.a, 0), spans[j]);
+        return { q: l.q || 0, F, a };
+    });
+
+    // Belastungsglieder der Dreimomentengleichung je Feld (links bzw. rechts)
+    const glied = loads.map((l, j) => {
+        const L = spans[j], a = l.a, b = L - l.a;
+        const qTerm = l.q * L * L * L / 4;
+        return {
+            links: qTerm + (L > 0 ? l.F * a * b * (L + b) / L : 0),
+            rechts: qTerm + (L > 0 ? l.F * a * b * (L + a) / L : 0)
+        };
+    });
+
+    // Gleichungssystem für die inneren Stützmomente M_1 … M_(n-1) aufstellen und lösen (Gauß)
+    const m = n - 1;
+    const K = Array.from({ length: m }, () => new Array(m).fill(0));
+    const r = new Array(m).fill(0);
+    for (let i = 1; i <= m; i++) {
+        const Ll = spans[i - 1], Lr = spans[i];
+        K[i - 1][i - 1] = 2 * (Ll + Lr);
+        if (i - 2 >= 0) K[i - 1][i - 2] = Ll;
+        if (i < m) K[i - 1][i] = Lr;
+        r[i - 1] = -(glied[i - 1].rechts + glied[i].links);
+    }
+    for (let c = 0; c < m; c++) {
+        let p = c;
+        for (let z = c + 1; z < m; z++) if (Math.abs(K[z][c]) > Math.abs(K[p][c])) p = z;
+        [K[c], K[p]] = [K[p], K[c]];
+        [r[c], r[p]] = [r[p], r[c]];
+        for (let z = c + 1; z < m; z++) {
+            const f = K[z][c] / K[c][c];
+            for (let s = c; s < m; s++) K[z][s] -= f * K[c][s];
+            r[z] -= f * r[c];
+        }
+    }
+    const innen = new Array(m).fill(0);
+    for (let c = m - 1; c >= 0; c--) {
+        let sum = r[c];
+        for (let s = c + 1; s < m; s++) sum -= K[c][s] * innen[s];
+        innen[c] = sum / K[c][c];
+    }
+    const stuetzmomente = [0, ...innen, 0];
+
+    // Auflagerpositionen
+    const X = [0];
+    spans.forEach(L => X.push(X[X.length - 1] + L));
+    const gesamtLaenge = X[n];
+
+    // Schnittgrößen im Feld j an der lokalen Stelle x (0 ≤ x ≤ L), Lasten bei x genau auf a zählen erst rechts davon
+    function feldSchnitt(j, x) {
+        const L = spans[j], l = loads[j];
+        const RA0 = l.q * L / 2 + (L > 0 ? l.F * (L - l.a) / L : 0);   // Einfeldträger ohne Stützmomente
+        let Q = RA0 - l.q * x;
+        let M = RA0 * x - l.q * x * x / 2;
+        if (x > l.a) { Q -= l.F; M -= l.F * (x - l.a); }
+        const Ml = stuetzmomente[j], Mr = stuetzmomente[j + 1];
+        return { Q: Q + (Mr - Ml) / L, M: M + Ml * (1 - x / L) + Mr * x / L };
+    }
+
+    // Auflagerkräfte aus dem Querkraftsprung an jedem Auflager
+    const auflager = X.map((_, i) => {
+        const rechts = i < n ? feldSchnitt(i, 0).Q : 0;
+        const links = i > 0 ? feldSchnitt(i - 1, spans[i - 1]).Q : 0;
+        return rechts - links;
+    });
+
+    const eps = 1e-9;
+    function schnitt(x) {
+        if (x <= eps || x > gesamtLaenge + eps) return { Q: 0, M: 0 };
+        let j = 0;
+        while (j < n - 1 && x > X[j + 1] + eps) j++;
+        return feldSchnitt(j, Math.min(x - X[j], spans[j]));
+    }
+
+    const kritischeStellen = X.slice();
+    loads.forEach((l, j) => { if (l.F) kritischeStellen.push(X[j] + l.a); });
+    const totalLoad = loads.reduce((s, l, j) => s + l.q * spans[j] + l.F, 0);
+
+    return { spans, loads, X, L: gesamtLaenge, stuetzmomente, auflager, totalLoad, schnitt, kritischeStellen };
+}
+
+// Größtes positives Feldmoment je Feld: [{ M, x }] mit x als globaler Stelle (M = 0, wenn das Feld nur negative Momente hat)
+function feldmomente(dlt) {
+    return dlt.spans.map((L, j) => {
+        const x0 = dlt.X[j];
+        const stellen = [];
+        const n = 2000;
+        for (let i = 0; i <= n; i++) stellen.push(x0 + (i / n) * L);
+        const l = dlt.loads[j];
+        if (l.F) stellen.push(x0 + l.a);
+        let best = { M: 0, x: x0 + L / 2 };
+        stellen.forEach(x => {
+            const M = dlt.schnitt(Math.min(Math.max(x, x0 + 1e-7), x0 + L)).M;
+            if (M > best.M) best = { M, x };
+        });
+        return best;
+    });
+}
+
 // Für die automatischen Tests unter Node.js exportieren (im Browser ohne Wirkung)
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
         berechneTraeger,
         extremwerte,
         diagrammStellen,
+        berechneDurchlauftraeger,
+        feldmomente,
         zerlegeKraft,
         istImWertebereich,
         momentParameterwert,
