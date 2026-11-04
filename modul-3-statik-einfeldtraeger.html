@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modul 3: Schnittgrößen (Einfeldträger) | Bautechnik-Labor</title>
-    <link rel="stylesheet" href="tailwind.min.css?v=2026-11-04b">
-    <link rel="stylesheet" href="labor.css?v=2026-11-04b">
+    <link rel="stylesheet" href="tailwind.min.css?v=2026-11-04c">
+    <link rel="stylesheet" href="labor.css?v=2026-11-04c">
 </head>
 <body data-modul="3" class="bg-slate-50 min-h-screen p-4 md:p-6 font-sans text-slate-800">
     <div class="max-w-7xl mx-auto bg-white p-6 rounded-2xl shadow-xl border border-slate-100">
@@ -30,9 +30,6 @@
                 <a id="btnToModul5" href="modul-5-spannungsnachweis.html" class="bg-violet-600 hover:bg-violet-700 text-white font-bold px-4 py-2.5 rounded-lg shadow transition-colors text-sm flex items-center gap-2" title="Öffnet Modul 5 mit dem aktuell berechneten maximalen Biegemoment">
                     <span>➡️</span><span>M<sub>max</sub> nachweisen (Modul 5)</span>
                 </a>
-                <div class="bg-teal-50 px-4 py-2.5 rounded-lg border border-teal-100 text-teal-800 text-sm font-semibold shadow-sm">
-                    SchnittGrip Pro
-                </div>
             </div>
         </header>
         
@@ -272,11 +269,10 @@
             <!-- Canvas und Rechenweg rechts -->
             <div class="lg:col-span-8 space-y-6 lg:sticky lg:top-6">
                 <!-- Statik Canvas mit Sonde -->
-                <div class="relative lab-beam-canvas-scroll">
-                    <p class="lab-canvas-hint">Auf dem Handy kannst du die vergrößerte Zeichnung seitlich verschieben. Für eine größere Ansicht nutze Vollbild.</p>
-                    <canvas id="statikCanvas" width="900" height="900" role="img" aria-describedby="output rechenweg" aria-label="Einfeldträger mit Lasten sowie Querkraft- und Biegemomentdiagrammen. Auflagerkräfte, Querkraft und Moment erscheinen in den Ergebnissen."></canvas>
+                <div class="relative">
+                    <canvas id="statikCanvas" width="900" height="900" data-responsive="1" role="img" aria-describedby="output rechenweg" aria-label="Einfeldträger mit Lasten sowie Querkraft- und Biegemomentdiagrammen. Auflagerkräfte, Querkraft und Moment erscheinen in den Ergebnissen."></canvas>
                     <!-- Schwebendes Sonden-Overlay für Echtzeit-Werte -->
-                    <div id="sondeTooltip" class="absolute hidden bg-slate-900/95 text-white p-3 rounded-lg text-xs shadow-xl border border-slate-700 pointer-events-none space-y-1.5 w-64 z-50">
+                    <div id="sondeTooltip" class="absolute hidden bg-slate-900/95 text-white p-3 rounded-lg text-xs shadow-xl border border-slate-700 pointer-events-none space-y-1.5 w-56 sm:w-64 z-50">
                         <div class="font-bold border-b border-slate-700 pb-1 flex justify-between">
                             <span>Sondendaten</span>
                             <span id="sonde_x" class="text-teal-400">x = 0,00 m</span>
@@ -332,12 +328,21 @@
         </section>
     </div>
 
-    <script src="labor.js?v=2026-11-04b"></script>
-    <script src="version.js?v=2.1"></script>
+    <script src="labor.js?v=2026-11-04c"></script>
+    <script src="version.js?v=2.2"></script>
     <script src="statik-core.js?v=2026-11-04b"></script>
     <script>
         const canvas = document.getElementById('statikCanvas');
         const ctx = canvas.getContext('2d');
+        // Zeichnung wächst mit der Bildschirmbreite mit (labor.js). Die Höhe wächst, wenn sich Lasten stapeln.
+        let zeichenHoehe = 900;
+        const statikZeichnung = responsiveCanvas(canvas, () => zeichenHoehe, () => calculate(), { maxBreite: 900 });
+        // Gemeinsames Raster für Zeichnen und Ziehen: auf dem Handy schmalere Ränder
+        function zeichenRaster() {
+            const W = statikZeichnung.breite();
+            const paddingX = W < 600 ? 44 : 80;
+            return { W, paddingX, drawWidth: W - 2 * paddingX };
+        }
         
         let lastMouseX = -1; // Speichert Mausposition für Sondenzeichnung
         let dragElements = []; // Liste der interaktiven Anfasser im Canvas
@@ -585,24 +590,31 @@
             lastMouseX = -1;
             calculate();
 
-            const tableHeight = 260;
+            // Die Zeichnung liegt in Bildschirmauflösung vor (k Bildpixel je Zeichnungseinheit).
+            // Die Wertetabelle wird im selben Maßstab angehängt; bei schmaler Zeichnung (Handy) einspaltig.
+            const mass = statikZeichnung.mass();
+            const k = mass ? canvas.width / mass.W : 1;
+            const Wl = canvas.width / k, Hl = canvas.height / k;
+            const einspaltig = Wl < 600;
+            const tableHeight = einspaltig ? 400 : 260;
             const exportCanvas = document.createElement('canvas');
             exportCanvas.width = canvas.width;
-            exportCanvas.height = canvas.height + tableHeight;
+            exportCanvas.height = canvas.height + Math.round(tableHeight * k);
             const exportCtx = exportCanvas.getContext('2d');
 
             // Weißer Hintergrund + Diagramm
             exportCtx.fillStyle = '#ffffff';
             exportCtx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
             exportCtx.drawImage(canvas, 0, 0);
+            exportCtx.setTransform(k, 0, 0, k, 0, 0);
 
             // Trennlinie
-            const tableTop = canvas.height + 20;
+            const tableTop = Hl + 20;
             exportCtx.strokeStyle = '#cbd5e1';
             exportCtx.lineWidth = 1.5;
             exportCtx.beginPath();
-            exportCtx.moveTo(40, canvas.height + 8);
-            exportCtx.lineTo(canvas.width - 40, canvas.height + 8);
+            exportCtx.moveTo(einspaltig ? 16 : 40, Hl + 8);
+            exportCtx.lineTo(Wl - (einspaltig ? 16 : 40), Hl + 8);
             exportCtx.stroke();
 
             // Titel
@@ -610,7 +622,7 @@
             exportCtx.font = 'bold 18px sans-serif';
             exportCtx.textAlign = 'left';
             exportCtx.textBaseline = 'alphabetic';
-            exportCtx.fillText('Ergebnisse – Modul 3: Schnittgrößen (Einfeldträger)', 40, tableTop + 14);
+            exportCtx.fillText(einspaltig ? 'Ergebnisse – Modul 3' : 'Ergebnisse – Modul 3: Schnittgrößen (Einfeldträger)', einspaltig ? 16 : 40, tableTop + 14);
 
             // Werte in zwei Spalten
             const rowsLeft = [
@@ -629,9 +641,10 @@
 
             exportCtx.font = '14px sans-serif';
             const lineHeight = 34;
-            const colLeftX = 40;
-            const colRightX = exportCanvas.width / 2 + 20;
+            const colLeftX = einspaltig ? 16 : 40;
+            const colRightX = einspaltig ? colLeftX : Wl / 2 + 20;
             let rowY = tableTop + 45;
+            const rechtsVersatz = einspaltig ? rowsLeft.length * lineHeight : 0;   // einspaltig: rechte Spalte darunter
 
             rowsLeft.forEach(([label, value], i) => {
                 const y = rowY + i * lineHeight;
@@ -643,7 +656,7 @@
                 exportCtx.fillText(value, colLeftX, y + 17);
             });
             rowsRight.forEach(([label, value], i) => {
-                const y = rowY + i * lineHeight;
+                const y = rowY + rechtsVersatz + i * lineHeight;
                 exportCtx.fillStyle = '#475569';
                 exportCtx.font = '13px sans-serif';
                 fillTextSub(exportCtx, label, colRightX, y);
@@ -668,9 +681,10 @@
             const rect = canvas.getBoundingClientRect();
             const clientX = e.touches && e.touches.length > 0 ? e.touches[0].clientX : e.clientX;
             const clientY = e.touches && e.touches.length > 0 ? e.touches[0].clientY : e.clientY;
+            const p = statikZeichnung.punkt(clientX, clientY);   // Zeichnungskoordinaten
             return {
-                x: (clientX - rect.left) * (canvas.width / rect.width),
-                y: (clientY - rect.top) * (canvas.height / rect.height),
+                x: p.x,
+                y: p.y,
                 rawX: clientX - rect.left,
                 rawY: clientY - rect.top
             };
@@ -679,7 +693,7 @@
         // Nächstgelegenen Griff im Fangradius suchen. Für Finger gilt ein Mindestradius von 40 Bildschirm-Pixeln,
         // damit die Griffe auch auf kleinen Displays (Zeichnung stark verkleinert) sicher zu treffen sind.
         function findDragTarget(coords, isTouch) {
-            const pxPerCanvas = canvas.getBoundingClientRect().width / canvas.width;
+            const pxPerCanvas = statikZeichnung.mass() ? statikZeichnung.mass().s : 1;
             const radius = isTouch ? Math.max(32, 40 / pxPerCanvas) : 22;
             let best = null, bestDist = radius;
             for (let el of dragElements) {
@@ -715,8 +729,7 @@
             const maxX = L + L_kr;
             const totalLength = L_kl + L + L_kr;
 
-            const paddingX = 80;
-            const drawWidth = canvas.width - 2 * paddingX;
+            const { paddingX, drawWidth } = zeichenRaster();
 
             if (activeDragId) {
                 const dragTarget = dragElements.find(el => el.id === activeDragId);
@@ -738,8 +751,8 @@
                 const rect = canvas.getBoundingClientRect();
                 tooltip.classList.remove('hidden');
 
-                const tooltipWidth = 256; 
-                const tooltipHeight = 120; 
+                const tooltipWidth = tooltip.offsetWidth || 256;
+                const tooltipHeight = tooltip.offsetHeight || 120;
                 
                 let leftPos = coords.rawX + 15;
                 let topPos = coords.rawY + 15;
@@ -825,7 +838,7 @@
                 `;
                 document.getElementById('rechenweg').innerHTML = '';
                 dragElements = [];
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                statikZeichnung.vorbereiten();   // leert die Zeichnung
                 return;
             }
 
@@ -977,8 +990,7 @@
 
         function drawSystem(L, L_kl, L_kr, kl_active, kr_active, F1, x1, alpha1, f1_active, F2, x2, alpha2, f2_active, q1_val, q1_start, q1_end, q1_active, q2_val, q2_start, q2_end, q2_active, getSchnittgroessen, maxM, maxX0, diagrammX) {
             const totalLength = L_kl + L + L_kr;
-            const paddingX = 80;
-            const drawWidth = canvas.width - 2 * paddingX;
+            const { W, paddingX, drawWidth } = zeichenRaster();
 
             // X-Koordinate mappen auf Canvas-Pixel
             function getPixelX(x) {
@@ -1001,9 +1013,8 @@
             const topMargin = 12;
             const offsetY = Math.max(0, Math.ceil(topMargin - stackTop));
             const neededHeight = BASE_CANVAS_HEIGHT + offsetY;
-            if (canvas.height !== neededHeight) canvas.height = neededHeight; // setzt auch den Canvas-Inhalt zurück
-
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            zeichenHoehe = neededHeight;
+            statikZeichnung.vorbereiten(neededHeight);   // Größe, Maßstab und Leeren
             ctx.save();
             ctx.translate(0, offsetY);
 
@@ -1171,7 +1182,9 @@
                 ctx.font = 'bold 12px sans-serif';
                 ctx.fillStyle = '#0f172a';
                 ctx.textAlign = 'center';
-                ctx.fillText(`${id.toUpperCase()} = ${fmt(force)} kN (${fmt(angle)}°)`, tailX, tailY - 14);
+                const lastText = `${id.toUpperCase()} = ${fmt(force)} kN (${fmt(angle)}°)`;
+                const lastBreite = ctx.measureText(lastText).width;
+                ctx.fillText(lastText, Math.min(Math.max(tailX, lastBreite / 2 + 4), W - lastBreite / 2 - 4), tailY - 14);
                 ctx.textAlign = 'left';
 
                 ctx.fillStyle = color;
@@ -1208,7 +1221,7 @@
             // Titel links
             ctx.fillStyle = '#0284c7';
             ctx.font = 'bold 14px sans-serif';
-            ctx.fillText('Querkraftverlauf Q(x) [kN]', paddingX - 40, qDiagramY - 100);
+            ctx.fillText('Querkraftverlauf Q(x) [kN]', Math.max(10, paddingX - 40), qDiagramY - 100);
 
             // Skalierung Querkraftdiagramm bestimmen (max Kraftwert mappen auf 80px Höhe)
             let maxQForScale = 10;
@@ -1260,7 +1273,7 @@
             // Titel links
             ctx.fillStyle = '#ea580c';
             ctx.font = 'bold 14px sans-serif';
-            ctx.fillText('Biegemomentenverlauf M(x) [kNm]', paddingX - 40, mDiagramY - 100);
+            ctx.fillText('Biegemomentenverlauf M(x) [kNm]', Math.max(10, paddingX - 40), mDiagramY - 100);
 
             // Skalierung Momentenkurve bestimmen
             let maxMForScale = 10;
@@ -1308,14 +1321,19 @@
                 // Text dazu
                 ctx.fillStyle = '#7c2d12';
                 ctx.font = 'bold 11px sans-serif';
-                fillTextSub(ctx, `M_{max} = ${fmt(Math.abs(maxM), 1)} kNm`, mx0 + 10, my0 + 4);
-                ctx.fillText(`x₀ = ${fmt(maxX0, 1)} m`, mx0 + 10, my0 + 18);
+                // Rechts vom Punkt, am rechten Rand links davon
+                const links = mx0 + 130 > W;
+                ctx.textAlign = links ? 'right' : 'left';
+                const tx = links ? mx0 - 10 : mx0 + 10;
+                fillTextSub(ctx, `M_{max} = ${fmt(Math.abs(maxM), 1)} kNm`, tx, my0 + 4);
+                ctx.fillText(`x₀ = ${fmt(maxX0, 1)} m`, tx, my0 + 18);
+                ctx.textAlign = 'left';
             }
 
             // ============================================
             // INTERAKTIVE SONDE (Sondierungs-Linie zeichnen)
             // ============================================
-            if (lastMouseX >= paddingX && lastMouseX <= canvas.width - paddingX) {
+            if (lastMouseX >= paddingX && lastMouseX <= W - paddingX) {
                 let sX = ((lastMouseX - paddingX) / drawWidth) * totalLength - L_kl;
                 sX = Math.round(sX * 100) / 100; // Präzise auf 2 Nachkommastellen runden
 

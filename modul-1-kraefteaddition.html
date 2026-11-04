@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modul 1: Kräfteaddition & Vektoren | Bautechnik-Labor</title>
-    <link rel="stylesheet" href="tailwind.min.css?v=2026-11-04b">
-    <link rel="stylesheet" href="labor.css?v=2026-11-04b">
+    <link rel="stylesheet" href="tailwind.min.css?v=2026-11-04c">
+    <link rel="stylesheet" href="labor.css?v=2026-11-04c">
 </head>
 <body data-modul="1" class="bg-slate-50 min-h-screen p-4 md:p-6 font-sans text-slate-800">
     <div class="max-w-7xl mx-auto bg-white p-6 rounded-2xl shadow-xl border border-slate-100">
@@ -93,7 +93,7 @@
             <div class="lg:col-span-8 space-y-6">
                 
                 <div>
-                    <canvas id="vectorCanvas" width="800" height="450"></canvas>
+                    <canvas id="vectorCanvas" width="800" height="450" data-responsive="1" role="img" aria-label="Kräfteparallelogramm: F₁ blau, F₂ rot und die Resultierende F_R grün. Die Werte stehen im Rechenweg."></canvas>
                 </div>
 
                 <!-- Rechenweg -->
@@ -279,7 +279,7 @@
             <div class="lg:col-span-8 space-y-6">
 
                 <div>
-                    <canvas id="slopeCanvas" width="800" height="450"></canvas>
+                    <canvas id="slopeCanvas" width="800" height="450" data-responsive="1" role="img" aria-label="Schräge Last auf einer Fläche mit Kräftedreieck aus F, Fₓ und F_y. Die Werte stehen im Rechenweg."></canvas>
                 </div>
 
                 <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200 font-mono text-sm shadow-sm">
@@ -299,11 +299,15 @@
         </div>
     </div>
 
-    <script src="labor.js?v=2026-11-04b"></script>
-    <script src="version.js?v=2.1"></script>
+    <script src="labor.js?v=2026-11-04c"></script>
+    <script src="version.js?v=2.2"></script>
     <script>
         const canvas = document.getElementById('vectorCanvas');
         const ctx = canvas.getContext('2d');
+        // Zeichnung wächst mit der Bildschirmbreite mit (labor.js); auf dem Handy etwas niedriger
+        let vektorWerte = null;
+        const vektorZeichnung = responsiveCanvas(canvas, W => (W < 600 ? 360 : 450),
+            (c, W, H) => { if (vektorWerte) draw(W, H, ...vektorWerte); }, { maxBreite: 800 });
 
         const f1_val = document.getElementById('f1_val');
         const f1_ang = document.getElementById('f1_ang');
@@ -346,21 +350,24 @@
             currentResult = { f1x, f1y, f2x, f2y, frx, fry, fr: FR, ang: FR_ang };
             if (practiceMode) setSolutionVisible(false);
 
-            draw(F1, a1_rad, F2, a2_rad, frx, fry);
+            vektorWerte = [F1, a1_rad, F2, a2_rad, frx, fry];
+            vektorZeichnung.zeichne();
         }
 
-        function draw(F1, a1, F2, a2, frx, fry) {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            const cx = canvas.width / 2;
-            const cy = canvas.height / 2;
-            const scale = 1.3; // Skalierungsfaktor Pixel/kN
+        function draw(W, H, F1, a1, F2, a2, frx, fry) {
+            const cx = W / 2;
+            const cy = H / 2;
+            // Maßstab Pixel/kN: höchstens 1,3; bei großen Kräften oder schmalem Bildschirm kleiner,
+            // damit alle Pfeile samt Beschriftung in die Zeichnung passen
+            const maxKraft = Math.max(1, Math.abs(F1), Math.abs(F2), Math.hypot(frx, fry));
+            const scale = Math.min(1.3, (Math.min(cx, cy) - 30) / maxKraft);
 
             // Koordinatengitter zeichnen
             ctx.strokeStyle = '#e2e8f0';
             ctx.lineWidth = 1;
             ctx.beginPath();
-            ctx.moveTo(0, cy); ctx.lineTo(canvas.width, cy);
-            ctx.moveTo(cx, 0); ctx.lineTo(cx, canvas.height);
+            ctx.moveTo(0, cy); ctx.lineTo(W, cy);
+            ctx.moveTo(cx, 0); ctx.lineTo(cx, H);
             ctx.stroke();
 
             // Kraft 1 (Blau, Y wird invertiert da Canvas-Y nach unten zeigt)
@@ -532,6 +539,10 @@
         const s_f = document.getElementById('s_f');
         const s_beta = document.getElementById('s_beta');
         const s_scale = document.getElementById('s_scale');
+        // Ab 600 px Breite die bewährte 800er-Zeichnung (nur skaliert), darunter ein schmales Layout
+        let schraegWerte = null;
+        const schraegZeichnung = responsiveCanvas(slopeCanvas, W => (W < 600 ? 380 : 450),
+            (c, W, H) => { if (schraegWerte) drawSlope(W, H, ...schraegWerte); }, { festeBreite: 800 });
 
         function drawSlopeArrow(ctx, fromx, fromy, tox, toy, color, width) {
             const headlen = 11;
@@ -575,19 +586,20 @@
             document.getElementById('s_cm_fn').innerText = fmt(cm_fy, 1);
             document.getElementById('s_cm_ft').innerText = fmt(cm_fx, 1);
 
-            drawSlope(F, beta, betaDeg, F_y, F_x, cm_f, cm_fy, cm_fx);
+            schraegWerte = [F, beta, betaDeg, F_y, F_x, cm_f, cm_fy, cm_fx];
+            schraegZeichnung.zeichne();
         }
 
-        function drawSlope(F, beta, betaDeg, F_y, F_x, cm_f, cm_fy, cm_fx) {
+        function drawSlope(W, H, F, beta, betaDeg, F_y, F_x, cm_f, cm_fy, cm_fx) {
             const ctx = slopeCtx;
-            ctx.clearRect(0, 0, slopeCanvas.width, slopeCanvas.height);
-            const P = { x: 340, y: 310 };
+            const schmal = W < 600;   // Handy: Beschriftungen zweizeilig bzw. unter der Fläche
+            const P = schmal ? { x: W / 2, y: H - 104 } : { x: 340, y: 310 };
             // Zeichenmaßstab passt sich automatisch an: Die Last F ist immer gleich lang gezeichnet,
             // damit das Kräftedreieck auch bei kleinen Kräften gut erkennbar bleibt. Die Beträge stehen
             // in den Beschriftungen, die Größenordnung zeigt der Maßstabsbalken (unabhängig vom cm-Maßstab).
-            const drawLenF = 230;                               // px für die Last F
+            const drawLenF = schmal ? Math.min(230, W / 2 - 24) : 230;   // px für die Last F
             const forceScale = F > 0 ? drawLenF / F : 0;        // px pro kN
-            const groundHalfLen = 260;
+            const groundHalfLen = schmal ? W / 2 - 12 : 260;
 
             ctx.save();
             ctx.translate(P.x, P.y);
@@ -615,7 +627,7 @@
                 ctx.fillStyle = '#64748b';
                 ctx.font = 'bold 14px sans-serif';
                 ctx.textAlign = 'center';
-                ctx.fillText('Keine Last (F = 0 kN) – Betrag F mit dem Regler einstellen', 0, -60);
+                ctx.fillText(schmal ? 'Keine Last (F = 0 kN)' : 'Keine Last (F = 0 kN) – Betrag F mit dem Regler einstellen', 0, -60);
                 ctx.restore();
                 return;
             }
@@ -653,20 +665,34 @@
             drawSlopeArrow(ctx, B.x, B.y, A.x, A.y, '#4f46e5', 3);
             ctx.fillStyle = '#4f46e5';
             ctx.textAlign = 'right';
-            fillTextSub(ctx, `F_{y} = ${fmt(F_y, 1)} kN (${fmt(cm_fy, 1)} cm)`, -8, -fyLen / 2);
+            if (schmal) {
+                fillTextSub(ctx, `F_{y} = ${fmt(F_y, 1)} kN`, -8, -fyLen / 2 - 2);
+                ctx.fillText(`(${fmt(cm_fy, 1)} cm)`, -8, -fyLen / 2 + 14);
+            } else {
+                fillTextSub(ctx, `F_{y} = ${fmt(F_y, 1)} kN (${fmt(cm_fy, 1)} cm)`, -8, -fyLen / 2);
+            }
 
             // F_x: jetzt oben am Dreieck (an der Spitze von F_y), Richtung umgedreht: von C nach B
             drawSlopeArrow(ctx, C.x, C.y, B.x, B.y, '#e11d48', 3);
             ctx.fillStyle = '#e11d48';
             ctx.textAlign = 'center';
-            fillTextSub(ctx, `F_{x} = ${fmt(F_x, 1)} kN (${fmt(cm_fx, 1)} cm)`, fxLen / 2, -fyLen - 10);
+            if (schmal) {
+                fillTextSub(ctx, `F_{x} = ${fmt(F_x, 1)} kN (${fmt(cm_fx, 1)} cm)`, Math.min(fxLen / 2, W / 2 - 92), -fyLen - 10);
+            } else {
+                fillTextSub(ctx, `F_{x} = ${fmt(F_x, 1)} kN (${fmt(cm_fx, 1)} cm)`, fxLen / 2, -fyLen - 10);
+            }
 
             // Lastpfeil F (Hypotenuse, von C nach A - schließt das Dreieck)
             drawSlopeArrow(ctx, C.x, C.y, A.x, A.y, '#0d9488', 3.5);
             ctx.fillStyle = '#0d9488';
             ctx.font = 'bold 13px sans-serif';
             const fText = `F = ${fmt(F, 1)} kN (${fmt(cm_f, 1)} cm)`;
-            if (fyLen < 24) {
+            if (schmal) {
+                // Handy: unter die Fläche, innerhalb der Zeichnung gehalten
+                const b = ctx.measureText(fText).width;
+                ctx.textAlign = 'center';
+                ctx.fillText(fText, Math.min(Math.max(fxLen / 2, -P.x + b / 2 + 6), W - P.x - b / 2 - 6), 40);
+            } else if (fyLen < 24) {
                 // Last fast waagerecht: Beschriftung unter die Fläche, sonst kollidiert sie mit Fₓ
                 ctx.textAlign = 'center';
                 ctx.fillText(fText, fxLen / 2, 36);
@@ -689,7 +715,7 @@
             const nice = [1, 2, 5, 10].map(m => m * pow).reduce((best, v) =>
                 Math.abs(v * pxPerKN - targetPx) < Math.abs(best * pxPerKN - targetPx) ? v : best);
             const len = nice * pxPerKN;
-            const x0 = 30, y0 = slopeCanvas.height - 30;
+            const x0 = 30, y0 = slopeZeichnungHoehe() - 30;
             ctx.save();
             ctx.strokeStyle = '#334155';
             ctx.fillStyle = '#334155';
@@ -707,6 +733,8 @@
             ctx.fillText('Zeichenmaßstab (passt sich automatisch an)', x0, y0 - 12);
             ctx.restore();
         }
+
+        const slopeZeichnungHoehe = () => (schraegZeichnung.mass() ? schraegZeichnung.mass().H : 450);
 
         [s_f, s_beta, s_scale].forEach(el => el.addEventListener('input', updateSlope));
 

@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modul 4: Diagramme zuordnen | Bautechnik-Labor</title>
-    <link rel="stylesheet" href="tailwind.min.css?v=2026-11-04b">
-    <link rel="stylesheet" href="labor.css?v=2026-11-04b">
+    <link rel="stylesheet" href="tailwind.min.css?v=2026-11-04c">
+    <link rel="stylesheet" href="labor.css?v=2026-11-04c">
     <style>
         .option-card {
             display: block;
@@ -100,26 +100,26 @@
 
         <!-- System -->
         <div class="mb-6">
-            <canvas id="systemCanvas" width="900" height="200" role="img" aria-label="Systemzeichnung der aktuellen Aufgabe."></canvas>
+            <canvas id="systemCanvas" width="900" height="200" data-responsive="1" role="img" aria-label="Systemzeichnung der aktuellen Aufgabe."></canvas>
         </div>
 
         <!-- Antwortoptionen -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 lab-quiz-options">
             <button type="button" class="option-card bg-white border-2 border-slate-200 rounded-xl p-3 cursor-pointer" data-idx="0" aria-pressed="false">
                 <span class="option-card-label">Diagramm A</span>
-                <canvas id="ans0" width="280" height="160" aria-hidden="true"></canvas>
+                <canvas id="ans0" width="280" height="160" data-responsive="1" aria-hidden="true"></canvas>
                 <span id="summary0" class="lab-sr-only"></span>
                 <span id="cap0" class="option-card-caption"></span>
             </button>
             <button type="button" class="option-card bg-white border-2 border-slate-200 rounded-xl p-3 cursor-pointer" data-idx="1" aria-pressed="false">
                 <span class="option-card-label">Diagramm B</span>
-                <canvas id="ans1" width="280" height="160" aria-hidden="true"></canvas>
+                <canvas id="ans1" width="280" height="160" data-responsive="1" aria-hidden="true"></canvas>
                 <span id="summary1" class="lab-sr-only"></span>
                 <span id="cap1" class="option-card-caption"></span>
             </button>
             <button type="button" class="option-card bg-white border-2 border-slate-200 rounded-xl p-3 cursor-pointer" data-idx="2" aria-pressed="false">
                 <span class="option-card-label">Diagramm C</span>
-                <canvas id="ans2" width="280" height="160" aria-hidden="true"></canvas>
+                <canvas id="ans2" width="280" height="160" data-responsive="1" aria-hidden="true"></canvas>
                 <span id="summary2" class="lab-sr-only"></span>
                 <span id="cap2" class="option-card-caption"></span>
             </button>
@@ -158,26 +158,26 @@
         <!-- Gegebene Linie -->
         <div class="mb-6">
             <div class="text-center text-xs font-bold text-slate-500 mb-1" id="givenLabel">Gegeben</div>
-            <canvas id="givenCanvas" width="900" height="170" role="img" aria-label="Vorgegebener Schnittgrößenverlauf."></canvas>
+            <canvas id="givenCanvas" width="900" height="170" data-responsive="1" role="img" aria-label="Vorgegebener Schnittgrößenverlauf."></canvas>
         </div>
 
         <!-- Antwortoptionen -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 lab-quiz-options">
             <button type="button" class="option-card bg-white border-2 border-slate-200 rounded-xl p-3 cursor-pointer" data-bidx="0" aria-pressed="false">
                 <span class="option-card-label">Kandidat A</span>
-                <canvas id="ansB0" width="280" height="160" aria-hidden="true"></canvas>
+                <canvas id="ansB0" width="280" height="160" data-responsive="1" aria-hidden="true"></canvas>
                 <span id="summaryB0" class="lab-sr-only"></span>
                 <span id="capB0" class="option-card-caption"></span>
             </button>
             <button type="button" class="option-card bg-white border-2 border-slate-200 rounded-xl p-3 cursor-pointer" data-bidx="1" aria-pressed="false">
                 <span class="option-card-label">Kandidat B</span>
-                <canvas id="ansB1" width="280" height="160" aria-hidden="true"></canvas>
+                <canvas id="ansB1" width="280" height="160" data-responsive="1" aria-hidden="true"></canvas>
                 <span id="summaryB1" class="lab-sr-only"></span>
                 <span id="capB1" class="option-card-caption"></span>
             </button>
             <button type="button" class="option-card bg-white border-2 border-slate-200 rounded-xl p-3 cursor-pointer" data-bidx="2" aria-pressed="false">
                 <span class="option-card-label">Kandidat C</span>
-                <canvas id="ansB2" width="280" height="160" aria-hidden="true"></canvas>
+                <canvas id="ansB2" width="280" height="160" data-responsive="1" aria-hidden="true"></canvas>
                 <span id="summaryB2" class="lab-sr-only"></span>
                 <span id="capB2" class="option-card-caption"></span>
             </button>
@@ -203,8 +203,8 @@
         </div>
     </div>
 
-    <script src="labor.js?v=2026-11-04b"></script>
-    <script src="version.js?v=2.1"></script>
+    <script src="labor.js?v=2026-11-04c"></script>
+    <script src="version.js?v=2.2"></script>
     <script src="statik-core.js?v=2026-11-04b"></script>
     <script>
         // ================= Physik: geschlossene Formeln pro Systemtyp =================
@@ -403,15 +403,28 @@
             return deduped;
         }
 
-        function drawSystem(task) {
-            const canvas = document.getElementById('systemCanvas');
-            const ctx = canvas.getContext('2d');
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        // Alle Zeichnungen wachsen mit der Bildschirmbreite mit (labor.js); die zuletzt gezeichnete
+        // Aufgabe wird bei einer Größenänderung automatisch neu gezeichnet.
+        const zeichnungen = {};
+        function zeichnungFuer(id) {
+            if (!zeichnungen[id]) {
+                const c = document.getElementById(id);
+                const klein = c.width < 700;   // Antwortkarten
+                zeichnungen[id] = responsiveCanvas(c, c.height, null,
+                    klein ? { minBreite: 160, maxBreite: 320 } : { maxBreite: 900 });
+            }
+            return zeichnungen[id];
+        }
 
+        function drawSystem(task) {
+            zeichnungFuer('systemCanvas').setze((ctx, W, H) => drawSystemAuf(ctx, W, H, task));
+        }
+
+        function drawSystemAuf(ctx, W, H, task) {
             const { xmin, xmax } = task.computed;
-            const padding = 70;
+            const padding = W < 600 ? 40 : 70;
             const beamY = 100;
-            const scaleX = (canvas.width - 2 * padding) / (xmax - xmin);
+            const scaleX = (W - 2 * padding) / (xmax - xmin);
             const px = x => padding + (x - xmin) * scaleX;
 
             // Hilfslinien an allen Auflager-/Lastpositionen (zuerst gezeichnet, liegen im Hintergrund)
@@ -506,15 +519,15 @@
         }
 
         // ================= Zeichnen: Antwort-Diagramme =================
-        function drawDiagram(canvasId, curve, isM, xmin, xmax, sharedMax, highlightColor, markerXs) {
-            const canvas = document.getElementById(canvasId);
-            const ctx = canvas.getContext('2d');
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        function drawDiagram(canvasId, ...werte) {
+            zeichnungFuer(canvasId).setze((ctx, W, H) => drawDiagramAuf(ctx, W, H, ...werte));
+        }
 
+        function drawDiagramAuf(ctx, W, H, curve, isM, xmin, xmax, sharedMax, highlightColor, markerXs) {
             const padding = 20;
-            const axisY = canvas.height / 2;
-            const scaleX = (canvas.width - 2 * padding) / (xmax - xmin);
-            const scaleY = sharedMax > 0 ? (canvas.height / 2 - 15) / sharedMax : 1;
+            const axisY = H / 2;
+            const scaleX = (W - 2 * padding) / (xmax - xmin);
+            const scaleY = sharedMax > 0 ? (H / 2 - 15) / sharedMax : 1;
             const px = x => padding + (x - xmin) * scaleX;
             // Bei Q entscheidet der Schalter, auf welcher Seite positive Werte landen (echte Konvention,
             // keine Wertverfälschung). Ohne Schalter: oben=+. Mit Schalter: unten=+ (wie beim Moment).
@@ -530,7 +543,7 @@
                     const cx = px(x);
                     ctx.beginPath();
                     ctx.moveTo(cx, 4);
-                    ctx.lineTo(cx, canvas.height - 4);
+                    ctx.lineTo(cx, H - 4);
                     ctx.stroke();
                 });
                 ctx.setLineDash([]);
@@ -541,7 +554,7 @@
             ctx.lineWidth = 1;
             ctx.beginPath();
             ctx.moveTo(padding, axisY);
-            ctx.lineTo(canvas.width - padding, axisY);
+            ctx.lineTo(W - padding, axisY);
             ctx.stroke();
 
             // Kurve in Segmente gleichen Vorzeichens zerlegen (Nulldurchgänge werden exakt eingefügt)

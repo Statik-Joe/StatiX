@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modul 5: Spannungsnachweis | Bautechnik-Labor</title>
-    <link rel="stylesheet" href="tailwind.min.css?v=2026-11-04b">
-    <link rel="stylesheet" href="labor.css?v=2026-11-04b">
+    <link rel="stylesheet" href="tailwind.min.css?v=2026-11-04c">
+    <link rel="stylesheet" href="labor.css?v=2026-11-04c">
 </head>
 <body data-modul="5" class="bg-slate-50 min-h-screen p-4 md:p-6 font-sans text-slate-800">
     <div class="max-w-7xl mx-auto bg-white p-6 rounded-2xl shadow-xl border border-slate-100">
@@ -156,7 +156,7 @@
             <div class="lg:col-span-8 space-y-6">
 
                 <div>
-                    <canvas id="qsCanvas" width="800" height="420"></canvas>
+                    <canvas id="qsCanvas" width="800" height="420" data-responsive="1" role="img" aria-label="Querschnitt mit Schwerachse und Bemaßung sowie die lineare Biegespannungsverteilung mit Druck oben und Zug unten."></canvas>
                 </div>
 
                 <div id="nachweisBox" class="p-5 rounded-2xl border-2 shadow-sm text-center">
@@ -260,12 +260,17 @@
         </div>
     </div>
 
-    <script src="labor.js?v=2026-11-04b"></script>
-    <script src="version.js?v=2.1"></script>
+    <script src="labor.js?v=2026-11-04c"></script>
+    <script src="version.js?v=2.2"></script>
     <script src="statik-core.js?v=2026-11-04b"></script>
     <script>
         const canvas = document.getElementById('qsCanvas');
         const ctx = canvas.getContext('2d');
+        // Ab 600 px Breite die bewährte 800er-Zeichnung (nur skaliert). Darunter (Handy) stehen
+        // Querschnitt und Spannungsverteilung untereinander, Schrift in normaler Größe.
+        let qsWerte = null;
+        const qsZeichnung = responsiveCanvas(canvas, W => (W < 600 ? 580 : 420),
+            (c, W, H) => { if (qsWerte) zeichneQuerschnitt(W, H, ...qsWerte); }, { festeBreite: 800 });
 
         const qsType = document.getElementById('qsType');
         const qs_b = document.getElementById('qs_b'), qs_h = document.getElementById('qs_h');
@@ -395,12 +400,16 @@
         }
 
         function draw(qv, sigma) {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            qsWerte = [qv, sigma];
+            qsZeichnung.zeichne();
+        }
 
-            // Layout: Querschnitt links, Spannungsverteilung rechts, gleiche Höhe
-            const areaTop = 40, areaBottom = 340;
+        function zeichneQuerschnitt(W, H, qv, sigma) {
+            const schmal = W < 600;
+            // Layout: Querschnitt links, Spannungsverteilung rechts, gleiche Höhe (Handy: untereinander)
+            const areaTop = 40, areaBottom = schmal ? 240 : 340;
             const availH = areaBottom - areaTop;
-            const maxDrawW = 260; // Querschnitt darf nicht in die Spannungsverteilung hineinragen
+            const maxDrawW = schmal ? Math.min(260, W - 170) : 260; // Querschnitt darf nicht in die Spannungsverteilung hineinragen
             const centerY = (areaTop + areaBottom) / 2;
 
             const realH = qv.type === 'kreis' ? qv.d : qv.h;
@@ -408,7 +417,7 @@
             // Maßstab: Höhe und Breite müssen passen, gedeckelt für sehr kleine Querschnitte
             const scale = Math.min(availH / realH, maxDrawW / realW, 8); // px pro cm
 
-            const qsCenterX = 220;
+            const qsCenterX = schmal ? W / 2 + 16 : 220;
             const drawnH = realH * scale;
             const drawnW = realW * scale;
             const top = centerY - drawnH / 2;
@@ -464,7 +473,7 @@
             ctx.fillStyle = '#475569';
             ctx.font = 'bold 11px sans-serif';
             ctx.textAlign = 'left';
-            ctx.fillText('Schwerachse (σ = 0)', drawnW / 2 + 24, centerY + 4);
+            ctx.fillText(schmal ? 'σ = 0' : 'Schwerachse (σ = 0)', drawnW / 2 + 24, centerY + 4);
 
             // Bemaßung Höhe (links): h bzw. beim Kreis d
             const hLabel = qv.type === 'kreis' ? 'd' : 'h';
@@ -500,13 +509,14 @@
             ctx.restore();
 
             // Spannungsverteilung (rechts, gleiche vertikale Ausrichtung)
-            const triCenterX = 560;
-            const maxTriWidth = 130;
+            const triCenterX = schmal ? W / 2 : 560;
+            const maxTriWidth = schmal ? Math.min(130, W / 2 - 30) : 130;
+            const triVersatz = schmal ? 330 - top : 0;   // Handy: unter dem Querschnitt
             const sigmaScale = sigma > 0 ? maxTriWidth / sigma : 0;
             const triHalf = drawnH / 2;
 
             ctx.save();
-            ctx.translate(triCenterX, 0);
+            ctx.translate(triCenterX, triVersatz);
 
             // Nulllinie (Bezugsachse der Spannungsverteilung)
             ctx.strokeStyle = '#cbd5e1';

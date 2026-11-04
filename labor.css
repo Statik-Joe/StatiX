@@ -517,8 +517,7 @@ input[aria-invalid="true"] {
 }
 
 /* ---------- Mobile Darstellung und Interaktion ---------- */
-.lab-mobile-only,
-.lab-canvas-hint {
+.lab-mobile-only {
     display: none;
 }
 
@@ -562,24 +561,6 @@ input[aria-invalid="true"] {
         touch-action: pan-y;
     }
 
-    body[data-modul="3"] .lab-beam-canvas-scroll {
-        overflow-x: auto;
-        overscroll-behavior-x: contain;
-        -webkit-overflow-scrolling: touch;
-    }
-
-    body[data-modul="3"] .lab-beam-canvas-scroll canvas {
-        width: 560px;
-        max-width: none;
-    }
-
-    body[data-modul="3"] .lab-canvas-hint {
-        display: block;
-        margin: 0 0 0.5rem;
-        color: #64748b;
-        font-size: 0.75rem;
-        line-height: 1rem;
-    }
 
 }
 

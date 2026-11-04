@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modul 2: Hebelgesetz & Drehmoment | Bautechnik-Labor</title>
-    <link rel="stylesheet" href="tailwind.min.css?v=2026-11-04b">
-    <link rel="stylesheet" href="labor.css?v=2026-11-04b">
+    <link rel="stylesheet" href="tailwind.min.css?v=2026-11-04c">
+    <link rel="stylesheet" href="labor.css?v=2026-11-04c">
     <style>
         .success-glow {
             box-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
@@ -125,10 +125,10 @@
                 <!-- Interaktives Canvas -->
                 <div class="relative rounded-xl overflow-hidden shadow-sm" id="canvasContainer">
                     <!-- Hinweis-Overlay -->
-                    <div class="absolute top-4 left-1/2 -translate-x-1/2 bg-white/90 backdrop-blur px-4 py-1.5 rounded-full text-xs font-bold text-slate-600 border border-slate-200 shadow-sm pointer-events-none z-10 flex items-center gap-2">
+                    <div class="absolute top-4 left-3 sm:left-1/2 sm:-translate-x-1/2 bg-white/90 backdrop-blur px-4 py-1.5 rounded-full text-xs font-bold text-slate-600 border border-slate-200 shadow-sm pointer-events-none z-10 whitespace-nowrap flex items-center gap-2">
                         <span class="text-lg">✥</span> Du kannst die Kisten direkt ziehen!
                     </div>
-                    <canvas id="wippeCanvas" width="900" height="450" aria-label="Interaktive Wippe. Massen können durch Ziehen verschoben werden."></canvas>
+                    <canvas id="wippeCanvas" width="900" height="450" data-responsive="1" aria-label="Interaktive Wippe. Massen können durch Ziehen verschoben werden."></canvas>
                 </div>
 
                 <!-- Didaktischer Rechenweg -->
@@ -222,8 +222,8 @@
         </div>
     </div>
 
-    <script src="labor.js?v=2026-11-04b"></script>
-    <script src="version.js?v=2.1"></script>
+    <script src="labor.js?v=2026-11-04c"></script>
+    <script src="version.js?v=2.2"></script>
     <script>
         // System Status
         const G = 9.81;
@@ -526,29 +526,56 @@
         // --- Canvas Rendering & Animation ---
         function animate() {
             currentAngle += (targetAngle - currentAngle) * 0.1;
-            draw();
+            wippeZeichnung.zeichne();
             requestAnimationFrame(animate);
         }
 
-        const pixelsPerMeter = 70;
-        const pivotX = 450; // Mitte des Canvas
-        const pivotY = 280; // Drehpunkt Höhe
+        // Maßstab und Lage des Drehpunkts: ab 600 px Breite die bewährte 900er-Zeichnung (nur skaliert),
+        // auf dem Handy ein schmales Layout mit kleinerem Maßstab und normal großer Schrift
+        let pixelsPerMeter = 70;
+        let pivotX = 450;      // Mitte der Zeichnung
+        let pivotY = 280;      // Drehpunkt Höhe
+        let boxScale = 1;      // Größe der Kisten relativ zur Desktop-Zeichnung
+        let zeichenBreite = 900;
+        const wippeZeichnung = responsiveCanvas(canvas, W => (W < 600 ? 380 : 450),
+            (c, W, H) => draw(W, H), { festeBreite: 900 });
+
+        function layout(W, H) {
+            zeichenBreite = W;
+            if (W >= 600) {
+                pixelsPerMeter = 70; pivotX = 450; pivotY = 280; boxScale = 1;
+            } else {
+                pixelsPerMeter = (W - 24) / 11.4;
+                pivotX = W / 2;
+                pivotY = H - 130;
+                boxScale = Math.max(0.6, pixelsPerMeter / 70);
+            }
+        }
+
+        // Beschriftung so verschieben, dass sie nicht über den Rand der Zeichnung hinausragt
+        // (x ist die lokale Lage im gedrehten Brett, originX die absolute Lage des Drehpunkts)
+        function randSicher(x, text, originX) {
+            const b = ctx.measureText(text).width;
+            const abs = Math.min(Math.max(originX + x, b / 2 + 4), zeichenBreite - b / 2 - 4);
+            return abs - originX;
+        }
 
         function getCanvasX(m) {
             return m * pixelsPerMeter;
         }
 
         function getBoxSize(mass) {
-            return 30 + (mass / 100) * 50; 
+            return (30 + (mass / 100) * 50) * boxScale;
         }
 
-        function draw() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        function draw(W, H) {
+            layout(W, H);
+            const originX = mode === 'two-sided' ? pivotX : pivotX - getCanvasX(4.5);
 
             // Bodenlinie
             ctx.beginPath();
-            ctx.moveTo(50, pivotY + 40);
-            ctx.lineTo(850, pivotY + 40);
+            ctx.moveTo(W >= 600 ? 50 : 12, pivotY + 40);
+            ctx.lineTo(W >= 600 ? 850 : W - 12, pivotY + 40);
             ctx.strokeStyle = '#cbd5e1';
             ctx.lineWidth = 3;
             ctx.stroke();
@@ -598,18 +625,21 @@
             ctx.fillStyle = '#6366f1';
             ctx.fillRect(px1 - s1/2, -5 - s1, s1, s1);
             
-            ctx.fillStyle = 'white';
             ctx.font = 'bold 12px sans-serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.fillText(m1 + ' kg', px1, -5 - s1/2);
+            // Passt die Masse nicht in die Kiste (Handy), steht sie darüber
+            const aussen1 = ctx.measureText(m1 + ' kg').width + 6 > s1;
+            ctx.fillStyle = aussen1 ? '#4338ca' : 'white';
+            ctx.fillText(m1 + ' kg', aussen1 ? randSicher(px1, m1 + ' kg', originX) : px1, aussen1 ? -5 - s1 - 24 : -5 - s1/2);
 
             // Momenten-Label M1 (während offener Erfolgskontrolle-Aufgabe ausgeblendet)
             if (!dragLocked) {
                 ctx.fillStyle = '#4338ca';
                 ctx.font = 'bold 13px sans-serif';
                 ctx.textBaseline = 'alphabetic';
-                ctx.fillText(`M₁ = ${fmt(m1 * G / 1000 * x1, 2)} kNm`, px1, -5 - s1 - 26);
+                const t1 = `M₁ = ${fmt(m1 * G / 1000 * x1, 2)} kNm`;
+                ctx.fillText(t1, randSicher(px1, t1, originX), -5 - s1 - (aussen1 ? 40 : 26));
             }
 
             // Kiste 2
@@ -620,15 +650,18 @@
             if (mode === 'two-sided') {
                 ctx.fillStyle = '#f43f5e';
                 ctx.fillRect(px2 - s2/2, -5 - s2, s2, s2);
-                ctx.fillStyle = 'white';
+                ctx.font = 'bold 12px sans-serif';
                 ctx.textBaseline = 'middle';
-                ctx.fillText(m2 + ' kg', px2, -5 - s2/2);
+                const aussen2 = ctx.measureText(m2 + ' kg').width + 6 > s2;
+                ctx.fillStyle = aussen2 ? '#be123c' : 'white';
+                ctx.fillText(m2 + ' kg', aussen2 ? randSicher(px2, m2 + ' kg', originX) : px2, aussen2 ? -5 - s2 - 24 : -5 - s2/2);
 
                 if (!dragLocked) {
                     ctx.fillStyle = '#be123c';
                     ctx.font = 'bold 13px sans-serif';
                     ctx.textBaseline = 'alphabetic';
-                    ctx.fillText(`M₂ = ${fmt(m2 * G / 1000 * x2, 2)} kNm`, px2, -5 - s2 - 26);
+                    const t2 = `M₂ = ${fmt(m2 * G / 1000 * x2, 2)} kNm`;
+                    ctx.fillText(t2, randSicher(px2, t2, originX), -5 - s2 - (aussen2 ? 40 : 26));
                 }
             } else {
                 ctx.fillStyle = '#f43f5e'; 
@@ -652,13 +685,17 @@
                 
                 ctx.fillStyle = '#f43f5e';
                 ctx.textBaseline = 'middle';
-                ctx.fillText(m2 + ' kg (Zug)', px2, -75);
+                // Liegen die Beschriftungen von Kiste 1 und Zugkraft dicht beieinander, Zugkraft höher setzen
+                const oben1 = -5 - s1 - (aussen1 ? 40 : 26) - 16;
+                const zugY = Math.abs(px1 - px2) < 130 ? Math.min(-75, oben1 - 6) : -75;
+                ctx.fillText(m2 + ' kg (Zug)', randSicher(px2, m2 + ' kg (Zug)', originX), zugY);
 
                 if (!dragLocked) {
                     ctx.fillStyle = '#be123c';
                     ctx.font = 'bold 13px sans-serif';
                     ctx.textBaseline = 'alphabetic';
-                    ctx.fillText(`M₂ = ${fmt(m2 * G / 1000 * x2, 2)} kNm`, px2, -90);
+                    const t2 = `M₂ = ${fmt(m2 * G / 1000 * x2, 2)} kNm`;
+                    ctx.fillText(t2, randSicher(px2, t2, originX), zugY - 15);
                 }
             }
 
@@ -724,13 +761,9 @@
 
         // Drag & Drop
         function getCoords(e) {
-            const rect = canvas.getBoundingClientRect();
             const clientX = e.touches ? e.touches[0].clientX : e.clientX;
             const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-            return {
-                x: (clientX - rect.left) * (canvas.width / rect.width),
-                y: (clientY - rect.top) * (canvas.height / rect.height)
-            };
+            return wippeZeichnung.punkt(clientX, clientY);   // in Zeichnungskoordinaten
         }
 
         function getMassTargets() {
@@ -759,7 +792,7 @@
         }
 
         function findMassTarget(coords, isTouch) {
-            const pxPerCanvas = canvas.getBoundingClientRect().width / canvas.width;
+            const pxPerCanvas = wippeZeichnung.mass() ? wippeZeichnung.mass().s : 1;
             const radius = isTouch ? Math.max(36, 44 / pxPerCanvas) : 40;
             let closest = null;
             let closestDistance = radius;

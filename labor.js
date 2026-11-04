@@ -288,34 +288,89 @@ function initLearningProgress(modulNr, options = {}) {
 
 // ==========================================================================
 // Mitwachsende Zeichenfläche für Handy, Tablet und Vollbild.
-// Die Zeichnung wird in einer logischen Breite zwischen 320 und 900 Einheiten angelegt, die der
-// tatsächlichen Breite auf dem Bildschirm entspricht. Dadurch bleibt Text auch auf dem Handy so groß
-// wie im übrigen Seitentext. Ab 900 Pixel Breite (großer Bildschirm, Vollbild) wird die Zeichnung
-// nur noch vergrößert. Scharf auf hochauflösenden Displays (devicePixelRatio).
-//   const z = responsiveCanvas(canvas, 400, (ctx, W, H) => { ... });   z.neu() zeichnet erneut.
-// Im HTML bleibt width="900" stehen, damit labor.js den Vollbild-Knopf ergänzt.
+// Die Zeichnung wird in einer logischen Breite W angelegt, die der tatsächlichen Breite auf dem
+// Bildschirm entspricht (begrenzt auf minBreite … maxBreite). Text bleibt dadurch auch auf dem Handy
+// so groß wie im übrigen Seitentext. Ist der Bildschirm breiter als maxBreite (Desktop, Vollbild),
+// wird die Zeichnung nur noch vergrößert. Scharf auf hochauflösenden Displays (devicePixelRatio).
+//
+// Mit festeBreite (z. B. 800) gilt ab der Breite schmalAb (Standard 600 px) immer W = festeBreite:
+// Die bewährte Desktop-Zeichnung bleibt unverändert und wird nur skaliert. Darunter zeichnet das
+// Modul ein eigenes, schmales Layout mit W < schmalAb.
+//
+//   const z = responsiveCanvas(canvas, 400, (ctx, W, H) => { ... }, { maxBreite: 900 });
+//   z.zeichne()          erneut zeichnen (z. B. nach neuen Eingabewerten oder in einer Animation)
+//   z.setze(fn)          neue Zeichenfunktion (ctx, W, H) hinterlegen und zeichnen
+//   z.vorbereiten(H)     Zeichenfläche selbst vorbereiten (optional mit neuer Höhe H): { ctx, W, H }
+//   z.punkt(x, y)        Bildschirmkoordinaten (clientX/clientY) in Zeichnungskoordinaten umrechnen
+//   z.mass()             { W, H, s }: s = Bildschirmpixel je Zeichnungseinheit
+// hoehe darf eine Zahl oder eine Funktion der logischen Breite W sein.
+// Im HTML bleibt width="900" (bzw. die bisherige Breite) stehen, damit labor.js den Vollbild-Knopf
+// ergänzt, und data-responsive="1", damit kein Hinweis zum Querformat erscheint.
 // ==========================================================================
-function responsiveCanvas(canvas, hoehe, zeichne) {
+function responsiveCanvas(canvas, hoehe, zeichne, optionen = {}) {
+    const { minBreite = 320, maxBreite = 900, festeBreite = 0, schmalAb = 600 } = optionen;
     canvas.dataset.responsive = '1';
-    let letzteBreite = 0;
-    function render(erzwingen) {
-        const breite = canvas.getBoundingClientRect().width;
-        if (breite < 1) return;                       // unsichtbar (zugeklappt, anderer Teil)
-        if (!erzwingen && Math.abs(breite - letzteBreite) < 0.5) return;
-        letzteBreite = breite;
-        const W = Math.min(900, Math.max(320, breite));
+    let mass = null;
+    let malen = zeichne || null;
+    const hoeheFuer = W => (typeof hoehe === 'function' ? hoehe(W) : hoehe);
+    const logischeBreite = breite => (festeBreite && breite >= schmalAb)
+        ? festeBreite
+        : Math.min(maxBreite, Math.max(minBreite, breite));
+    const messen = () => {
+        const b = canvas.getBoundingClientRect().width;
+        return b >= 1 ? b : 0;
+    };
+
+    function anwenden(breite, H) {
+        const W = logischeBreite(breite);
         const s = breite / W;
         const dpr = window.devicePixelRatio || 1;
-        canvas.width = Math.round(breite * dpr);
-        canvas.height = Math.round(hoehe * s * dpr);
-        const ctx = canvas.getContext('2d');
-        ctx.setTransform(s * dpr, 0, 0, s * dpr, 0, 0);
-        ctx.clearRect(0, 0, W, hoehe);
-        zeichne(ctx, W, hoehe);
+        const bw = Math.max(1, Math.round(breite * dpr));
+        const bh = Math.max(1, Math.round(H * s * dpr));
+        if (canvas.width !== bw) canvas.width = bw;
+        if (canvas.height !== bh) canvas.height = bh;
+        mass = { breite, W, H, s, dpr };
     }
-    if (typeof ResizeObserver !== 'undefined') new ResizeObserver(() => render(false)).observe(canvas);
-    window.addEventListener('resize', () => render(false));
-    return { neu: () => render(true) };
+
+    function vorbereiten(H) {
+        // Unsichtbar (zugeklappt, anderer Teil): mit der zuletzt bekannten bzw. der Desktop-Breite arbeiten
+        const breite = messen() || (mass ? mass.breite : (festeBreite || maxBreite));
+        const neueH = H !== undefined ? H : hoeheFuer(logischeBreite(breite));
+        if (!mass || Math.abs(breite - mass.breite) >= 0.5 || neueH !== mass.H) anwenden(breite, neueH);
+        const ctx = canvas.getContext('2d');
+        ctx.setTransform(mass.s * mass.dpr, 0, 0, mass.s * mass.dpr, 0, 0);
+        ctx.clearRect(0, 0, mass.W, mass.H);
+        return { ctx, W: mass.W, H: mass.H };
+    }
+
+    function zeichnen() {
+        if (!malen) return;
+        const { ctx, W, H } = vorbereiten();
+        malen(ctx, W, H);
+    }
+
+    function beiGroessenaenderung() {
+        const breite = messen();
+        if (!breite || (mass && Math.abs(breite - mass.breite) < 0.5)) return;
+        zeichnen();
+    }
+    if (typeof ResizeObserver !== 'undefined') new ResizeObserver(beiGroessenaenderung).observe(canvas);
+    window.addEventListener('resize', beiGroessenaenderung);
+
+    return {
+        neu: zeichnen,
+        zeichne: zeichnen,
+        setze(fn) { malen = fn; zeichnen(); },
+        vorbereiten,
+        mass: () => mass,
+        // logische Breite für die aktuelle Größe auf dem Bildschirm (ohne neu zu zeichnen)
+        breite: () => logischeBreite(messen() || (mass ? mass.breite : (festeBreite || maxBreite))),
+        punkt(clientX, clientY) {
+            const r = canvas.getBoundingClientRect();
+            const W = mass ? mass.W : canvas.width, H = mass ? mass.H : canvas.height;
+            return { x: (clientX - r.left) * W / r.width, y: (clientY - r.top) * H / r.height };
+        }
+    };
 }
 
 // ==========================================================================
@@ -362,10 +417,11 @@ function responsiveCanvas(canvas, hoehe, zeichne) {
 
     // ---------- Hinweis auf dem Handy im Hochformat ----------
     // Feste Zeichnungen (900 px breit) werden auf dem Handy stark verkleinert. Quer gehalten sind sie
-    // etwa doppelt so groß. Mitwachsende Zeichnungen (responsiveCanvas) und Modul 3 (eigener
-    // Hinweis mit Seitwärts-Scrollen) brauchen den Hinweis nicht.
+    // etwa doppelt so groß. Mitwachsende Zeichnungen (responsiveCanvas, data-responsive="1")
+    // brauchen den Hinweis nicht. Derzeit wachsen alle Zeichnungen mit; der Hinweis bleibt für
+    // künftige Module mit fester Zeichnung.
     document.querySelectorAll('canvas').forEach(canvas => {
-        if (canvas.width < 700 || canvas.dataset.responsive || canvas.closest('.lab-beam-canvas-scroll')) return;
+        if (canvas.width < 700 || canvas.dataset.responsive) return;
         if (canvas.parentElement.querySelector(':scope > .lab-rotate-hint')) return;
         const hint = document.createElement('p');
         hint.className = 'lab-rotate-hint';
