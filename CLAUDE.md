@@ -1,6 +1,8 @@
 # CLAUDE.md – Hinweise für die Arbeit an diesem Repository
 
-Virtuelles Bautechnik-Labor: interaktive Statik-Lernmodule für die FOS 12 (Hessen). Statische HTML-, CSS- und JavaScript-Dateien, laufen offline ohne Server. Überblick: `README.md`, geplante Erweiterungen: `ROADMAP.md`.
+Virtuelles Bautechnik-Labor: interaktive Statik-Lernmodule für die FOS 12 (Hessen). Statische HTML-, CSS- und JavaScript-Dateien, laufen offline ohne Server. Überblick und Modulliste: `README.md`, geplante Erweiterungen: `ROADMAP.md`.
+
+Modulnummern ab Labor 3.0: 1 Kräfteaddition, 2 Hebelgesetz, 3 Lastannahme, 4 Schnittgrößen (Einfeldträger), 5 Diagramme zuordnen, 6 Spannungsnachweis, 7 Durchlaufträger. Die alten Dateinamen (z. B. `modul-3-statik-einfeldtraeger.html`) leiten nur noch auf die neuen Seiten weiter – nicht löschen und nicht für neue Arbeit verwenden.
 
 ## Zusammenarbeit
 
@@ -15,14 +17,14 @@ Virtuelles Bautechnik-Labor: interaktive Statik-Lernmodule für die FOS 12 (Hess
 - Einheiten: Kräfte in kN, Momente in kNm, Streckenlasten in kN/m, Längen in m. Modul 2: Massen in kg, F = m · g im Rechenweg in N und kN.
 - Zahlen mit deutschem Dezimalkomma und Leerzeichen vor der Einheit („2,5 kN“): `fmt()` aus `labor.js` verwenden.
 - Indizes tiefgestellt: im HTML `<sub>`, im Canvas `fillTextSub(ctx, 'M_{max} = …')`.
-- Vorzeichen wie in Modul 3: Q positiv nach oben, M positiv nach unten (Zugseite). Querkraftsprünge senkrecht zeichnen – Diagramme über `diagrammStellen()` auswerten.
-- Modul 5 arbeitet mit klassischen zulässigen Spannungen (Holz nach DIN 1052:1988, Stahl nach DIN 1050), nicht mit Eurocode-Bemessungswerten.
+- Vorzeichen wie in Modul 4 (Schnittgrößen): Q positiv nach oben, M positiv nach unten (Zugseite). Querkraftsprünge senkrecht zeichnen – Diagramme über `diagrammStellen()` auswerten.
+- Modul 6 (Spannungsnachweis) arbeitet mit klassischen zulässigen Spannungen (Holz nach DIN 1052:1988, Stahl nach DIN 1050), nicht mit Eurocode-Bemessungswerten. Modul 3 (Lastannahme) nutzt dagegen charakteristische Lasten nach DIN EN 1991-1-1 mit NA – bei Übergängen zwischen den Modulen auf diesen Unterschied achten.
 
 ## Aufbau und gemeinsame Bausteine
 
 - Jedes Modul: `<body data-modul="N">`, Kopfzeile mit `.lab-back` und `.lab-badge`, Abschnitt „Rechenweg – …“, Erfolgskontrolle mit `exportProtocol()` und optional `initLearningProgress(N, …)`.
 - `labor.css` / `labor.js`: Modulfarben, Kopfzeile, Präsentationsmodus, Vollbild, Formatierung, Protokoll, lokaler Fortschritt.
-- `statik-core.js`: gemeinsamer Rechenkern (Einfeldträger, Durchlaufträger, Extremwerte, Diagrammstellen). Neue Rechnungen hier ergänzen und testen, nicht in einzelnen Modulen duplizieren.
+- `statik-core.js`: gemeinsamer Rechenkern (u. a. Einfeldträger, Durchlaufträger, Extremwerte, Diagrammstellen). Neue Rechnungen hier ergänzen und testen, nicht in einzelnen Modulen duplizieren.
 - `version.js`: einzige Stelle für Versionen. Bei Änderungen am Modul Version und `stand` erhöhen, ebenso die Gesamtversion; neue Module = neue Hauptversion des Labors.
 - Neues Modul: Kachel in `index.html`, Farbe in `labor.css`, Eintrag in `version.js` und `tests/version.test.js`, README (Modulliste und Offline-Paket), ROADMAP.
 
