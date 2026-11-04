@@ -1,6 +1,6 @@
 // ==========================================================================
 // Gemeinsamer Rechenkern für Einfeldträger mit optionalen Kragarmen.
-// Wird von Modul 3 (Schnittgrößen) und Modul 4 (Diagramme zuordnen) genutzt,
+// Wird von Modul 4 (Schnittgrößen) und Modul 5 (Diagramme zuordnen) genutzt,
 // damit beide Module garantiert gleich rechnen. Getestet in tests/statik-core.test.js
 // (npm test) gegen Tabellenwerte wie M = F·L/4 und M = q·L²/8.
 //
@@ -128,7 +128,7 @@ function diagrammStellen(traeger, xmin, xmax, step = 0.05) {
 }
 
 // ==========================================================================
-// Durchlaufträger (Zwei- und Dreifeldträger, allgemein n Felder) – Modul 6
+// Durchlaufträger (Zwei- und Dreifeldträger, allgemein n Felder) – Modul 7
 // ==========================================================================
 // system = { spans: [L1, L2, …], loads: [{ q, F, a }, …] } mit je einem Eintrag pro Feld:
 //   q = Gleichlast über das ganze Feld [kN/m], F = Einzellast [kN] im Abstand a [m] vom linken Auflager des Feldes.
@@ -282,6 +282,78 @@ function momentenNullpunkte(dlt, n = 2000) {
     return punkte;
 }
 
+// ==========================================================================
+// Lastannahme für Decken – Modul 3
+// Richtwerte nach DIN EN 1991-1-1 (Anhang A, Tabelle 6.1DE) mit Nationalem Anhang bzw. Bautabellen.
+// Alle Wichten lassen sich im Modul ändern, damit mit der Tabelle aus dem Unterricht gerechnet werden kann.
+// ==========================================================================
+const LAST_BAUSTOFFE = [
+    { id: 'stahlbeton', name: 'Stahlbeton', gamma: 25.0, gruppe: 'Tragende Bauteile' },
+    { id: 'nadelholz', name: 'Nadelholz C24 (Balken, Dielung)', gamma: 4.2, gruppe: 'Tragende Bauteile' },
+    { id: 'bsh', name: 'Brettschichtholz GL24h', gamma: 3.7, gruppe: 'Tragende Bauteile' },
+    { id: 'zementestrich', name: 'Zementestrich', gamma: 22.0, gruppe: 'Estrich und Beläge' },
+    { id: 'calciumsulfatestrich', name: 'Calciumsulfatestrich', gamma: 22.0, gruppe: 'Estrich und Beläge' },
+    { id: 'gussasphalt', name: 'Gussasphaltestrich', gamma: 23.0, gruppe: 'Estrich und Beläge' },
+    { id: 'fliesen', name: 'Keramische Fliesen', gamma: 22.0, gruppe: 'Estrich und Beläge' },
+    { id: 'parkett', name: 'Parkett (Laubholz)', gamma: 6.4, gruppe: 'Estrich und Beläge' },
+    { id: 'osb', name: 'OSB- bzw. Spanplatte', gamma: 7.0, gruppe: 'Estrich und Beläge' },
+    { id: 'mineralwolle', name: 'Mineralwolle (Tritt- und Wärmedämmung)', gamma: 1.0, gruppe: 'Dämmung und Schüttung' },
+    { id: 'eps', name: 'Polystyrol-Hartschaum (EPS)', gamma: 0.3, gruppe: 'Dämmung und Schüttung' },
+    { id: 'holzfaser', name: 'Holzfaser-Dämmplatte', gamma: 2.0, gruppe: 'Dämmung und Schüttung' },
+    { id: 'sandkies', name: 'Sand, Kies (Schüttung, trocken)', gamma: 16.0, gruppe: 'Dämmung und Schüttung' },
+    { id: 'kalkzementputz', name: 'Kalkzementputz', gamma: 20.0, gruppe: 'Putz und Bekleidung' },
+    { id: 'gipskarton', name: 'Gipskartonplatte', gamma: 9.0, gruppe: 'Putz und Bekleidung' },
+    { id: 'eigen', name: 'Eigener Baustoff', gamma: 10.0, gruppe: 'Sonstiges' }
+];
+
+// Lotrechte Nutzlasten q_k in kN/m² (DIN EN 1991-1-1/NA, Tabelle 6.1DE, Auszug)
+const NUTZLASTEN = [
+    { kat: 'A1', name: 'Spitzböden (nicht für Wohnzwecke)', qk: 1.0 },
+    { kat: 'A2', name: 'Wohn- und Aufenthaltsräume mit ausreichender Querverteilung', qk: 1.5 },
+    { kat: 'A3', name: 'Wohn- und Aufenthaltsräume ohne ausreichende Querverteilung', qk: 2.0 },
+    { kat: 'B1', name: 'Büroflächen, Flure in Bürogebäuden, Arztpraxen', qk: 2.0 },
+    { kat: 'B2', name: 'Flure und Küchen in Krankenhäusern, Hotels, Altenheimen', qk: 3.0 },
+    { kat: 'C1', name: 'Flächen mit Tischen (Klassenräume, Cafés, Restaurants)', qk: 3.0 },
+    { kat: 'C2', name: 'Flächen mit fester Bestuhlung (Kirchen, Theater, Hörsäle)', qk: 4.0 },
+    { kat: 'C3', name: 'Frei begehbare Flächen (Museen, Ausstellungen, Eingänge)', qk: 5.0 },
+    { kat: 'D1', name: 'Verkaufsräume bis 50 m² in Wohn- und Bürogebäuden', qk: 2.0 },
+    { kat: 'D2', name: 'Flächen in Einzelhandelsgeschäften und Warenhäusern', qk: 5.0 },
+    { kat: 'T1', name: 'Treppen und Podeste in Wohngebäuden', qk: 3.0 },
+    { kat: 'Z', name: 'Balkone, Dachterrassen, Laubengänge', qk: 4.0 }
+];
+
+// Zuschlag für leichte, unbelastete Trennwände (DIN EN 1991-1-1/NA, 6.3.1.2(8)); zählt zur Nutzlast
+const TRENNWANDZUSCHLAEGE = [
+    { id: 'keiner', name: 'kein Zuschlag (keine leichten Trennwände)', wert: 0 },
+    { id: 'bis3', name: 'Trennwände bis 3 kN/m Wandlänge', wert: 0.8 },
+    { id: 'bis5', name: 'Trennwände bis 5 kN/m Wandlänge', wert: 1.2 }
+];
+
+const TEILSICHERHEIT = { G: 1.35, Q: 1.5 };
+
+// Deckenlast aus dem Schichtaufbau.
+//   schichten: [{ name, d (Dicke in m), gamma (kN/m³) }]  – oder { name, g } mit fester Flächenlast in kN/m²
+//   balken (nur Holzbalkendecke): { b, h (m), gamma (kN/m³), e (Balkenabstand in m) }
+//   nutzlast, trennwand: in kN/m²;  breite: Einzugsbreite in m (ohne Balken: 1-m-Deckenstreifen)
+// Rückgabe: Flächenlasten g_k und q_k in kN/m², Streckenlasten in kN/m und Bemessungswerte (1,35 · g + 1,5 · q).
+function berechneDeckenlast({ schichten = [], balken = null, nutzlast = 0, trennwand = 0, breite } = {}) {
+    const liste = schichten.map(s => ({ ...s, g: s.g !== undefined ? s.g : s.d * s.gamma }));
+    const gSchichten = liste.reduce((summe, s) => summe + s.g, 0);
+    const gBalkenStrecke = balken ? balken.b * balken.h * balken.gamma : 0;          // kN/m je Balken
+    const einzugsbreite = balken ? balken.e : (breite || 1);
+    const gBalkenFlaeche = balken ? gBalkenStrecke / balken.e : 0;                    // kN/m², über e verteilt
+    const gk = gSchichten + gBalkenFlaeche;
+    const qk = nutzlast + trennwand;
+    const gStrecke = gSchichten * einzugsbreite + gBalkenStrecke;                       // = gk · e
+    const qStrecke = qk * einzugsbreite;
+    return {
+        schichten: liste, gSchichten, gBalkenStrecke, gBalkenFlaeche, gk, qk,
+        einzugsbreite, gStrecke, qStrecke, gesamtStrecke: gStrecke + qStrecke,
+        qdFlaeche: TEILSICHERHEIT.G * gk + TEILSICHERHEIT.Q * qk,
+        qdStrecke: TEILSICHERHEIT.G * gStrecke + TEILSICHERHEIT.Q * qStrecke
+    };
+}
+
 // Für die automatischen Tests unter Node.js exportieren (im Browser ohne Wirkung)
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
@@ -292,6 +364,11 @@ if (typeof module !== 'undefined' && module.exports) {
         feldmomente,
         biegelinie,
         momentenNullpunkte,
+        berechneDeckenlast,
+        LAST_BAUSTOFFE,
+        NUTZLASTEN,
+        TRENNWANDZUSCHLAEGE,
+        TEILSICHERHEIT,
         zerlegeKraft,
         istImWertebereich,
         momentParameterwert,

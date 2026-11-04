@@ -137,6 +137,26 @@ function exportProtocol(modulNr, modulTitel, studentName, entries) {
     URL.revokeObjectURL(url);
 }
 
+// Labor 3.0: Die Lastannahme ist neu Modul 3, die bisherigen Module 3–6 sind zu 4–7 geworden.
+// Gespeicherten Fortschritt deshalb einmalig zur neuen Modulnummer umziehen (von hinten nach vorn,
+// damit nichts überschrieben wird). Danach merkt sich das Labor, dass der Umzug erledigt ist.
+(function fortschrittUmnummerieren() {
+    const erledigt = 'bautechnik-labor:nummerierung:v3';
+    try {
+        if (localStorage.getItem(erledigt)) return;
+        for (const alt of [6, 5, 4, 3]) {
+            const von = `bautechnik-labor:modul-${alt}:fortschritt:v1`;
+            const nach = `bautechnik-labor:modul-${alt + 1}:fortschritt:v1`;
+            const wert = localStorage.getItem(von);
+            if (wert !== null) {
+                localStorage.setItem(nach, wert);
+                localStorage.removeItem(von);
+            }
+        }
+        localStorage.setItem(erledigt, '1');
+    } catch (error) { /* kein lokaler Speicher (z. B. privater Modus): nichts umzuziehen */ }
+})();
+
 // Optionales Speichern von Eingaben und abgeschlossenen Übungsversuchen auf diesem Gerät.
 function initLearningProgress(modulNr, options = {}) {
     const key = `bautechnik-labor:modul-${modulNr}:fortschritt:v1`;
@@ -438,7 +458,7 @@ function responsiveCanvas(canvas, hoehe, zeichne, optionen = {}) {
     const exitFs = () => (document.exitFullscreen || document.webkitExitFullscreen).call(document);
 
     document.querySelectorAll('canvas').forEach(canvas => {
-        if (canvas.width < 700) return;   // kleine Diagramme (z. B. Antwortkarten in Modul 4) auslassen
+        if (canvas.width < 700) return;   // kleine Diagramme (z. B. Antwortkarten in Modul 5) auslassen
         const host = canvas.parentElement;
         host.classList.add('lab-fs-host');
         // Seitenverhältnis merken, damit die Zeichnung im Vollbild unverzerrt formatfüllend wird

@@ -10,6 +10,10 @@ const {
     feldmomente,
     biegelinie,
     momentenNullpunkte,
+    berechneDeckenlast,
+    LAST_BAUSTOFFE,
+    NUTZLASTEN,
+    TRENNWANDZUSCHLAEGE,
     zerlegeKraft,
     istImWertebereich,
     momentParameterwert,
@@ -73,7 +77,7 @@ test('Kragarm rechts mit Gleichlast: M_B = −q·a²/2', () => {
     nah(t.schnitt(L + a).Q, 0, 0.05);   // am freien Ende ist auch die Querkraft null
 });
 
-test('Gleichgewicht: A + B = Gesamtlast bei gemischter Belastung (Preset „Prüfungsmischlast“ aus Modul 3)', () => {
+test('Gleichgewicht: A + B = Gesamtlast bei gemischter Belastung (Preset „Prüfungsmischlast“ aus Modul 4)', () => {
     const t = berechneTraeger({
         L: 12,
         pointLoads: [{ F: 12, x: 2 }, { F: 8, x: 9 }],
@@ -155,7 +159,7 @@ test('Eingabegrenzen sind inklusiv und weisen ungültige Werte zurück', () => {
     assert.equal(istImWertebereich('NaN', 0, 100000), false);
 });
 
-test('M_max-Übergabe von Modul 3 nach Modul 5 rundet und lehnt ungültige Werte ab', () => {
+test('M_max-Übergabe von Modul 4 nach Modul 6 rundet und lehnt ungültige Werte ab', () => {
     assert.equal(momentParameterwert(74.144), 74.14);
     assert.equal(momentParameterwert(0), 0);
     assert.equal(momentParameterwert(null), null);
@@ -186,7 +190,7 @@ test('Diagrammstellen: Querkraftsprünge an Auflager und Einzellast werden senkr
     }
 });
 
-// ---------- Durchlaufträger (Modul 6): Vergleich mit Tabellenwerten gleicher Stützweiten ----------
+// ---------- Durchlaufträger (Modul 7): Vergleich mit Tabellenwerten gleicher Stützweiten ----------
 const dlt = (spans, loads) => berechneDurchlauftraeger({ spans, loads });
 
 test('Zweifeldträger, Gleichlast auf beiden Feldern: A = C = 0,375·qL, B = 1,25·qL, M_B = −0,125·qL², M_F = 0,070·qL²', () => {
@@ -291,4 +295,56 @@ test('Momentennullpunkte Zweifeldträger mit Gleichlast bei 0,75 · L und 1,25 �
     assert.equal(p.length, 2);
     nah(p[0], 0.75 * L, 0.01);
     nah(p[1], 1.25 * L, 0.01);
+});
+
+// ---------- Lastannahme für Decken (Modul 3) ----------
+test('Stahlbetondecke: g_k = Σ d · γ, q_k = Nutzlast + Trennwandzuschlag, 1-m-Streifen und q_d = 1,35 g + 1,5 q', () => {
+    const r = berechneDeckenlast({
+        schichten: [
+            { name: 'Zementestrich', d: 0.05, gamma: 22 },
+            { name: 'Trittschalldämmung', d: 0.03, gamma: 1 },
+            { name: 'Stahlbetonplatte', d: 0.20, gamma: 25 },
+            { name: 'Kalkzementputz', d: 0.015, gamma: 20 }
+        ],
+        nutzlast: 1.5, trennwand: 0.8
+    });
+    nah(r.gk, 1.1 + 0.03 + 5.0 + 0.3, 1e-9);
+    nah(r.qk, 2.3, 1e-9);
+    assert.equal(r.einzugsbreite, 1);
+    nah(r.gStrecke, 6.43, 1e-9);
+    nah(r.qStrecke, 2.3, 1e-9);
+    nah(r.qdFlaeche, 1.35 * 6.43 + 1.5 * 2.3, 1e-9);
+});
+
+test('Holzbalkendecke: Balkeneigengewicht b · h · γ, Streckenlast = Flächenlast · e + Balken', () => {
+    const r = berechneDeckenlast({
+        schichten: [
+            { name: 'Dielung', d: 0.024, gamma: 4.2 },
+            { name: 'Gipskarton', d: 0.0125, gamma: 9 }
+        ],
+        balken: { b: 0.10, h: 0.22, gamma: 4.2, e: 0.625 },
+        nutzlast: 1.5, trennwand: 0
+    });
+    nah(r.gBalkenStrecke, 0.0924, 1e-9);
+    nah(r.gBalkenFlaeche, 0.0924 / 0.625, 1e-9);
+    nah(r.gStrecke, (0.1008 + 0.1125) * 0.625 + 0.0924, 1e-9);
+    nah(r.gStrecke, r.gk * 0.625, 1e-9);               // beide Rechenwege führen zum gleichen Ergebnis
+    nah(r.qStrecke, 1.5 * 0.625, 1e-9);
+});
+
+test('Feste Flächenlast je Schicht und eigene Einzugsbreite', () => {
+    const r = berechneDeckenlast({ schichten: [{ name: 'Belag', g: 0.5 }, { name: 'Platte', d: 0.16, gamma: 25 }], nutzlast: 2, breite: 2.5 });
+    nah(r.gk, 4.5, 1e-9);
+    nah(r.gStrecke, 11.25, 1e-9);
+    nah(r.qStrecke, 5, 1e-9);
+});
+
+test('Tabellenwerte Lastannahme: Nutzlast A2 = 1,5, C1 = 3,0 kN/m², Trennwandzuschlag 0,8 / 1,2, Stahlbeton 25 kN/m³', () => {
+    const nl = kat => NUTZLASTEN.find(n => n.kat === kat).qk;
+    assert.equal(nl('A2'), 1.5);
+    assert.equal(nl('C1'), 3.0);
+    assert.deepEqual(TRENNWANDZUSCHLAEGE.map(t => t.wert), [0, 0.8, 1.2]);
+    assert.equal(LAST_BAUSTOFFE.find(b => b.id === 'stahlbeton').gamma, 25);
+    LAST_BAUSTOFFE.forEach(b => assert.ok(b.gamma > 0, b.name));
+    assert.equal(new Set(LAST_BAUSTOFFE.map(b => b.id)).size, LAST_BAUSTOFFE.length);
 });
