@@ -10,11 +10,19 @@ Interaktive Statik- und Mechanik-Lernmodule für die Fachoberschule (FOS 12, Hes
 - `modul-3-statik-einfeldtraeger.html` – Auflagerkräfte, Querkraft und Biegemoment für Einfeldträger mit Kragarmen, Einzel- und Streckenlasten
 - `modul-4-diagramme-zuordnen.html` – Quiz zum Zuordnen von Systemen und Schnittgrößendiagrammen
 - `modul-5-spannungsnachweis.html` – Querschnittswerte und Biegespannungsnachweis
-- `modul-6-durchlauftraeger.html` – Selbstlernmodul Durchlaufträger: Schritt-für-Schritt-Anleitung mit Beiwert-Tabelle, Übung mit Selbstkontrolle und Rechner für Zwei- und Dreifeldträger mit eigenen Stützweiten und Lasten
+- `modul-6-durchlauftraeger.html` – Selbstlernmodul Durchlaufträger: Schritt-für-Schritt-Anleitung mit Grafiken (Vergleich mit Einfeldträgern, statische Unbestimmtheit, Lastaufteilung, Zugseite und Bewehrung, Idee der Dreimomentengleichung) und Beiwert-Tabelle, Übung mit Selbstkontrolle und Rechner für Zwei- und Dreifeldträger mit eigenen Stützweiten und Lasten
 
-## Unterricht und Zugänglichkeit
+## Unterricht
 
 Modul 3 bietet im **Lehrkraftmodus** vorgefertigte Unterrichtsszenarien, einen Reset auf die ursprünglichen Vorführwerte und eine Druckansicht für ein Arbeitsblatt. Ein optionaler Arbeitsauftrag kann ergänzt werden; Lösungen und Diagramm werden nur mit aktivierter Option mitgedruckt. Im Druckdialog kann das Blatt auch als PDF gespeichert werden.
+
+## Handy und Tablet
+
+Alle Module lassen sich per Finger bedienen. Auf Geräten mit Touch-Bedienung (Handy und Tablet) haben Schaltflächen, Eingabefelder, Auswahllisten und aufklappbare Abschnitte eine Mindesthöhe von etwa 44 px, Kontrollkästchen und Schieberegler sind vergrößert. Jede Beschriftung ist mit ihrem Eingabefeld verknüpft, ein Tippen auf die Beschriftung setzt also den Cursor ins Feld.
+
+Alle Zeichnungen wachsen mit der Bildschirmbreite mit (`responsiveCanvas` in `labor.js`). Auf dem Handy werden sie nicht einfach verkleinert, sondern bekommen ein eigenes, schmales Layout: Die Beschriftung bleibt so groß wie der übrige Seitentext, Querschnitt und Spannungsverteilung in Modul 5 stehen untereinander, Beschriftungen in Modul 1 und 2 werden umgebrochen oder versetzt. Ab etwa 600 px Breite zeigen Modul 1, 2 und 5 die gewohnte Desktop-Zeichnung, nur passend skaliert. Kisten (Modul 2) und Lasten (Modul 3) lassen sich auf jeder Größe per Finger ziehen. Der Vollbild-Knopf ⛶ steht überall zur Verfügung, wo der Browser Vollbild für einzelne Elemente unterstützt (nicht auf dem iPhone). Der PNG-Export in Modul 3 hängt die Wertetabelle auf dem Handy einspaltig an.
+
+## Barrierearmut
 
 Im Diagrammquiz lassen sich Antwortkarten per Tastatur auswählen. Screenreader erhalten Textbeschreibungen der dargestellten Kurven; zu jedem Aufgabenteil gibt es aufklappbare, schrittweise Hinweise. Nach einer Antwort wird die Auswertung angesagt und erläutert typische Vorzeichen- und Lagefehler.
 
@@ -74,11 +82,11 @@ Schema: kleine Verbesserungen und Fehlerbehebungen erhöhen die Unterversion (1.
 
 ## Gemeinsame Bausteine
 
-- `labor.css` und `labor.js` – Modulfarben, Präsentationsmodus, Vollbild für Zeichnungen, Zahlenformatierung, Protokoll-Export und lokales Speichern des Lernfortschritts
+- `labor.css` und `labor.js` – Modulfarben, Präsentationsmodus, Vollbild für Zeichnungen, mitwachsende Zeichenflächen, Touch-Bedienung, Zahlenformatierung, Protokoll-Export und lokales Speichern des Lernfortschritts
 - `statik-core.js` – gemeinsamer Statik-Rechenkern für Modul 3, 4 und 6 (Durchlaufträger über die Dreimomentengleichung) sowie getestete Validierungs-, Quiz- und Übergabehelfer
 - `src/tailwind.css`, `tailwind.config.js`, `package.json` und `package-lock.json` – CSS-Build-Konfiguration für die Entwicklung
 - `version.js` – Versionsnummern und Aktualisierungsdatum aller Module und der Startseite
-- `tests/statik-core.test.js` – automatisierte Tests des Statik-Rechenkerns
+- `tests/statik-core.test.js` – automatisierte Tests des Statik-Rechenkerns (einschließlich Biegelinie und Momentennullpunkten für die Grafiken in Modul 6)
 - `tests/version.test.js` – prüft Versionsangaben und den Cache-Schutz von `version.js`
 
 ## Einheitliche Konventionen
@@ -87,3 +95,6 @@ Schema: kleine Verbesserungen und Fehlerbehebungen erhöhen die Unterversion (1.
 - Zahlen werden mit deutschem Dezimalkomma und Einheiten mit Leerzeichen dargestellt, zum Beispiel `2,5 kN`
 - In Modul 3 wird der Winkel schräger Einzelkräfte von der Trägerachse aus gemessen: 0° nach rechts, 90° nach unten, 180° nach links und 270° nach oben
 - In Modul 2 werden Massen in kg eingegeben und die Gewichtskraft mit `F = m · g` berechnet
+- In Modul 5 werden Querschnittsmaße in cm, Querschnittswerte in cm³ und cm⁴ und Spannungen in N/mm² angegeben, wie in den Bautabellen
+- In jeder Übung mit Selbstkontrolle steht die Rundungstoleranz direkt über dem Prüfen-Knopf (Modul 1 und 2: 3 %, Modul 5 und 6: 2 %)
+- Hinweistexte nutzen deutsche Anführungszeichen („…“) und den Halbgeviertstrich (–)

@@ -517,8 +517,7 @@ input[aria-invalid="true"] {
 }
 
 /* ---------- Mobile Darstellung und Interaktion ---------- */
-.lab-mobile-only,
-.lab-canvas-hint {
+.lab-mobile-only {
     display: none;
 }
 
@@ -555,51 +554,82 @@ input[aria-invalid="true"] {
     }
 
     body[data-modul] .lab-tab {
-        min-height: 2.75rem;
         padding: 0.625rem 0.5rem;
-    }
-
-    body[data-modul] button,
-    body[data-modul] select,
-    body[data-modul] input[type="number"],
-    body[data-modul] input[type="text"] {
-        min-height: 2.75rem;
-    }
-
-    body[data-modul] input[type="checkbox"] {
-        min-width: 1.25rem;
-        min-height: 1.25rem;
     }
 
     body[data-modul="2"] #wippeCanvas {
         touch-action: pan-y;
     }
 
-    body[data-modul="3"] .lg\:col-span-4 {
+
+}
+
+/* Modul 3: Unterhalb der Desktop-Breite stehen Eingaben und Zeichnung untereinander.
+   Dann kein eigener Scrollbereich für die Eingaben (verschachteltes Scrollen ist per Finger mühsam). */
+@media (max-width: 1023px) {
+    body[data-modul="3"] #controlPanel {
         max-height: none;
         overflow: visible;
         padding-right: 0;
     }
+}
 
-    body[data-modul="3"] .lab-beam-canvas-scroll {
-        overflow-x: auto;
-        overscroll-behavior-x: contain;
-        -webkit-overflow-scrolling: touch;
+/* ---------- Touch-Bedienung (Handy und Tablet) ----------
+   Fingerfreundliche Mindestgrößen von etwa 44 px für alles, was angetippt wird.
+   Gilt für jedes Gerät, das hauptsächlich per Finger bedient wird, also auch für Tablets. */
+@media (pointer: coarse) {
+    body[data-modul] button,
+    body[data-modul] select,
+    body[data-modul] input[type="number"],
+    body[data-modul] input[type="text"],
+    body[data-modul] .lab-tab,
+    .lab-back {
+        min-height: 2.75rem;
     }
 
-    body[data-modul="3"] .lab-beam-canvas-scroll canvas {
-        width: 560px;
-        max-width: none;
+    .lab-present-btn,
+    .lab-progress-clear {
+        min-height: 2.25rem;
+        padding: 0.375rem 0.75rem;
     }
 
-    body[data-modul="3"] .lab-canvas-hint {
+    body[data-modul] input[type="checkbox"],
+    body[data-modul] input[type="radio"] {
+        min-width: 1.375rem;
+        min-height: 1.375rem;
+    }
+
+    /* Schieberegler: größere Fläche zum Greifen */
+    body[data-modul] input[type="range"] {
+        min-height: 2.25rem;
+    }
+
+    /* Aufklappbare Abschnitte (Hinweise, Lehrkraftmodus, Selbstlernschritte) */
+    body[data-modul] summary {
+        padding-block: 0.625rem;   /* display bleibt list-item, damit das Aufklapp-Dreieck sichtbar bleibt */
+    }
+
+    .lab-fs-btn {
+        width: 2.75rem;
+        height: 2.75rem;
+    }
+}
+
+/* Hinweis unter festen Zeichnungen: nur auf dem Handy im Hochformat (siehe labor.js) */
+.lab-rotate-hint {
+    display: none;
+}
+@media (max-width: 640px) and (orientation: portrait) {
+    .lab-rotate-hint {
         display: block;
-        margin: 0 0 0.5rem;
+        margin-top: 0.375rem;
         color: #64748b;
         font-size: 0.75rem;
         line-height: 1rem;
     }
-
+}
+.lab-fs-host:fullscreen .lab-rotate-hint {
+    display: none;
 }
 
 @media (min-width: 560px) and (max-width: 767px) {

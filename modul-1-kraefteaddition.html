@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modul 1: Kräfteaddition & Vektoren | Bautechnik-Labor</title>
-    <link rel="stylesheet" href="tailwind.min.css?v=2026-11-04">
-    <link rel="stylesheet" href="labor.css?v=2026-11-04">
+    <link rel="stylesheet" href="tailwind.min.css?v=2026-11-04c">
+    <link rel="stylesheet" href="labor.css?v=2026-11-04c">
 </head>
 <body data-modul="1" class="bg-slate-50 min-h-screen p-4 md:p-6 font-sans text-slate-800">
     <div class="max-w-7xl mx-auto bg-white p-6 rounded-2xl shadow-xl border border-slate-100">
@@ -47,14 +47,14 @@
                     </h3>
                     <div class="space-y-3">
                         <div>
-                            <label class="flex justify-between text-xs font-bold text-slate-500 mb-1">
+                            <label for="f1_val" class="flex justify-between text-xs font-bold text-slate-500 mb-1">
                                 <span>Betrag F₁ [kN]</span>
                                 <span id="val_f1" class="text-indigo-700 font-bold">80 kN</span>
                             </label>
                             <input type="range" id="f1_val" min="10" max="150" value="80" class="w-full accent-indigo-600">
                         </div>
                         <div>
-                            <label class="flex justify-between text-xs font-bold text-slate-500 mb-1">
+                            <label for="f1_ang" class="flex justify-between text-xs font-bold text-slate-500 mb-1">
                                 <span>Winkel α₁ [°]</span>
                                 <span id="val_a1" class="text-indigo-700 font-bold">30°</span>
                             </label>
@@ -71,14 +71,14 @@
                     </h3>
                     <div class="space-y-3">
                         <div>
-                            <label class="flex justify-between text-xs font-bold text-slate-500 mb-1">
+                            <label for="f2_val" class="flex justify-between text-xs font-bold text-slate-500 mb-1">
                                 <span>Betrag F₂ [kN]</span>
                                 <span id="val_f2" class="text-rose-700 font-bold">100 kN</span>
                             </label>
                             <input type="range" id="f2_val" min="10" max="150" value="100" class="w-full accent-rose-600">
                         </div>
                         <div>
-                            <label class="flex justify-between text-xs font-bold text-slate-500 mb-1">
+                            <label for="f2_ang" class="flex justify-between text-xs font-bold text-slate-500 mb-1">
                                 <span>Winkel α₂ [°]</span>
                                 <span id="val_a2" class="text-rose-700 font-bold">120°</span>
                             </label>
@@ -93,7 +93,7 @@
             <div class="lg:col-span-8 space-y-6">
                 
                 <div>
-                    <canvas id="vectorCanvas" width="800" height="450"></canvas>
+                    <canvas id="vectorCanvas" width="800" height="450" data-responsive="1" role="img" aria-label="Kräfteparallelogramm: F₁ blau, F₂ rot und die Resultierende F_R grün. Die Werte stehen im Rechenweg."></canvas>
                 </div>
 
                 <!-- Rechenweg -->
@@ -141,20 +141,20 @@
                             </button>
                         </div>
                     </div>
-                    <p class="text-sm text-slate-500 mt-2 mb-4">Aktiviere "Selbst berechnen" — die Lösung oben wird ausgeblendet. Rechne die Zerlegung und die Resultierende per Hand und trage deine Werte ein.</p>
+                    <p class="text-sm text-slate-500 mt-2 mb-4">Aktiviere „Selbst berechnen“ – die Lösung oben wird ausgeblendet. Rechne die Zerlegung und die Resultierende per Hand und trage deine Werte ein.</p>
 
                     <div id="practiceForm" class="hidden space-y-4">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div class="bg-amber-50/60 p-3 rounded-lg border border-amber-100 space-y-2">
                                 <p class="font-bold text-indigo-700 text-sm font-mono">F₁ Zerlegung:</p>
                                 <div class="flex items-center gap-2">
-                                    <label class="text-xs font-mono w-28">F<sub>1x</sub> = F₁·cos(α₁) =</label>
+                                    <label for="check_f1x" class="text-xs font-mono w-28">F<sub>1x</sub> = F₁·cos(α₁) =</label>
                                     <input type="number" id="check_f1x" step="0.1" class="w-24 border border-slate-300 rounded px-2 py-1 text-sm">
                                     <span class="text-xs">kN</span>
                                     <span id="fb_f1x" class="text-lg"></span>
                                 </div>
                                 <div class="flex items-center gap-2">
-                                    <label class="text-xs font-mono w-28">F<sub>1y</sub> = F₁·sin(α₁) =</label>
+                                    <label for="check_f1y" class="text-xs font-mono w-28">F<sub>1y</sub> = F₁·sin(α₁) =</label>
                                     <input type="number" id="check_f1y" step="0.1" class="w-24 border border-slate-300 rounded px-2 py-1 text-sm">
                                     <span class="text-xs">kN</span>
                                     <span id="fb_f1y" class="text-lg"></span>
@@ -163,13 +163,13 @@
                             <div class="bg-amber-50/60 p-3 rounded-lg border border-amber-100 space-y-2">
                                 <p class="font-bold text-rose-600 text-sm font-mono">F₂ Zerlegung:</p>
                                 <div class="flex items-center gap-2">
-                                    <label class="text-xs font-mono w-28">F<sub>2x</sub> = F₂·cos(α₂) =</label>
+                                    <label for="check_f2x" class="text-xs font-mono w-28">F<sub>2x</sub> = F₂·cos(α₂) =</label>
                                     <input type="number" id="check_f2x" step="0.1" class="w-24 border border-slate-300 rounded px-2 py-1 text-sm">
                                     <span class="text-xs">kN</span>
                                     <span id="fb_f2x" class="text-lg"></span>
                                 </div>
                                 <div class="flex items-center gap-2">
-                                    <label class="text-xs font-mono w-28">F<sub>2y</sub> = F₂·sin(α₂) =</label>
+                                    <label for="check_f2y" class="text-xs font-mono w-28">F<sub>2y</sub> = F₂·sin(α₂) =</label>
                                     <input type="number" id="check_f2y" step="0.1" class="w-24 border border-slate-300 rounded px-2 py-1 text-sm">
                                     <span class="text-xs">kN</span>
                                     <span id="fb_f2y" class="text-lg"></span>
@@ -180,31 +180,32 @@
                             <p class="font-bold text-emerald-700 text-sm font-mono">Resultierende F<sub>R</sub>:</p>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                 <div class="flex items-center gap-2">
-                                    <label class="text-xs font-mono w-28">F<sub>Rx</sub> =</label>
+                                    <label for="check_frx" class="text-xs font-mono w-28">F<sub>Rx</sub> =</label>
                                     <input type="number" id="check_frx" step="0.1" class="w-24 border border-slate-300 rounded px-2 py-1 text-sm">
                                     <span class="text-xs">kN</span>
                                     <span id="fb_frx" class="text-lg"></span>
                                 </div>
                                 <div class="flex items-center gap-2">
-                                    <label class="text-xs font-mono w-28">F<sub>Ry</sub> =</label>
+                                    <label for="check_fry" class="text-xs font-mono w-28">F<sub>Ry</sub> =</label>
                                     <input type="number" id="check_fry" step="0.1" class="w-24 border border-slate-300 rounded px-2 py-1 text-sm">
                                     <span class="text-xs">kN</span>
                                     <span id="fb_fry" class="text-lg"></span>
                                 </div>
                                 <div class="flex items-center gap-2">
-                                    <label class="text-xs font-mono w-28">F<sub>R</sub> =</label>
+                                    <label for="check_fr" class="text-xs font-mono w-28">F<sub>R</sub> =</label>
                                     <input type="number" id="check_fr" step="0.1" class="w-24 border border-slate-300 rounded px-2 py-1 text-sm">
                                     <span class="text-xs">kN</span>
                                     <span id="fb_fr" class="text-lg"></span>
                                 </div>
                                 <div class="flex items-center gap-2">
-                                    <label class="text-xs font-mono w-28">φ =</label>
+                                    <label for="check_ang" class="text-xs font-mono w-28">φ =</label>
                                     <input type="number" id="check_ang" step="0.1" class="w-24 border border-slate-300 rounded px-2 py-1 text-sm">
                                     <span class="text-xs">°</span>
                                     <span id="fb_ang" class="text-lg"></span>
                                 </div>
                             </div>
                         </div>
+                        <p class="text-xs text-slate-500">Rundungstoleranz 3 %, mindestens 1,5 kN bzw. 1,5°.</p>
                         <button id="btnCheck" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-lg transition-colors">
                             Prüfen
                         </button>
@@ -234,7 +235,7 @@
                         Last F
                     </h3>
                     <div>
-                        <label class="flex justify-between text-xs font-bold text-slate-500 mb-1">
+                        <label for="s_f" class="flex justify-between text-xs font-bold text-slate-500 mb-1">
                             <span>Betrag F [kN]</span>
                             <span id="val_sf" class="text-teal-700 font-bold">20 kN</span>
                         </label>
@@ -248,7 +249,7 @@
                         Winkel
                     </h3>
                     <div>
-                        <label class="flex justify-between text-xs font-bold text-slate-500 mb-1">
+                        <label for="s_beta" class="flex justify-between text-xs font-bold text-slate-500 mb-1">
                             <span>Lastwinkel zur Flächennormalen β [°]</span>
                             <span id="val_sbeta" class="text-slate-700 font-bold">25°</span>
                         </label>
@@ -262,7 +263,7 @@
                         Kräftemaßstab
                     </h3>
                     <div>
-                        <label class="block text-xs font-bold text-slate-500 mb-1">Maßstab (zum Zeichnen der Pfeile in cm)</label>
+                        <label for="s_scale" class="block text-xs font-bold text-slate-500 mb-1">Maßstab (zum Zeichnen der Pfeile in cm)</label>
                         <select id="s_scale" class="w-full border border-slate-300 rounded-lg px-2 py-1.5 text-sm bg-white">
                             <option value="4">1 kN = 0,25 cm</option>
                             <option value="2">1 kN = 0,5 cm</option>
@@ -278,7 +279,7 @@
             <div class="lg:col-span-8 space-y-6">
 
                 <div>
-                    <canvas id="slopeCanvas" width="800" height="450"></canvas>
+                    <canvas id="slopeCanvas" width="800" height="450" data-responsive="1" role="img" aria-label="Schräge Last auf einer Fläche mit Kräftedreieck aus F, Fₓ und F_y. Die Werte stehen im Rechenweg."></canvas>
                 </div>
 
                 <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200 font-mono text-sm shadow-sm">
@@ -298,11 +299,15 @@
         </div>
     </div>
 
-    <script src="labor.js?v=2026-10-01"></script>
-    <script src="version.js?v=2.0"></script>
+    <script src="labor.js?v=2026-11-04c"></script>
+    <script src="version.js?v=2.2"></script>
     <script>
         const canvas = document.getElementById('vectorCanvas');
         const ctx = canvas.getContext('2d');
+        // Zeichnung wächst mit der Bildschirmbreite mit (labor.js); auf dem Handy etwas niedriger
+        let vektorWerte = null;
+        const vektorZeichnung = responsiveCanvas(canvas, W => (W < 600 ? 360 : 450),
+            (c, W, H) => { if (vektorWerte) draw(W, H, ...vektorWerte); }, { maxBreite: 800 });
 
         const f1_val = document.getElementById('f1_val');
         const f1_ang = document.getElementById('f1_ang');
@@ -345,21 +350,24 @@
             currentResult = { f1x, f1y, f2x, f2y, frx, fry, fr: FR, ang: FR_ang };
             if (practiceMode) setSolutionVisible(false);
 
-            draw(F1, a1_rad, F2, a2_rad, frx, fry);
+            vektorWerte = [F1, a1_rad, F2, a2_rad, frx, fry];
+            vektorZeichnung.zeichne();
         }
 
-        function draw(F1, a1, F2, a2, frx, fry) {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            const cx = canvas.width / 2;
-            const cy = canvas.height / 2;
-            const scale = 1.3; // Skalierungsfaktor Pixel/kN
+        function draw(W, H, F1, a1, F2, a2, frx, fry) {
+            const cx = W / 2;
+            const cy = H / 2;
+            // Maßstab Pixel/kN: höchstens 1,3; bei großen Kräften oder schmalem Bildschirm kleiner,
+            // damit alle Pfeile samt Beschriftung in die Zeichnung passen
+            const maxKraft = Math.max(1, Math.abs(F1), Math.abs(F2), Math.hypot(frx, fry));
+            const scale = Math.min(1.3, (Math.min(cx, cy) - 30) / maxKraft);
 
             // Koordinatengitter zeichnen
             ctx.strokeStyle = '#e2e8f0';
             ctx.lineWidth = 1;
             ctx.beginPath();
-            ctx.moveTo(0, cy); ctx.lineTo(canvas.width, cy);
-            ctx.moveTo(cx, 0); ctx.lineTo(cx, canvas.height);
+            ctx.moveTo(0, cy); ctx.lineTo(W, cy);
+            ctx.moveTo(cx, 0); ctx.lineTo(cx, H);
             ctx.stroke();
 
             // Kraft 1 (Blau, Y wird invertiert da Canvas-Y nach unten zeigt)
@@ -531,6 +539,10 @@
         const s_f = document.getElementById('s_f');
         const s_beta = document.getElementById('s_beta');
         const s_scale = document.getElementById('s_scale');
+        // Ab 600 px Breite die bewährte 800er-Zeichnung (nur skaliert), darunter ein schmales Layout
+        let schraegWerte = null;
+        const schraegZeichnung = responsiveCanvas(slopeCanvas, W => (W < 600 ? 380 : 450),
+            (c, W, H) => { if (schraegWerte) drawSlope(W, H, ...schraegWerte); }, { festeBreite: 800 });
 
         function drawSlopeArrow(ctx, fromx, fromy, tox, toy, color, width) {
             const headlen = 11;
@@ -574,19 +586,20 @@
             document.getElementById('s_cm_fn').innerText = fmt(cm_fy, 1);
             document.getElementById('s_cm_ft').innerText = fmt(cm_fx, 1);
 
-            drawSlope(F, beta, betaDeg, F_y, F_x, cm_f, cm_fy, cm_fx);
+            schraegWerte = [F, beta, betaDeg, F_y, F_x, cm_f, cm_fy, cm_fx];
+            schraegZeichnung.zeichne();
         }
 
-        function drawSlope(F, beta, betaDeg, F_y, F_x, cm_f, cm_fy, cm_fx) {
+        function drawSlope(W, H, F, beta, betaDeg, F_y, F_x, cm_f, cm_fy, cm_fx) {
             const ctx = slopeCtx;
-            ctx.clearRect(0, 0, slopeCanvas.width, slopeCanvas.height);
-            const P = { x: 340, y: 310 };
+            const schmal = W < 600;   // Handy: Beschriftungen zweizeilig bzw. unter der Fläche
+            const P = schmal ? { x: W / 2, y: H - 104 } : { x: 340, y: 310 };
             // Zeichenmaßstab passt sich automatisch an: Die Last F ist immer gleich lang gezeichnet,
             // damit das Kräftedreieck auch bei kleinen Kräften gut erkennbar bleibt. Die Beträge stehen
             // in den Beschriftungen, die Größenordnung zeigt der Maßstabsbalken (unabhängig vom cm-Maßstab).
-            const drawLenF = 230;                               // px für die Last F
+            const drawLenF = schmal ? Math.min(230, W / 2 - 24) : 230;   // px für die Last F
             const forceScale = F > 0 ? drawLenF / F : 0;        // px pro kN
-            const groundHalfLen = 260;
+            const groundHalfLen = schmal ? W / 2 - 12 : 260;
 
             ctx.save();
             ctx.translate(P.x, P.y);
@@ -614,7 +627,7 @@
                 ctx.fillStyle = '#64748b';
                 ctx.font = 'bold 14px sans-serif';
                 ctx.textAlign = 'center';
-                ctx.fillText('Keine Last (F = 0 kN) – Betrag F mit dem Regler einstellen', 0, -60);
+                ctx.fillText(schmal ? 'Keine Last (F = 0 kN)' : 'Keine Last (F = 0 kN) – Betrag F mit dem Regler einstellen', 0, -60);
                 ctx.restore();
                 return;
             }
@@ -652,20 +665,34 @@
             drawSlopeArrow(ctx, B.x, B.y, A.x, A.y, '#4f46e5', 3);
             ctx.fillStyle = '#4f46e5';
             ctx.textAlign = 'right';
-            fillTextSub(ctx, `F_{y} = ${fmt(F_y, 1)} kN (${fmt(cm_fy, 1)} cm)`, -8, -fyLen / 2);
+            if (schmal) {
+                fillTextSub(ctx, `F_{y} = ${fmt(F_y, 1)} kN`, -8, -fyLen / 2 - 2);
+                ctx.fillText(`(${fmt(cm_fy, 1)} cm)`, -8, -fyLen / 2 + 14);
+            } else {
+                fillTextSub(ctx, `F_{y} = ${fmt(F_y, 1)} kN (${fmt(cm_fy, 1)} cm)`, -8, -fyLen / 2);
+            }
 
             // F_x: jetzt oben am Dreieck (an der Spitze von F_y), Richtung umgedreht: von C nach B
             drawSlopeArrow(ctx, C.x, C.y, B.x, B.y, '#e11d48', 3);
             ctx.fillStyle = '#e11d48';
             ctx.textAlign = 'center';
-            fillTextSub(ctx, `F_{x} = ${fmt(F_x, 1)} kN (${fmt(cm_fx, 1)} cm)`, fxLen / 2, -fyLen - 10);
+            if (schmal) {
+                fillTextSub(ctx, `F_{x} = ${fmt(F_x, 1)} kN (${fmt(cm_fx, 1)} cm)`, Math.min(fxLen / 2, W / 2 - 92), -fyLen - 10);
+            } else {
+                fillTextSub(ctx, `F_{x} = ${fmt(F_x, 1)} kN (${fmt(cm_fx, 1)} cm)`, fxLen / 2, -fyLen - 10);
+            }
 
             // Lastpfeil F (Hypotenuse, von C nach A - schließt das Dreieck)
             drawSlopeArrow(ctx, C.x, C.y, A.x, A.y, '#0d9488', 3.5);
             ctx.fillStyle = '#0d9488';
             ctx.font = 'bold 13px sans-serif';
             const fText = `F = ${fmt(F, 1)} kN (${fmt(cm_f, 1)} cm)`;
-            if (fyLen < 24) {
+            if (schmal) {
+                // Handy: unter die Fläche, innerhalb der Zeichnung gehalten
+                const b = ctx.measureText(fText).width;
+                ctx.textAlign = 'center';
+                ctx.fillText(fText, Math.min(Math.max(fxLen / 2, -P.x + b / 2 + 6), W - P.x - b / 2 - 6), 40);
+            } else if (fyLen < 24) {
                 // Last fast waagerecht: Beschriftung unter die Fläche, sonst kollidiert sie mit Fₓ
                 ctx.textAlign = 'center';
                 ctx.fillText(fText, fxLen / 2, 36);
@@ -688,7 +715,7 @@
             const nice = [1, 2, 5, 10].map(m => m * pow).reduce((best, v) =>
                 Math.abs(v * pxPerKN - targetPx) < Math.abs(best * pxPerKN - targetPx) ? v : best);
             const len = nice * pxPerKN;
-            const x0 = 30, y0 = slopeCanvas.height - 30;
+            const x0 = 30, y0 = slopeZeichnungHoehe() - 30;
             ctx.save();
             ctx.strokeStyle = '#334155';
             ctx.fillStyle = '#334155';
@@ -706,6 +733,8 @@
             ctx.fillText('Zeichenmaßstab (passt sich automatisch an)', x0, y0 - 12);
             ctx.restore();
         }
+
+        const slopeZeichnungHoehe = () => (schraegZeichnung.mass() ? schraegZeichnung.mass().H : 450);
 
         [s_f, s_beta, s_scale].forEach(el => el.addEventListener('input', updateSlope));
 

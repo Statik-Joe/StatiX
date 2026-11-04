@@ -243,6 +243,45 @@ function feldmomente(dlt) {
     });
 }
 
+// Biegelinie w(x) eines Durchlaufträgers, nach unten positiv, für EI = 1 (also w · EI).
+// Zweifache Integration von w'' = −M/EI; die Randbedingungen w(0) = w(L) = 0 werden über eine
+// lineare Korrektur erfüllt. Weil die Stützmomente aus der Verträglichkeit stammen, ist w auch an
+// allen Zwischenauflagern null. Rückgabe: { xs, ws, M, max } mit max = größter Betrag von w.
+function biegelinie(dlt, n = 300) {
+    const dx = dlt.L / n;
+    const xs = [], M = [];
+    for (let i = 0; i <= n; i++) {
+        xs.push(i * dx);
+        M.push(dlt.schnitt(Math.min(Math.max(i * dx, 1e-7), dlt.L)).M);
+    }
+    const w = [0];
+    let phi = 0;
+    for (let i = 1; i <= n; i++) {
+        const phiNeu = phi - (M[i - 1] + M[i]) / 2 * dx;
+        w.push(w[i - 1] + (phi + phiNeu) / 2 * dx);
+        phi = phiNeu;
+    }
+    const wEnde = w[n];
+    const ws = w.map((v, i) => v - wEnde * xs[i] / dlt.L);
+    return { xs, ws, M, max: Math.max(1e-12, ...ws.map(Math.abs)) };
+}
+
+// Momentennullpunkte: Stellen, an denen M innerhalb des Trägers das Vorzeichen wechselt
+function momentenNullpunkte(dlt, n = 2000) {
+    const punkte = [];
+    let alt = null;
+    for (let i = 1; i < n; i++) {
+        const x = (i / n) * dlt.L;
+        const M = dlt.schnitt(x).M;
+        if (Math.abs(M) < 1e-9) continue;          // genau auf dem Nullpunkt: mit dem nächsten Wert vergleichen
+        if (alt && Math.sign(M) !== Math.sign(alt.M)) {
+            punkte.push(alt.x + (x - alt.x) * Math.abs(alt.M) / (Math.abs(alt.M) + Math.abs(M)));
+        }
+        alt = { x, M };
+    }
+    return punkte;
+}
+
 // Für die automatischen Tests unter Node.js exportieren (im Browser ohne Wirkung)
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
@@ -251,6 +290,8 @@ if (typeof module !== 'undefined' && module.exports) {
         diagrammStellen,
         berechneDurchlauftraeger,
         feldmomente,
+        biegelinie,
+        momentenNullpunkte,
         zerlegeKraft,
         istImWertebereich,
         momentParameterwert,

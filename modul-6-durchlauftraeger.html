@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modul 6: Durchlaufträger | Bautechnik-Labor</title>
-    <link rel="stylesheet" href="tailwind.min.css?v=2026-11-04">
-    <link rel="stylesheet" href="labor.css?v=2026-11-04">
+    <link rel="stylesheet" href="tailwind.min.css?v=2026-11-04c">
+    <link rel="stylesheet" href="labor.css?v=2026-11-04c">
     <style>
         .dlt-table { border-collapse: collapse; width: 100%; font-size: 0.8125rem; }
         .dlt-table th, .dlt-table td { border: 1px solid #e2e8f0; padding: 0.4rem 0.5rem; text-align: center; }
@@ -15,6 +15,10 @@
         .dlt-step summary::-webkit-details-marker { display: none; }
         .dlt-step[open] .dlt-chevron { transform: rotate(90deg); }
         .dlt-chevron { transition: transform 0.15s ease-in-out; display: inline-block; }
+        .dlt-figur { margin: 0.75rem 0 0.25rem; }
+        .dlt-figur figcaption { margin-top: 0.375rem; color: #64748b; font-size: 0.75rem; line-height: 1rem; }
+        .dlt-figur canvas { background: #ffffff; }
+        .dlt-icon { display: block; margin-bottom: 0.25rem; }
     </style>
 </head>
 <body data-modul="6" class="bg-slate-50 min-h-screen p-4 md:p-6 font-sans text-slate-800">
@@ -54,6 +58,10 @@
                     <p>Ein <strong>Durchlaufträger</strong> läuft ohne Unterbrechung über mehrere Felder und liegt dabei auf drei oder mehr Auflagern. Ein Zweifeldträger hat drei Auflager (A, B, C), ein Dreifeldträger vier (A, B, C, D).</p>
                     <p>Beispiele aus der Praxis: Deckenbalken über eine Mittelwand, Pfetten im Dach, Stahlbetondecken über mehrere Räume, Brücken mit Zwischenpfeilern.</p>
                     <p><strong>Vorteil:</strong> Die Felder „helfen sich gegenseitig“. Über dem Zwischenauflager entsteht ein negatives Stützmoment, dadurch werden die Feldmomente kleiner. Bei Gleichlast hat ein Einfeldträger max M = 0,125 · q · L², jedes Feld eines Zweifeldträgers nur noch etwa 0,070 · q · L².</p>
+                    <figure class="dlt-figur">
+                        <div><canvas id="figVergleich" width="900" height="470" data-responsive="1" role="img" aria-label="Vergleich: oben zwei einzelne Einfeldträger mit Knick in der Biegelinie über B und Feldmomenten von je 0,125 q L². Unten ein Zweifeldträger ohne Knick, mit Stützmoment minus 0,125 q L² und Feldmomenten von 0,070 q L²."></canvas></div>
+                        <figcaption>Gleiche Last, gleiche Stützweiten, gleicher Maßstab. Oben biegen sich die beiden Träger unabhängig voneinander durch, über B entsteht ein Knick. Unten hält der durchlaufende Träger den Knick zurück: Über B entsteht ein negatives Stützmoment, die Feldmomente und die Durchbiegung werden kleiner. Durchbiegung überhöht dargestellt.</figcaption>
+                    </figure>
                 </div>
             </details>
 
@@ -66,7 +74,15 @@
                         <li><strong>Zweifeldträger:</strong> A<sub>h</sub>, A<sub>v</sub>, B<sub>v</sub>, C<sub>v</sub> → 4 Unbekannte, 3 Gleichungen → <em>1-fach statisch unbestimmt</em>.</li>
                         <li><strong>Dreifeldträger:</strong> 5 Unbekannte → <em>2-fach statisch unbestimmt</em>.</li>
                     </ul>
+                    <figure class="dlt-figur">
+                        <div><canvas id="figUnbestimmt" width="900" height="470" data-responsive="1" role="img" aria-label="Einfeld-, Zweifeld- und Dreifeldträger mit ihren unbekannten Auflagerkräften. Beim Zweifeldträger ist eine, beim Dreifeldträger sind zwei Auflagerkräfte überzählig."></canvas></div>
+                        <figcaption><span class="font-semibold text-emerald-700">Grün:</span> mit den drei Gleichgewichtsbedingungen bestimmbar. <span class="font-semibold text-rose-700">Rot:</span> überzählige Auflagerkräfte, sie machen den Träger statisch unbestimmt.</figcaption>
+                    </figure>
                     <p>Die fehlenden Gleichungen erhält man nur über die <strong>Verformung</strong> des Trägers (die Biegelinie verläuft über dem Zwischenauflager ohne Knick). Das ist aufwendig. In der Praxis nutzt man deshalb <strong>Tabellen mit Beiwerten</strong> für häufige Fälle – oder ein Rechenprogramm wie Teil 3 dieses Moduls.</p>
+                    <figure class="dlt-figur">
+                        <div><canvas id="figVerformung" width="900" height="320" data-responsive="1" role="img" aria-label="Oben: Zweifeldträger ohne Mittelstütze, der Träger biegt sich bei B um w B nach unten durch. Unten: Mit Mittelstütze drückt die Auflagerkraft B den Träger zurück, bis die Durchbiegung bei B null ist."></canvas></div>
+                        <figcaption>Die fehlende Gleichung lautet: Durchbiegung bei B = 0. Die Stütze B drückt genau so stark nach oben, dass der Träger dort nicht absinkt. Verformungen stark überhöht und nicht im gleichen Maßstab.</figcaption>
+                    </figure>
                 </div>
             </details>
 
@@ -94,22 +110,22 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>Zweifeldträger, Gleichlast q auf beiden Feldern</td>
+                                    <td data-skizze="2q">Zweifeldträger, Gleichlast q auf beiden Feldern</td>
                                     <td>Kräfte · q · L<br>Momente · q · L²</td>
                                     <td>0,375</td><td>1,250</td><td>−0,125</td><td>0,070</td><td>0,070</td>
                                 </tr>
                                 <tr>
-                                    <td>Zweifeldträger, Einzellast F in jeder Feldmitte</td>
+                                    <td data-skizze="2F">Zweifeldträger, Einzellast F in jeder Feldmitte</td>
                                     <td>Kräfte · F<br>Momente · F · L</td>
                                     <td>0,313</td><td>1,375</td><td>−0,188</td><td>0,156</td><td>0,156</td>
                                 </tr>
                                 <tr>
-                                    <td>Dreifeldträger, Gleichlast q auf allen Feldern</td>
+                                    <td data-skizze="3q">Dreifeldträger, Gleichlast q auf allen Feldern</td>
                                     <td>Kräfte · q · L<br>Momente · q · L²</td>
                                     <td>0,400</td><td>1,100</td><td>−0,100</td><td>0,080</td><td>0,025</td>
                                 </tr>
                                 <tr>
-                                    <td>Dreifeldträger, Einzellast F in jeder Feldmitte</td>
+                                    <td data-skizze="3F">Dreifeldträger, Einzellast F in jeder Feldmitte</td>
                                     <td>Kräfte · F<br>Momente · F · L</td>
                                     <td>0,350</td><td>1,150</td><td>−0,150</td><td>0,175</td><td>0,100</td>
                                 </tr>
@@ -124,6 +140,10 @@
                 <summary class="font-bold text-slate-800 flex items-center gap-2"><span class="dlt-chevron">▶</span> Schritt 4: Mit den Beiwerten rechnen – ein Beispiel</summary>
                 <div class="mt-3 text-sm text-slate-700 space-y-2">
                     <p><strong>Aufgabe:</strong> Zweifeldträger, Stützweiten L = 5,0 m, Gleichlast q = 10 kN/m auf beiden Feldern.</p>
+                    <figure class="dlt-figur">
+                        <div><canvas id="figBeispiel" width="900" height="240" data-responsive="1" role="img" aria-label="Zweifeldträger mit L gleich 5 m und Gleichlast 10 kN pro m. Auflagerkräfte A gleich C gleich 18,75 kN und B gleich 62,50 kN."></canvas></div>
+                        <figcaption>Das Beispielsystem mit den Auflagerkräften, die du gleich mit den Beiwerten ausrechnest. Das Mittelauflager B trägt mit 1,25 · q · L mehr als die Hälfte der Gesamtlast.</figcaption>
+                    </figure>
                     <p><strong>Regel:</strong> Auflagerkraft = Beiwert · q · L, Moment = Beiwert · q · L². Hier ist q · L = 10 · 5 = 50 kN und q · L² = 10 · 25 = 250 kNm.</p>
                     <div class="bg-white border border-slate-200 rounded-lg p-3 font-mono text-xs sm:text-sm space-y-1">
                         <p>A = C = 0,375 · 50 kN = <strong>18,75 kN</strong></p>
@@ -142,6 +162,10 @@
                         <p>A + B + C = 18,75 + 62,50 + 18,75 = 100 kN</p>
                         <p>Gesamtlast = q · 2 · L = 10 · 2 · 5 = 100 kN ✓</p>
                     </div>
+                    <figure class="dlt-figur">
+                        <div><canvas id="figLastaufteilung" width="900" height="350" data-responsive="1" role="img" aria-label="Die Gleichlast auf dem Zweifeldträger wird an den Querkraft-Nullpunkten bei 0,375 L und 1,625 L geteilt: 18,75 kN gehen nach A, 62,50 kN nach B und 18,75 kN nach C."></canvas></div>
+                        <figcaption>So kannst du dir die Aufteilung vorstellen: Die Stellen mit Q = 0 teilen die Last. Alles links vom ersten Nullpunkt trägt A ab, alles zwischen den Nullpunkten trägt B, der Rest geht nach C. Zusammen ergibt das wieder die Gesamtlast.</figcaption>
+                    </figure>
                     <p>Stimmt die Summe nicht, wurde ein Beiwert falsch abgelesen oder mit dem falschen Faktor multipliziert (q · L statt q · L²).</p>
                 </div>
             </details>
@@ -154,10 +178,14 @@
                         <li>Über dem Zwischenauflager ist das Moment <strong>negativ</strong> (Stützmoment). Der Träger hat dort Zug an der <strong>Oberseite</strong> – im Stahlbetonbau liegt die Bewehrung deshalb über der Stütze oben.</li>
                         <li>Zwischen Feld und Stütze wechselt das Moment das Vorzeichen (Momentennullpunkt).</li>
                     </ul>
-                    <div>
-                        <canvas id="beispielCanvas" width="900" height="560"></canvas>
-                    </div>
-                    <p class="text-xs text-slate-500">Positive Momente werden wie in Modul 3 nach unten (Zugseite) aufgetragen, das negative Stützmoment also nach oben.</p>
+                    <figure class="dlt-figur">
+                        <div><canvas id="beispielCanvas" width="900" height="580" data-responsive="1" role="img" aria-label="Zweifeldträger mit Gleichlast: Querkraftverlauf und Biegemomentenverlauf. Querkraft-Nullpunkte bei 0,375 L vom Endauflager, Momentennullpunkte bei 0,75 L, Stützmoment über B negativ."></canvas></div>
+                        <figcaption>Positive Momente werden wie in Modul 3 nach unten (Zugseite) aufgetragen, das negative Stützmoment also nach oben. Gestrichelt: Querkraft-Nullpunkte (dort liegt max M<sub>F</sub>) und Momentennullpunkte.</figcaption>
+                    </figure>
+                    <figure class="dlt-figur">
+                        <div><canvas id="figZugseite" width="900" height="250" data-responsive="1" role="img" aria-label="Oben die Biegelinie des Zweifeldträgers mit markierter Zugseite: im Feld unten, über der Stütze B oben. Unten ein Stahlbetonbalken mit unterer Bewehrung im Feld und oberer Bewehrung über der Stütze."></canvas></div>
+                        <figcaption>Rot markiert ist die Zugseite. Sie wechselt an den Momentennullpunkten. Im Stahlbetonbau liegt die Bewehrung immer auf der Zugseite, also im Feld unten und über der Stütze oben (vereinfachtes Prinzip ohne Verankerungslängen).</figcaption>
+                    </figure>
                 </div>
             </details>
 
@@ -166,6 +194,10 @@
                 <div class="mt-3 text-sm text-slate-700 space-y-2">
                     <p>Bei ungleichen Stützweiten oder anderen Lasten hilft die Tabelle nicht weiter. Dann rechnet man mit der <strong>Dreimomentengleichung</strong> (nach Clapeyron). Für jedes Zwischenauflager i gilt eine Gleichung, in der die Stützmomente der Nachbarauflager vorkommen:</p>
                     <p class="bg-white border border-slate-200 rounded-lg p-3 font-mono text-xs sm:text-sm text-center">M<sub>i−1</sub> · L<sub>i</sub> + 2 · M<sub>i</sub> · (L<sub>i</sub> + L<sub>i+1</sub>) + M<sub>i+1</sub> · L<sub>i+1</sub> = − (Lastglieder der beiden Felder)</p>
+                    <figure class="dlt-figur">
+                        <div><canvas id="figDreimoment" width="900" height="290" data-responsive="1" role="img" aria-label="Zwei benachbarte Felder mit den Auflagern i minus 1, i und i plus 1 werden gedanklich an den Stützen aufgetrennt. Es entstehen Einfeldträger, an deren Enden die Stützmomente M i minus 1, M i und M i plus 1 wirken."></canvas></div>
+                        <figcaption>Idee der Dreimomentengleichung: Man schneidet den Durchlaufträger an den Stützen auf und erhält lauter Einfeldträger. Die unbekannten Stützmomente werden so gewählt, dass sich beide Trägerenden an jeder Stütze gleich stark verdrehen, also kein Knick entsteht.</figcaption>
+                    </figure>
                     <p>Das Lastglied ist bei Gleichlast q · L³ / 4. Aus den Stützmomenten folgen dann alle Auflagerkräfte und Verläufe. Genau so rechnet Teil 3 dieses Moduls – probiere dort aus, dass bei gleichen Stützweiten die Tabellenwerte herauskommen.</p>
                 </div>
             </details>
@@ -186,7 +218,7 @@
                 <p id="uebungText" class="text-sm text-slate-700 mt-2 mb-4"></p>
 
                 <div class="mb-4">
-                    <canvas id="uebungCanvas" width="900" height="560"></canvas>
+                    <canvas id="uebungCanvas" width="900" height="580" data-responsive="1" role="img" aria-label="System der Übungsaufgabe mit Lasten. Nach dem Prüfen erscheinen Querkraft- und Momentenverlauf."></canvas>
                 </div>
 
                 <details class="mb-4 text-sm">
@@ -261,7 +293,7 @@
 
                 <div class="lg:col-span-8 space-y-6">
                     <div>
-                        <canvas id="rechnerCanvas" width="900" height="560"></canvas>
+                        <canvas id="rechnerCanvas" width="900" height="580" data-responsive="1" role="img" aria-label="Eigenes System mit Lasten, Auflagerkräften, Querkraft- und Momentenverlauf. Die Werte stehen auch in den Ergebnissen."></canvas>
                     </div>
                     <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200 shadow-sm">
                         <h3 class="text-lg font-bold text-slate-800 mb-3 flex items-center gap-2">
@@ -276,111 +308,225 @@
         </section>
     </div>
 
-    <script src="labor.js?v=2026-10-01"></script>
-    <script src="version.js?v=2.0"></script>
-    <script src="statik-core.js?v=2026-11-04"></script>
+    <script src="labor.js?v=2026-11-04c"></script>
+    <script src="version.js?v=2.2"></script>
+    <script src="statik-core.js?v=2026-11-04b"></script>
     <script>
         const AUFLAGER = ['A', 'B', 'C', 'D', 'E'];
+        const FARBE = {
+            traeger: '#334155', text: '#334155', grau: '#94a3b8',
+            last: '#e11d48', lastText: '#9f1239', F: '#7c3aed',
+            Q: '#0284c7', M: '#ea580c', MText: '#7c2d12',
+            biege: '#0f766e', bestimmt: '#059669', ueberzaehlig: '#e11d48'
+        };
+
+        // ================= Zeichen-Bausteine =================
+        // Text mit Tiefstellung (q_{1}), bei align 'center' innerhalb der Zeichnung gehalten
+        // hinterlegt = true: weißes Feld hinter dem Text, damit er auf Linien lesbar bleibt
+        function text(ctx, t, x, y, { farbe = FARBE.text, font = '12px sans-serif', align = 'center', W = 0, hinterlegt = false } = {}) {
+            ctx.save();
+            ctx.font = font;
+            const b = ctx.measureText(t.replace(/_\{([^}]*)\}/g, '$1')).width;
+            if (W && align === 'center') x = Math.min(Math.max(x, b / 2 + 4), W - b / 2 - 4);
+            if (hinterlegt) {
+                const links = align === 'center' ? x - b / 2 : (align === 'right' ? x - b : x);
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+                ctx.fillRect(links - 3, y - 12, b + 6, 17);
+            }
+            ctx.fillStyle = farbe;
+            ctx.textAlign = align;
+            fillTextSub(ctx, t, x, y);
+            ctx.restore();
+        }
+
+        function pfeil(ctx, x0, y0, x1, y1, farbe, breite = 2.5, spitze = 10) {
+            const a = Math.atan2(y1 - y0, x1 - x0), c = Math.cos(a), s = Math.sin(a);
+            ctx.save();
+            ctx.strokeStyle = farbe;
+            ctx.fillStyle = farbe;
+            ctx.lineWidth = breite;
+            ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1 - c * spitze * 0.8, y1 - s * spitze * 0.8); ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x1 - spitze * c + spitze * 0.5 * s, y1 - spitze * s - spitze * 0.5 * c);
+            ctx.lineTo(x1 - spitze * c - spitze * 0.5 * s, y1 - spitze * s + spitze * 0.5 * c);
+            ctx.closePath(); ctx.fill();
+            ctx.restore();
+        }
+
+        function streckenlast(ctx, x0, x1, yUnten, h, label, farbe = FARBE.last, W = 0) {
+            ctx.save();
+            ctx.fillStyle = farbe + '22';
+            ctx.strokeStyle = farbe;
+            ctx.lineWidth = 2;
+            ctx.fillRect(x0, yUnten - h, x1 - x0, h);
+            ctx.beginPath(); ctx.moveTo(x0, yUnten - h); ctx.lineTo(x1, yUnten - h); ctx.stroke();
+            const schritte = Math.max(2, Math.round((x1 - x0) / 26));
+            ctx.fillStyle = farbe;
+            ctx.lineWidth = 1.5;
+            for (let i = 0; i <= schritte; i++) {
+                const x = x0 + (i / schritte) * (x1 - x0);
+                ctx.beginPath(); ctx.moveTo(x, yUnten - h); ctx.lineTo(x, yUnten - 3); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(x, yUnten); ctx.lineTo(x - 3.5, yUnten - 7); ctx.lineTo(x + 3.5, yUnten - 7); ctx.fill();
+            }
+            ctx.restore();
+            if (label) text(ctx, label, (x0 + x1) / 2, yUnten - h - 6, { farbe: farbe === FARBE.last ? FARBE.lastText : farbe, font: 'bold 12px sans-serif', W });
+        }
+
+        function traeger(ctx, x0, x1, y, breite = 7) {
+            ctx.save();
+            ctx.strokeStyle = FARBE.traeger;
+            ctx.lineWidth = breite;
+            ctx.lineCap = 'round';
+            ctx.beginPath(); ctx.moveTo(x0, y); ctx.lineTo(x1, y); ctx.stroke();
+            ctx.restore();
+        }
+
+        function titel(ctx, t, y, unter) {
+            text(ctx, t, 12, y, { farbe: '#1e293b', font: 'bold 13px sans-serif', align: 'left' });
+            if (unter) text(ctx, unter, 12, y + 16, { farbe: '#475569', font: '12px sans-serif', align: 'left' });
+        }
+
+        function zeichneBiegelinie(ctx, bl, px, y, skala, { farbe = FARBE.traeger, breite = 6, zugseite = false } = {}) {
+            ctx.save();
+            ctx.strokeStyle = '#cbd5e1';
+            ctx.lineWidth = 1.5;
+            ctx.setLineDash([6, 5]);
+            ctx.beginPath(); ctx.moveTo(px(0), y); ctx.lineTo(px(bl.xs[bl.xs.length - 1]), y); ctx.stroke();
+            ctx.setLineDash([]);
+            ctx.strokeStyle = farbe;
+            ctx.lineWidth = breite;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.beginPath();
+            bl.xs.forEach((x, i) => (i ? ctx.lineTo : ctx.moveTo).call(ctx, px(x), y + bl.ws[i] * skala));
+            ctx.stroke();
+            if (zugseite) {
+                // Zugseite: bei positivem Moment unten, bei negativem oben
+                ctx.strokeStyle = FARBE.last;
+                ctx.lineWidth = 3;
+                ctx.lineCap = 'butt';
+                for (let i = 1; i < bl.xs.length; i++) {
+                    const Mm = (bl.M[i - 1] + bl.M[i]) / 2;
+                    if (Math.abs(Mm) < 1e-9) continue;
+                    const off = Mm > 0 ? breite / 2 + 3 : -(breite / 2 + 3);
+                    ctx.beginPath();
+                    ctx.moveTo(px(bl.xs[i - 1]), y + bl.ws[i - 1] * skala + off);
+                    ctx.lineTo(px(bl.xs[i]), y + bl.ws[i] * skala + off);
+                    ctx.stroke();
+                }
+            }
+            ctx.restore();
+        }
+
+        // Momentenfläche (positiv nach unten) eines Trägers, der bei x0 [m] beginnt
+        function momentFlaeche(ctx, dlt, x0, px, yBasis, skala) {
+            const xs = diagrammStellen(dlt, 0, dlt.L, dlt.L / 200);
+            ctx.save();
+            ctx.strokeStyle = '#94a3b8';
+            ctx.lineWidth = 1.2;
+            ctx.beginPath(); ctx.moveTo(px(x0), yBasis); ctx.lineTo(px(x0 + dlt.L), yBasis); ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(px(x0), yBasis);
+            xs.forEach(x => ctx.lineTo(px(x0 + x), yBasis + dlt.schnitt(Math.max(x, 1e-7)).M * skala));
+            ctx.lineTo(px(x0 + dlt.L), yBasis);
+            ctx.closePath();
+            ctx.fillStyle = FARBE.M + '1a';
+            ctx.fill();
+            ctx.strokeStyle = FARBE.M;
+            ctx.lineWidth = 2.2;
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        function auflagerBeschriftung(ctx, x, y, name) {
+            text(ctx, name, x - 19, y + 22, { farbe: '#1e293b', font: 'bold 13px sans-serif', align: 'right' });
+        }
+
+        // Kleine Lastfall-Skizze für die Beiwert-Tabelle
+        function lastfallSkizze(felder, last) {
+            const w = 120, y = 30, fw = (w - 12) / felder;
+            let s = `<svg class="dlt-icon" viewBox="0 0 ${w} 42" width="${w}" height="42" aria-hidden="true">`;
+            if (last === 'q') {
+                s += `<rect x="6" y="8" width="${w - 12}" height="16" fill="#e11d4822" stroke="none"/>`;
+                s += `<line x1="6" y1="8" x2="${w - 6}" y2="8" stroke="#e11d48" stroke-width="1.5"/>`;
+                for (let x = 6; x <= w - 6 + 0.1; x += (w - 12) / (felder * 4)) {
+                    s += `<line x1="${x}" y1="8" x2="${x}" y2="22" stroke="#e11d48" stroke-width="1"/><path d="M ${x} 26 l -2.5 -5 h 5 z" fill="#e11d48"/>`;
+                }
+            } else {
+                for (let j = 0; j < felder; j++) {
+                    const x = 6 + (j + 0.5) * fw;
+                    s += `<line x1="${x}" y1="2" x2="${x}" y2="20" stroke="#7c3aed" stroke-width="2"/><path d="M ${x} 27 l -4 -7 h 8 z" fill="#7c3aed"/>`;
+                }
+            }
+            s += `<line x1="6" y1="${y}" x2="${w - 6}" y2="${y}" stroke="#334155" stroke-width="3.5" stroke-linecap="round"/>`;
+            for (let i = 0; i <= felder; i++) {
+                const x = 6 + i * fw;
+                s += `<path d="M ${x} ${y + 2} l -5 9 h 10 z" fill="#64748b"/>`;
+            }
+            return s + '</svg>';
+        }
 
         // ================= Zeichnen: System, Querkraft und Moment =================
         // opts.verdeckt = true: nur System und Lasten zeichnen, Ergebnisse als „?“ (Übung vor dem Prüfen)
-        function zeichneDurchlauftraeger(canvas, dlt, opts = {}) {
-            const ctx = canvas.getContext('2d');
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            const padding = 80;
+        // opts.nullpunkte = true: Querkraft- und Momentennullpunkte gestrichelt markieren
+        function zeichneDurchlauftraeger(ctx, W, H, dlt, opts = {}) {
+            const padding = W < 600 ? 40 : 80;
             const beamY = 135;
-            const px = x => padding + (x / dlt.L) * (canvas.width - 2 * padding);
+            const px = x => padding + (x / dlt.L) * (W - 2 * padding);
+            const schmal = dlt.X.some((x, i) => i > 0 && px(x) - px(dlt.X[i - 1]) < 100);
 
             // Lasten
             dlt.loads.forEach((l, j) => {
                 const x0 = px(dlt.X[j]), x1 = px(dlt.X[j + 1]);
                 let top = beamY - 6;
                 if (l.q > 0) {
-                    const h = 32;
-                    ctx.fillStyle = '#e11d4822';
-                    ctx.strokeStyle = '#e11d48';
-                    ctx.lineWidth = 2;
-                    ctx.fillRect(x0, top - h, x1 - x0, h);
-                    ctx.beginPath(); ctx.moveTo(x0, top - h); ctx.lineTo(x1, top - h); ctx.stroke();
-                    const steps = Math.max(3, Math.round((x1 - x0) / 28));
-                    for (let i = 0; i <= steps; i++) {
-                        const x = x0 + (i / steps) * (x1 - x0);
-                        ctx.beginPath(); ctx.moveTo(x, top - h); ctx.lineTo(x, top); ctx.stroke();
-                        ctx.beginPath(); ctx.moveTo(x, top); ctx.lineTo(x - 4, top - 7); ctx.lineTo(x + 4, top - 7); ctx.fill();
-                    }
-                    ctx.fillStyle = '#9f1239';
-                    ctx.font = 'bold 12px sans-serif';
-                    ctx.textAlign = 'center';
-                    fillTextSub(ctx, `q_{${j + 1}} = ${fmt(l.q)} kN/m`, (x0 + x1) / 2, top - h - 7);
-                    top -= h + 22;
+                    streckenlast(ctx, x0, x1, top, 32, `q_{${j + 1}} = ${fmt(l.q)} kN/m`, FARBE.last, W);
+                    top -= 32 + 22;
                 }
                 if (l.F > 0) {
                     const xf = px(dlt.X[j] + l.a);
-                    const len = 46;
-                    ctx.strokeStyle = '#7c3aed';
-                    ctx.fillStyle = '#7c3aed';
-                    ctx.lineWidth = 3;
-                    ctx.beginPath(); ctx.moveTo(xf, top - len); ctx.lineTo(xf, top - 2); ctx.stroke();
-                    ctx.beginPath(); ctx.moveTo(xf, top); ctx.lineTo(xf - 7, top - 12); ctx.lineTo(xf + 7, top - 12); ctx.fill();
-                    ctx.font = 'bold 12px sans-serif';
-                    ctx.textAlign = 'center';
-                    fillTextSub(ctx, `F_{${j + 1}} = ${fmt(l.F)} kN`, xf, top - len - 6);
+                    pfeil(ctx, xf, top - 46, xf, top, FARBE.F, 3, 12);
+                    text(ctx, `F_{${j + 1}} = ${fmt(l.F)} kN`, xf, top - 52, { farbe: FARBE.F, font: 'bold 12px sans-serif', W });
                 }
             });
 
             // Träger und Auflager
-            ctx.strokeStyle = '#334155';
-            ctx.lineWidth = 8;
-            ctx.lineCap = 'round';
-            ctx.beginPath(); ctx.moveTo(px(0), beamY); ctx.lineTo(px(dlt.L), beamY); ctx.stroke();
-            ctx.lineCap = 'butt';
+            traeger(ctx, px(0), px(dlt.L), beamY, 8);
             dlt.X.forEach((x, i) => {
                 drawSupport(ctx, px(x), beamY + 4, i === 0 ? 'fest' : 'los');
-                ctx.fillStyle = '#1e293b';
-                ctx.font = 'bold 13px sans-serif';
-                ctx.textAlign = 'right';
-                ctx.fillText(AUFLAGER[i], px(x) - 20, beamY + 22);
-                ctx.textAlign = 'center';
-                ctx.font = '11px sans-serif';
-                ctx.fillStyle = '#334155';
-                ctx.fillText(opts.verdeckt ? `${AUFLAGER[i]} = ?` : `${AUFLAGER[i]} = ${fmt(dlt.auflager[i], 2)} kN`, px(x), beamY + 56);
+                auflagerBeschriftung(ctx, px(x), beamY, AUFLAGER[i]);
+                const versatz = schmal && i % 2 === 1 ? 14 : 0;   // eng beieinander: Beschriftung versetzt
+                text(ctx, opts.verdeckt ? `${AUFLAGER[i]} = ?` : `${AUFLAGER[i]} = ${fmt(dlt.auflager[i], 2)} kN`,
+                    px(x), beamY + 56 + versatz, { font: '11px sans-serif', W });
             });
 
             // Bemaßung der Stützweiten
-            const dimY = beamY + 78;
+            const dimY = beamY + (schmal ? 96 : 78);
+            ctx.save();
             ctx.strokeStyle = '#475569';
             ctx.lineWidth = 1.2;
             ctx.beginPath(); ctx.moveTo(px(0), dimY); ctx.lineTo(px(dlt.L), dimY); ctx.stroke();
-            dlt.X.forEach(x => {
-                ctx.beginPath(); ctx.moveTo(px(x) - 5, dimY + 5); ctx.lineTo(px(x) + 5, dimY - 5); ctx.stroke();
-            });
+            dlt.X.forEach(x => { ctx.beginPath(); ctx.moveTo(px(x) - 5, dimY + 5); ctx.lineTo(px(x) + 5, dimY - 5); ctx.stroke(); });
+            ctx.restore();
             dlt.spans.forEach((L, j) => {
-                ctx.fillStyle = '#334155';
-                ctx.font = '11px sans-serif';
-                ctx.textAlign = 'center';
-                fillTextSub(ctx, `L_{${j + 1}} = ${fmt(L, 2)} m`, (px(dlt.X[j]) + px(dlt.X[j + 1])) / 2, dimY - 6);
+                text(ctx, `L_{${j + 1}} = ${fmt(L, 2)} m`, (px(dlt.X[j]) + px(dlt.X[j + 1])) / 2, dimY - 6, { font: '11px sans-serif' });
             });
 
-            const qY = 320, mY = 470, amp = 60;
-            ctx.textAlign = 'left';
-            ctx.font = 'bold 13px sans-serif';
-            ctx.fillStyle = '#0284c7';
-            ctx.fillText('Querkraftverlauf Q(x) [kN]', 20, qY - amp - 14);
-            ctx.fillStyle = '#ea580c';
-            ctx.fillText('Biegemomentenverlauf M(x) [kNm]', 20, mY - amp - 14);
-
+            const qY = 330, mY = 495, amp = 58;
+            text(ctx, 'Querkraftverlauf Q(x) [kN]', 20, qY - amp - 14, { farbe: FARBE.Q, font: 'bold 13px sans-serif', align: 'left' });
+            text(ctx, 'Biegemomentenverlauf M(x) [kNm]', 20, mY - amp - 30, { farbe: FARBE.M, font: 'bold 13px sans-serif', align: 'left' });
             [qY, mY].forEach(y => {
-                ctx.strokeStyle = '#94a3b8';
+                ctx.save();
+                ctx.strokeStyle = FARBE.grau;
                 ctx.lineWidth = 1.5;
                 ctx.beginPath(); ctx.moveTo(px(0), y); ctx.lineTo(px(dlt.L), y); ctx.stroke();
+                ctx.restore();
             });
 
             if (opts.verdeckt) {
-                ctx.fillStyle = '#94a3b8';
-                ctx.font = 'italic 13px sans-serif';
-                ctx.textAlign = 'center';
-                ctx.fillText('Die Verläufe erscheinen nach dem Prüfen.', canvas.width / 2, qY + 24);
-                ctx.fillText('Die Verläufe erscheinen nach dem Prüfen.', canvas.width / 2, mY + 24);
+                text(ctx, 'Die Verläufe erscheinen nach dem Prüfen.', W / 2, qY + 24, { farbe: FARBE.grau, font: 'italic 13px sans-serif' });
+                text(ctx, 'Die Verläufe erscheinen nach dem Prüfen.', W / 2, mY + 24, { farbe: FARBE.grau, font: 'italic 13px sans-serif' });
                 return;
             }
 
@@ -392,6 +538,7 @@
             const my = M => mY + (M / maxM) * amp;          // M positiv nach unten (Zugseite)
 
             function kurve(yFn, wert, farbe) {
+                ctx.save();
                 ctx.beginPath();
                 ctx.moveTo(px(0), yFn(0));
                 xs.forEach((x, i) => ctx.lineTo(px(x), yFn(wert(werte[i]))));
@@ -402,31 +549,338 @@
                 ctx.strokeStyle = farbe;
                 ctx.lineWidth = 2.5;
                 ctx.stroke();
+                ctx.restore();
             }
-            kurve(qy, w => w.Q, '#0284c7');
-            kurve(my, w => w.M, '#ea580c');
+            kurve(qy, w => w.Q, FARBE.Q);
+            kurve(my, w => w.M, FARBE.M);
+
+            const fm = feldmomente(dlt);
+            if (opts.nullpunkte) {
+                ctx.save();
+                ctx.setLineDash([4, 4]);
+                ctx.lineWidth = 1.2;
+                fm.forEach(f => {
+                    if (f.M <= 1e-6) return;
+                    ctx.strokeStyle = FARBE.Q;
+                    ctx.beginPath(); ctx.moveTo(px(f.x), qY - amp - 4); ctx.lineTo(px(f.x), mY + amp); ctx.stroke();
+                });
+                momentenNullpunkte(dlt).forEach(x => {
+                    ctx.strokeStyle = FARBE.M;
+                    ctx.beginPath(); ctx.moveTo(px(x), mY - 14); ctx.lineTo(px(x), mY + 14); ctx.stroke();
+                });
+                ctx.restore();
+                fm.forEach(f => {
+                    if (f.M > 1e-6) text(ctx, 'Q = 0', px(f.x) + 5, qY - 7, { farbe: FARBE.Q, font: 'bold 11px sans-serif', align: 'left', hinterlegt: true });
+                });
+                momentenNullpunkte(dlt).forEach(x => {
+                    text(ctx, 'M = 0', px(x), mY + 28, { farbe: FARBE.MText, font: 'bold 11px sans-serif', W, hinterlegt: true });
+                });
+            }
 
             // Stützmomente an den Zwischenauflagern
-            ctx.font = 'bold 11px sans-serif';
-            ctx.textAlign = 'center';
             for (let i = 1; i < dlt.X.length - 1; i++) {
                 const M = dlt.stuetzmomente[i];
                 const x = px(dlt.X[i]), y = my(M);
-                ctx.fillStyle = '#ea580c';
-                ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI * 2); ctx.fill();
-                ctx.fillStyle = '#7c2d12';
-                fillTextSub(ctx, `M_{${AUFLAGER[i]}} = ${fmt(M, 2)} kNm`, x, M < 0 ? y - 9 : y + 16);
+                ctx.save(); ctx.fillStyle = FARBE.M; ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+                text(ctx, `M_{${AUFLAGER[i]}} = ${fmt(M, 2)} kNm`, x, M < 0 ? y - 9 : y + 16, { farbe: FARBE.MText, font: 'bold 11px sans-serif', W, hinterlegt: true });
             }
             // Größte Feldmomente
-            feldmomente(dlt).forEach((f, j) => {
+            fm.forEach((f, j) => {
                 if (f.M <= 1e-6) return;
                 const x = px(f.x), y = my(f.M);
-                ctx.fillStyle = '#ea580c';
-                ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI * 2); ctx.fill();
-                ctx.fillStyle = '#7c2d12';
-                fillTextSub(ctx, `max M_{F${j + 1}} = ${fmt(f.M, 2)}`, x, y + 16);
+                ctx.save(); ctx.fillStyle = FARBE.M; ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+                text(ctx, `max M_{F${j + 1}} = ${fmt(f.M, 2)}`, x, y + 16, { farbe: FARBE.MText, font: 'bold 11px sans-serif', W, hinterlegt: true });
             });
         }
+
+        // Zeichenfläche mit Durchlaufträger, die mit der Bildschirmbreite mitwächst
+        function dltZeichnung(id) {
+            let aktuell = null;
+            const z = responsiveCanvas(document.getElementById(id), 580, (ctx, W, H) => {
+                if (aktuell) zeichneDurchlauftraeger(ctx, W, H, aktuell.dlt, aktuell.opts);
+            });
+            return (dlt, opts = {}) => { aktuell = { dlt, opts }; z.neu(); };
+        }
+
+        // ================= Grafiken im Selbstlernpfad (Teil 1) =================
+        const BSP = { L: 5, q: 10 };
+        const bspEinfeld = berechneDurchlauftraeger({ spans: [BSP.L], loads: [{ q: BSP.q }] });
+        const bspZweifeld = berechneDurchlauftraeger({ spans: [BSP.L, BSP.L], loads: [{ q: BSP.q }, { q: BSP.q }] });
+        const blEinfeld = biegelinie(bspEinfeld);
+        const blZweifeld = biegelinie(bspZweifeld);
+        const blOhneB = biegelinie(berechneDurchlauftraeger({ spans: [2 * BSP.L], loads: [{ q: BSP.q }] }));
+
+        // Schritt 1: zwei Einfeldträger und ein Zweifeldträger im gleichen Maßstab
+        function figVergleich(ctx, W) {
+            const L = BSP.L, pad = W < 600 ? 34 : 70;
+            const px = x => pad + x / (2 * L) * (W - 2 * pad);
+            const wSkala = 26 / blEinfeld.max;
+            const mSkala = 32 / (0.125 * BSP.q * L * L);
+            [0, 1].forEach(zeile => {
+                const y0 = zeile * 236;
+                const beam = y0 + 78;
+                if (zeile === 0) titel(ctx, '① Zwei einzelne Einfeldträger', y0 + 16, 'Biegelinie mit Knick über B');
+                else titel(ctx, '② Ein Zweifeldträger', y0 + 16, 'Biegelinie ohne Knick, weniger Durchbiegung');
+                const spalt = zeile === 0 ? 16 : 0;
+                streckenlast(ctx, px(0), px(L) - spalt, beam - 14, 14, '', FARBE.last);
+                streckenlast(ctx, px(L) + spalt, px(2 * L), beam - 14, 14, '', FARBE.last);
+                text(ctx, 'q', px(L / 2), beam - 34, { farbe: FARBE.lastText, font: 'bold 12px sans-serif' });
+                text(ctx, 'q', px(1.5 * L), beam - 34, { farbe: FARBE.lastText, font: 'bold 12px sans-serif' });
+                if (zeile === 0) {
+                    const pxL = x => px(0) + x / L * (px(L) - spalt - px(0));
+                    const pxR = x => px(L) + spalt + x / L * (px(2 * L) - px(L) - spalt);
+                    zeichneBiegelinie(ctx, blEinfeld, pxL, beam, wSkala);
+                    zeichneBiegelinie(ctx, blEinfeld, pxR, beam, wSkala);
+                    drawSupport(ctx, pxL(0), beam + 4, 'fest');
+                    drawSupport(ctx, pxL(L), beam + 4, 'los');
+                    drawSupport(ctx, pxR(0), beam + 4, 'fest');
+                    drawSupport(ctx, pxR(L), beam + 4, 'los');
+                    momentFlaeche(ctx, bspEinfeld, 0, pxL, beam + 100, mSkala);
+                    momentFlaeche(ctx, bspEinfeld, 0, pxR, beam + 100, mSkala);
+                    text(ctx, 'max M = 0,125 · q · L²', px(L / 2), beam + 148, { farbe: FARBE.MText, font: 'bold 11px sans-serif', W });
+                    text(ctx, 'max M = 0,125 · q · L²', px(1.5 * L), beam + 148, { farbe: FARBE.MText, font: 'bold 11px sans-serif', W });
+                    // Knick markieren
+                    ctx.save();
+                    ctx.strokeStyle = FARBE.last;
+                    ctx.lineWidth = 2;
+                    ctx.beginPath(); ctx.arc(px(L), beam + 2, 13, 0, Math.PI * 2); ctx.stroke();
+                    ctx.restore();
+                    text(ctx, 'Knick', px(L), beam + 66, { farbe: FARBE.last, font: 'bold 12px sans-serif' });
+                } else {
+                    zeichneBiegelinie(ctx, blZweifeld, px, beam, wSkala);
+                    [0, L, 2 * L].forEach((x, i) => drawSupport(ctx, px(x), beam + 4, i === 0 ? 'fest' : 'los'));
+                    momentFlaeche(ctx, bspZweifeld, 0, px, beam + 100, mSkala);
+                    const f = feldmomente(bspZweifeld);
+                    text(ctx, '0,070 · q · L²', px(f[0].x), beam + 148, { farbe: FARBE.MText, font: 'bold 11px sans-serif', W });
+                    text(ctx, '0,070 · q · L²', px(f[1].x), beam + 148, { farbe: FARBE.MText, font: 'bold 11px sans-serif', W });
+                    text(ctx, 'M_{B} = −0,125 · q · L²', px(L), beam + 100 - 32 - 7, { farbe: FARBE.MText, font: 'bold 11px sans-serif', W });
+                }
+                text(ctx, 'M', pad - 14, beam + 104, { farbe: FARBE.M, font: 'bold 12px sans-serif' });
+            });
+        }
+
+        // Schritt 2: Unbekannte Auflagerkräfte zählen
+        function figUnbestimmt(ctx, W) {
+            const pad = W < 600 ? 58 : 90;
+            const zeilen = [
+                { felder: 1, t: 'Einfeldträger: 3 Unbekannte', u: '3 Gleichungen → statisch bestimmt' },
+                { felder: 2, t: 'Zweifeldträger: 4 Unbekannte', u: '3 Gleichungen → 1-fach statisch unbestimmt' },
+                { felder: 3, t: 'Dreifeldträger: 5 Unbekannte', u: '3 Gleichungen → 2-fach statisch unbestimmt' }
+            ];
+            zeilen.forEach((z, k) => {
+                const y0 = k * 160;
+                const beam = y0 + 64;
+                titel(ctx, z.t, y0 + 16, z.u);
+                const px = i => pad + i / z.felder * (W - 2 * pad);
+                traeger(ctx, px(0), px(z.felder), beam);
+                for (let i = 0; i <= z.felder; i++) {
+                    const x = px(i);
+                    drawSupport(ctx, x, beam + 4, i === 0 ? 'fest' : 'los');
+                    // Überzählig sind die Zwischenauflager (Wahl wie üblich: A und letztes Auflager bleiben bestimmt)
+                    const farbe = i > 0 && i < z.felder ? FARBE.ueberzaehlig : FARBE.bestimmt;
+                    pfeil(ctx, x, beam + 82, x, beam + 50, farbe, 3, 11);
+                    text(ctx, `${AUFLAGER[i]}_{v}`, x + 8, beam + 76, { farbe, font: 'bold 12px sans-serif', align: 'left' });
+                }
+                pfeil(ctx, px(0) - 46, beam + 24, px(0) - 18, beam + 24, FARBE.bestimmt, 3, 11);
+                text(ctx, 'A_{h}', px(0) - 34, beam + 14, { farbe: FARBE.bestimmt, font: 'bold 12px sans-serif' });
+            });
+        }
+
+        // Schritt 2: Woher kommt die fehlende Gleichung? Durchbiegung bei B muss null sein
+        function figVerformung(ctx, W) {
+            const L = BSP.L, pad = W < 600 ? 34 : 70;
+            const px = x => pad + x / (2 * L) * (W - 2 * pad);
+            // Zeile 1: ohne Stütze B
+            let beam = 82;
+            titel(ctx, '① Stütze B gedanklich entfernt', 16, 'Der Träger biegt sich bei B um w_{B} durch.');
+            streckenlast(ctx, px(0), px(2 * L), beam - 14, 14, '', FARBE.last);
+            const skala1 = 34 / blOhneB.max;
+            zeichneBiegelinie(ctx, blOhneB, px, beam, skala1);
+            drawSupport(ctx, px(0), beam + 4, 'fest');
+            drawSupport(ctx, px(2 * L), beam + 4, 'los');
+            ctx.save(); ctx.globalAlpha = 0.25; drawSupport(ctx, px(L), beam + 4, 'los'); ctx.restore();
+            const wB = blOhneB.ws[Math.round(blOhneB.ws.length / 2)] * skala1;
+            pfeil(ctx, px(L) + 26, beam, px(L) + 26, beam + wB, FARBE.last, 2, 8);
+            text(ctx, 'w_{B}', px(L) + 32, beam + wB / 2 + 5, { farbe: FARBE.last, font: 'bold 12px sans-serif', align: 'left' });
+
+            // Zeile 2: mit Stütze B
+            beam = 222;
+            titel(ctx, '② Mit Stütze B', 156, 'B drückt den Träger zurück, bis w_{B} = 0 ist.');
+            streckenlast(ctx, px(0), px(2 * L), beam - 14, 14, '', FARBE.last);
+            zeichneBiegelinie(ctx, blZweifeld, px, beam, 16 / blZweifeld.max);
+            [0, L, 2 * L].forEach((x, i) => drawSupport(ctx, px(x), beam + 4, i === 0 ? 'fest' : 'los'));
+            pfeil(ctx, px(L), beam + 92, px(L), beam + 50, FARBE.ueberzaehlig, 3.5, 12);
+            text(ctx, 'B', px(L) + 10, beam + 86, { farbe: FARBE.ueberzaehlig, font: 'bold 13px sans-serif', align: 'left' });
+            text(ctx, 'w_{B} = 0', px(L) + 24, beam + 22, { farbe: FARBE.biege, font: 'bold 12px sans-serif', align: 'left' });
+        }
+
+        // Schritt 4: Beispielsystem mit Auflagerkräften
+        function figBeispiel(ctx, W) {
+            const L = BSP.L, pad = W < 600 ? 44 : 80;
+            const px = x => pad + x / (2 * L) * (W - 2 * pad);
+            const beam = 78;
+            streckenlast(ctx, px(0), px(2 * L), beam - 6, 24, `q = ${fmt(BSP.q)} kN/m`, FARBE.last, W);
+            traeger(ctx, px(0), px(2 * L), beam);
+            const beiwerte = ['0,375 · q · L', '1,25 · q · L', '0,375 · q · L'];
+            [0, L, 2 * L].forEach((x, i) => {
+                drawSupport(ctx, px(x), beam + 4, i === 0 ? 'fest' : 'los');
+                auflagerBeschriftung(ctx, px(x), beam, AUFLAGER[i]);
+                pfeil(ctx, px(x), beam + 92, px(x), beam + 50, FARBE.bestimmt, 3, 11);
+                text(ctx, `${AUFLAGER[i]} = ${fmt(bspZweifeld.auflager[i], 2)} kN`, px(x), beam + 110, { farbe: FARBE.bestimmt, font: 'bold 12px sans-serif', W });
+                text(ctx, beiwerte[i], px(x), beam + 125, { farbe: '#475569', font: '11px sans-serif', W });
+            });
+            const dimY = beam + 146;
+            ctx.save();
+            ctx.strokeStyle = '#475569';
+            ctx.lineWidth = 1.2;
+            ctx.beginPath(); ctx.moveTo(px(0), dimY); ctx.lineTo(px(2 * L), dimY); ctx.stroke();
+            [0, L, 2 * L].forEach(x => { ctx.beginPath(); ctx.moveTo(px(x) - 5, dimY + 5); ctx.lineTo(px(x) + 5, dimY - 5); ctx.stroke(); });
+            ctx.restore();
+            text(ctx, `L = ${fmt(L, 2)} m`, px(L / 2), dimY - 6, { font: '11px sans-serif' });
+            text(ctx, `L = ${fmt(L, 2)} m`, px(1.5 * L), dimY - 6, { font: '11px sans-serif' });
+        }
+
+        // Schritt 5: Lastaufteilung an den Querkraft-Nullpunkten
+        function figLastaufteilung(ctx, W) {
+            const L = BSP.L, q = BSP.q, pad = W < 600 ? 44 : 80;
+            const px = x => pad + x / (2 * L) * (W - 2 * pad);
+            const fm = feldmomente(bspZweifeld);
+            const grenzen = [0, fm[0].x, fm[1].x, 2 * L];
+            const farben = ['#0d9488', '#7c3aed', '#0d9488'];
+            const beam = 100;
+            grenzen.slice(0, 3).forEach((x0, k) => {
+                const x1 = grenzen[k + 1];
+                streckenlast(ctx, px(x0) + (k ? 1 : 0), px(x1) - (k < 2 ? 1 : 0), beam - 6, 24, '', farben[k]);
+                text(ctx, `${fmt(q * (x1 - x0), 2)} kN`, (px(x0) + px(x1)) / 2, beam - 38, { farbe: farben[k], font: 'bold 12px sans-serif', W });
+            });
+            traeger(ctx, px(0), px(2 * L), beam);
+            [0, L, 2 * L].forEach((x, i) => {
+                drawSupport(ctx, px(x), beam + 4, i === 0 ? 'fest' : 'los');
+                pfeil(ctx, px(x), beam + 92, px(x), beam + 50, farben[i], 3, 11);
+                text(ctx, `${AUFLAGER[i]} = ${fmt(bspZweifeld.auflager[i], 2)} kN`, px(x), beam + 110, { farbe: farben[i], font: 'bold 12px sans-serif', W });
+            });
+
+            // Querkraftverlauf darunter
+            const qY = 266, amp = 34;
+            const maxQ = Math.max(...[0, 1, 2].map(i => Math.abs(bspZweifeld.schnitt(i * L + 1e-6).Q)), 1e-6);
+            text(ctx, 'Q', pad - 16, qY + 4, { farbe: FARBE.Q, font: 'bold 12px sans-serif' });
+            ctx.save();
+            ctx.strokeStyle = FARBE.grau; ctx.lineWidth = 1.2;
+            ctx.beginPath(); ctx.moveTo(px(0), qY); ctx.lineTo(px(2 * L), qY); ctx.stroke();
+            const xs = diagrammStellen(bspZweifeld, 0, 2 * L, L / 100);
+            ctx.beginPath(); ctx.moveTo(px(0), qY);
+            xs.forEach(x => ctx.lineTo(px(x), qY - bspZweifeld.schnitt(x).Q / maxQ * amp));
+            ctx.lineTo(px(2 * L), qY); ctx.closePath();
+            ctx.fillStyle = FARBE.Q + '1a'; ctx.fill();
+            ctx.strokeStyle = FARBE.Q; ctx.lineWidth = 2; ctx.stroke();
+            // Teilungslinien
+            ctx.setLineDash([4, 4]);
+            ctx.strokeStyle = '#64748b';
+            ctx.lineWidth = 1.2;
+            [fm[0].x, fm[1].x].forEach(x => { ctx.beginPath(); ctx.moveTo(px(x), beam - 36); ctx.lineTo(px(x), qY + amp); ctx.stroke(); });
+            ctx.restore();
+            [fm[0].x, fm[1].x].forEach(x => text(ctx, 'Q = 0', px(x), qY + amp + 14, { farbe: FARBE.Q, font: 'bold 11px sans-serif', W }));
+            const summe = '18,75 + 62,50 + 18,75 = 100 kN = q · 2 · L ✓';
+            text(ctx, summe, W / 2, 338, { farbe: '#1e293b', font: 'bold 12px sans-serif', W });
+        }
+
+        // Schritt 6: Zugseite und Bewehrung
+        function figZugseite(ctx, W) {
+            const L = BSP.L, pad = W < 600 ? 34 : 70;
+            const px = x => pad + x / (2 * L) * (W - 2 * pad);
+            titel(ctx, 'Biegelinie (überhöht) mit Zugseite', 16);
+            const beam = 52;
+            zeichneBiegelinie(ctx, blZweifeld, px, beam, 22 / blZweifeld.max, { zugseite: true });
+            [0, L, 2 * L].forEach((x, i) => drawSupport(ctx, px(x), beam + 4, i === 0 ? 'fest' : 'los'));
+            const fm = feldmomente(bspZweifeld);
+            text(ctx, 'Zug unten', px(fm[0].x), beam + 46, { farbe: FARBE.last, font: 'bold 12px sans-serif', W });
+            text(ctx, 'Zug unten', px(fm[1].x), beam + 46, { farbe: FARBE.last, font: 'bold 12px sans-serif', W });
+            text(ctx, 'Zug oben', px(L), beam - 12, { farbe: FARBE.last, font: 'bold 12px sans-serif' });
+            const nullpunkte = momentenNullpunkte(bspZweifeld);
+            nullpunkte.forEach(x => {
+                const i = Math.round(x / (2 * L) * (blZweifeld.xs.length - 1));
+                ctx.save(); ctx.fillStyle = FARBE.M; ctx.beginPath();
+                ctx.arc(px(x), beam + blZweifeld.ws[i] * 22 / blZweifeld.max, 4, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+            });
+
+            titel(ctx, 'Stahlbetonbalken: Bewehrung auf der Zugseite', 128);
+            const top = 146, h = 30;
+            ctx.save();
+            ctx.fillStyle = '#e2e8f0'; ctx.strokeStyle = '#64748b'; ctx.lineWidth = 1.5;
+            ctx.fillRect(px(0) - 8, top, px(2 * L) - px(0) + 16, h);
+            ctx.strokeRect(px(0) - 8, top, px(2 * L) - px(0) + 16, h);
+            ctx.strokeStyle = FARBE.last; ctx.lineWidth = 3.5; ctx.lineCap = 'round';
+            ctx.beginPath(); ctx.moveTo(px(0) - 2, top + h - 6); ctx.lineTo(px(2 * L) + 2, top + h - 6); ctx.stroke();
+            const x0 = nullpunkte[0] - 0.12 * L, x1 = nullpunkte[nullpunkte.length - 1] + 0.12 * L;
+            ctx.beginPath(); ctx.moveTo(px(x0), top + 6); ctx.lineTo(px(x1), top + 6); ctx.stroke();
+            ctx.restore();
+            [0, L, 2 * L].forEach((x, i) => drawSupport(ctx, px(x), top + h, i === 0 ? 'fest' : 'los'));
+            text(ctx, 'oben über der Stütze', px(L), top - 6, { farbe: FARBE.lastText, font: 'bold 11px sans-serif', W });
+            text(ctx, 'unten im Feld', px(L / 2), top + h + 22, { farbe: FARBE.lastText, font: 'bold 11px sans-serif', W });
+            text(ctx, 'unten im Feld', px(1.5 * L), top + h + 22, { farbe: FARBE.lastText, font: 'bold 11px sans-serif', W });
+        }
+
+        // Ausblick: Idee der Dreimomentengleichung
+        function figDreimoment(ctx, W) {
+            const pad = W < 600 ? 40 : 90;
+            const anteil = 1 / 2.3;                      // L_i : L_(i+1) = 1 : 1,3
+            const xa = pad, xc = W - pad, xb = xa + anteil * (xc - xa);
+            titel(ctx, 'Durchlaufträger (Ausschnitt)', 16);
+            let beam = 52;
+            traeger(ctx, xa - 22, xc + 22, beam);
+            [xa, xb, xc].forEach(x => drawSupport(ctx, x, beam + 4, 'los'));
+            ['i − 1', 'i', 'i + 1'].forEach((t, k) => text(ctx, t, [xa, xb, xc][k], beam + 56, { font: 'bold 12px sans-serif' }));
+            text(ctx, 'L_{i}', (xa + xb) / 2, beam - 10, { font: '12px sans-serif' });
+            text(ctx, 'L_{i+1}', (xb + xc) / 2, beam - 10, { font: '12px sans-serif' });
+            text(ctx, '⬇ an den Stützen gedanklich auftrennen', W / 2, 140, { farbe: '#475569', font: 'italic 12px sans-serif', W });
+
+            titel(ctx, 'Einfeldträger mit Stützmomenten an den Enden', 172);
+            beam = 222;
+            const spalt = 26;
+            traeger(ctx, xa, xb - spalt, beam);
+            traeger(ctx, xb + spalt, xc, beam);
+            drawSupport(ctx, xa, beam + 4, 'fest');
+            drawSupport(ctx, xb - spalt, beam + 4, 'los');
+            drawSupport(ctx, xb + spalt, beam + 4, 'fest');
+            drawSupport(ctx, xc, beam + 4, 'los');
+            // Momentenpfeile (Bogen mit Spitze) – an der Schnittstelle i wirken gleich große, entgegengesetzte Momente
+            function moment(x, rechtsdrehend, label) {
+                const r = 14, y = beam;
+                const [a0, a1] = rechtsdrehend ? [Math.PI * 1.05, Math.PI * 1.95] : [Math.PI * 1.95, Math.PI * 1.05];
+                ctx.save();
+                ctx.strokeStyle = FARBE.M; ctx.fillStyle = FARBE.M; ctx.lineWidth = 2.5;
+                ctx.beginPath(); ctx.arc(x, y, r, a0, a1, !rechtsdrehend); ctx.stroke();
+                const ex = x + r * Math.cos(a1), ey = y + r * Math.sin(a1);
+                const t = rechtsdrehend ? 1 : -1;   // Tangentenrichtung am Bogenende
+                const tx = -Math.sin(a1) * t, ty = Math.cos(a1) * t;
+                ctx.beginPath();
+                ctx.moveTo(ex + tx * 7, ey + ty * 7);
+                ctx.lineTo(ex - ty * 5, ey + tx * 5);
+                ctx.lineTo(ex + ty * 5, ey - tx * 5);
+                ctx.closePath(); ctx.fill();
+                ctx.restore();
+                text(ctx, label, x, y - r - 8, { farbe: FARBE.MText, font: 'bold 12px sans-serif', W });
+            }
+            moment(xa, true, 'M_{i−1}');
+            moment(xb - spalt, false, 'M_{i}');
+            moment(xb + spalt, true, '');
+            moment(xc, false, 'M_{i+1}');
+            text(ctx, 'Bedingung an jeder Stütze: kein Knick', W / 2, 284, { farbe: FARBE.biege, font: 'bold 12px sans-serif', W });
+        }
+
+        [
+            ['figVergleich', 470, figVergleich],
+            ['figUnbestimmt', 470, figUnbestimmt],
+            ['figVerformung', 320, figVerformung],
+            ['figBeispiel', 240, figBeispiel],
+            ['figLastaufteilung', 350, figLastaufteilung],
+            ['figZugseite', 250, figZugseite],
+            ['figDreimoment', 290, figDreimoment]
+        ].forEach(([id, hoehe, fn]) => responsiveCanvas(document.getElementById(id), hoehe, fn).neu());
+
+        document.querySelectorAll('#beiwertTabelle td[data-skizze]').forEach(td => {
+            td.insertAdjacentHTML('afterbegin', lastfallSkizze(parseInt(td.dataset.skizze, 10), td.dataset.skizze.slice(1)));
+        });
 
         // ================= Umschalter =================
         const teile = { lernen: 'teilLernen', uebung: 'teilUebung', rechner: 'teilRechner' };
@@ -440,8 +894,9 @@
         document.querySelectorAll('.lab-tab[data-tab]').forEach(b => b.addEventListener('click', () => zeigeTeil(b.dataset.tab)));
 
         // ================= Teil 1: Beispiel =================
-        zeichneDurchlauftraeger(document.getElementById('beispielCanvas'),
-            berechneDurchlauftraeger({ spans: [5, 5], loads: [{ q: 10 }, { q: 10 }] }));
+        dltZeichnung('beispielCanvas')(bspZweifeld, { nullpunkte: true });
+        const zeichneUebung = dltZeichnung('uebungCanvas');
+        const zeichneRechner = dltZeichnung('rechnerCanvas');
         document.getElementById('tabelleKopie').appendChild(document.getElementById('beiwertTabelle').cloneNode(true)).removeAttribute('id');
 
         // ================= Teil 2: Übung mit Tabellenwerten =================
@@ -473,7 +928,7 @@
             ['ue_A', 'ue_B', 'ue_MB', 'ue_MF'].forEach(id => { document.getElementById(id).value = ''; });
             ['fb_A', 'fb_B', 'fb_MB', 'fb_MF'].forEach(id => { document.getElementById(id).textContent = ''; });
             document.getElementById('uebungErgebnis').classList.add('hidden');
-            zeichneDurchlauftraeger(document.getElementById('uebungCanvas'), dlt, { verdeckt: true });
+            zeichneUebung(dlt, { verdeckt: true });
         }
 
         document.getElementById('btnNeueUebung').addEventListener('click', neueAufgabe);
@@ -511,7 +966,7 @@
                 `<p class="font-mono text-xs mb-1">${basisK} &nbsp;|&nbsp; ${basisM}</p>` +
                 `<div class="font-mono text-xs space-y-0.5">${rechenweg.map(r => `<p>${r}</p>`).join('')}</div>` +
                 `<p class="text-xs mt-2">Kontrolle: Summe der Auflagerkräfte = ${fmt(dlt.auflager.reduce((a, b) => a + b, 0), 2)} kN = Gesamtlast ${fmt(dlt.totalLoad, 2)} kN ✓</p>`;
-            zeichneDurchlauftraeger(document.getElementById('uebungCanvas'), dlt);
+            zeichneUebung(dlt);
 
             if (!aufgabe.geprueft) {
                 aufgabe.geprueft = true;
@@ -591,7 +1046,7 @@
             if (fehler.length) return;
 
             const dlt = berechneDurchlauftraeger({ spans, loads });
-            zeichneDurchlauftraeger(document.getElementById('rechnerCanvas'), dlt);
+            zeichneRechner(dlt);
 
             const fm = feldmomente(dlt);
             const zeile = (name, wert, einheit) => `<div class="flex justify-between border-b border-slate-200 py-1"><span>${name}</span><strong>${fmt(wert, 2)} ${einheit}</strong></div>`;
