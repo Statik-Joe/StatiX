@@ -6,6 +6,8 @@ const {
     berechneTraeger,
     extremwerte,
     diagrammStellen,
+    berechneDurchlauftraeger,
+    feldmomente,
     zerlegeKraft,
     istImWertebereich,
     momentParameterwert,
@@ -180,4 +182,83 @@ test('Diagrammstellen: Querkraftsprünge an Auflager und Einzellast werden senkr
         assert.ok(rechts - links < 1e-4, `Punkte an x = ${stelle} liegen ${rechts - links} m auseinander`);
         nah(t.schnitt(rechts).Q - t.schnitt(links).Q, sprung, 0.01);
     }
+});
+
+// ---------- Durchlaufträger (Modul 6): Vergleich mit Tabellenwerten gleicher Stützweiten ----------
+const dlt = (spans, loads) => berechneDurchlauftraeger({ spans, loads });
+
+test('Zweifeldträger, Gleichlast auf beiden Feldern: A = C = 0,375·qL, B = 1,25·qL, M_B = −0,125·qL², M_F = 0,070·qL²', () => {
+    const q = 10, L = 5;
+    const t = dlt([L, L], [{ q }, { q }]);
+    nah(t.auflager[0], 0.375 * q * L);
+    nah(t.auflager[1], 1.25 * q * L);
+    nah(t.auflager[2], 0.375 * q * L);
+    nah(t.stuetzmomente[1], -0.125 * q * L * L);
+    const f = feldmomente(t);
+    nah(f[0].M, 0.0703 * q * L * L, 0.03);
+    nah(f[0].x, 0.375 * L, 0.01);
+});
+
+test('Zweifeldträger, Gleichlast nur auf Feld 1: A = 0,4375·qL, B = 0,625·qL, C = −0,0625·qL (abhebend), M_B = −0,0625·qL²', () => {
+    const q = 8, L = 4;
+    const t = dlt([L, L], [{ q }, {}]);
+    nah(t.auflager[0], 0.4375 * q * L);
+    nah(t.auflager[1], 0.625 * q * L);
+    nah(t.auflager[2], -0.0625 * q * L);
+    nah(t.stuetzmomente[1], -0.0625 * q * L * L);
+});
+
+test('Zweifeldträger, Einzellast in jeder Feldmitte: A = 0,3125·F, B = 1,375·F, M_B = −0,1875·F·L, M_F = 0,156·F·L', () => {
+    const F = 20, L = 6;
+    const t = dlt([L, L], [{ F, a: L / 2 }, { F, a: L / 2 }]);
+    nah(t.auflager[0], 0.3125 * F);
+    nah(t.auflager[1], 1.375 * F);
+    nah(t.stuetzmomente[1], -0.1875 * F * L);
+    nah(feldmomente(t)[0].M, 0.15625 * F * L);
+});
+
+test('Dreifeldträger, Gleichlast auf allen Feldern: A = 0,4·qL, B = 1,1·qL, M_B = −0,1·qL², M_F1 = 0,08·qL², M_F2 = 0,025·qL²', () => {
+    const q = 12, L = 4;
+    const t = dlt([L, L, L], [{ q }, { q }, { q }]);
+    nah(t.auflager[0], 0.4 * q * L);
+    nah(t.auflager[1], 1.1 * q * L);
+    nah(t.auflager[2], 1.1 * q * L);
+    nah(t.auflager[3], 0.4 * q * L);
+    nah(t.stuetzmomente[1], -0.1 * q * L * L);
+    nah(t.stuetzmomente[2], -0.1 * q * L * L);
+    const f = feldmomente(t);
+    nah(f[0].M, 0.08 * q * L * L, 0.03);
+    nah(f[1].M, 0.025 * q * L * L, 0.03);
+});
+
+test('Dreifeldträger, Einzellast in jeder Feldmitte: A = 0,35·F, B = 1,15·F, M_B = −0,15·F·L, M_F1 = 0,175·F·L, M_F2 = 0,1·F·L', () => {
+    const F = 15, L = 5;
+    const t = dlt([L, L, L], [{ F, a: 2.5 }, { F, a: 2.5 }, { F, a: 2.5 }]);
+    nah(t.auflager[0], 0.35 * F);
+    nah(t.auflager[1], 1.15 * F);
+    nah(t.stuetzmomente[1], -0.15 * F * L);
+    const f = feldmomente(t);
+    nah(f[0].M, 0.175 * F * L);
+    nah(f[1].M, 0.1 * F * L);
+});
+
+test('Durchlaufträger mit eigenen Werten: Gleichgewicht und Übergang zum Einfeldträger', () => {
+    // ungleiche Stützweiten, gemischte Lasten
+    const t = dlt([4, 6.5, 3], [{ q: 5, F: 12, a: 1.5 }, { q: 8 }, { F: 20, a: 2 }]);
+    nah(t.auflager.reduce((a, b) => a + b, 0), t.totalLoad);   // ΣV = 0
+    // ΣM um A = 0: Auflagerkräfte · Abstand = Lasten · Abstand
+    const mR = t.auflager.reduce((s, R, i) => s + R * t.X[i], 0);
+    const mL = 5 * 4 * 2 + 12 * 1.5 + 8 * 6.5 * (4 + 3.25) + 20 * (10.5 + 2);
+    nah(mR, mL);
+    // Momente an den Endauflagern null, Stützmomente stetig
+    nah(t.schnitt(1e-6).M, 0);
+    nah(t.schnitt(t.L).M, 0);
+    nah(t.schnitt(4 - 1e-6).M, t.stuetzmomente[1]);
+    nah(t.schnitt(4 + 1e-6).M, t.stuetzmomente[1]);
+    // Ein Feld allein entspricht dem Einfeldträger aus berechneTraeger
+    const e = dlt([7], [{ q: 3, F: 10, a: 2 }]);
+    const ref = berechneTraeger({ L: 7, pointLoads: [{ F: 10, x: 2 }], udls: [{ q: 3, start: 0, end: 7 }] });
+    nah(e.auflager[0], ref.A);
+    nah(e.auflager[1], ref.B);
+    nah(e.schnitt(3.3).M, ref.schnitt(3.3).M);
 });
