@@ -190,7 +190,7 @@
                             <div><label for="r_gh" class="block text-xs font-bold text-slate-500 mb-1">Wichte Holz γ [kN/m³]</label>
                                 <input type="number" id="r_gh" min="0.1" max="20" step="0.1" class="w-full border border-slate-300 rounded p-1.5 text-sm"></div>
                         </div>
-                        <p class="text-xs text-slate-500">Bei jeder Schicht lässt sich die Lage wählen: über, zwischen oder unter den Balken. Schichten zwischen den Balken (z. B. Dämmung im Gefach) zählen nur mit dem Gefachanteil (e − b) / e, weil der Balken selbst einen Teil der Breite einnimmt.</p>
+                        <p class="text-xs text-slate-500">Bei jeder Schicht lässt sich die Lage wählen: über, zwischen oder unter den Balken. Schichten zwischen den Balken (z. B. Dämmung im Gefach) zählen nur mit dem Gefachanteil (e − b) / e, weil der Balken selbst einen Teil der Breite einnimmt. Die Liste steht immer in der Reihenfolge der Zeichnung; mit ↑ und ↓ wandert eine Schicht an der Grenze in die nächste Lage.</p>
                     </div>
 
                     <div class="p-4 bg-white rounded-xl border border-slate-200 shadow-sm space-y-3">
@@ -296,6 +296,42 @@
         // Ältere gespeicherte Stände ohne Lage: Putz und Bekleidung unten, alles andere oben.
         const LAGEN = { oben: 'über den Balken', zwischen: 'zwischen den Balken', unten: 'unter den Balken' };
         const lageVon = s => (LAGEN[s.lage] ? s.lage : (baustoff(s.id).gruppe === UNTER_BALKEN ? 'unten' : 'oben'));
+        const LAGE_FOLGE = ['oben', 'zwischen', 'unten'];
+
+        // Holzbalkendecke: Die Liste steht immer in der Reihenfolge der Zeichnung – erst die Schichten über den
+        // Balken, dann die im Gefach, dann die darunter. Innerhalb einer Lage bleibt die eingegebene Reihenfolge.
+        function ordneSchichten(d) {
+            if (d.typ !== 'holz') return;
+            d.schichten.forEach(s => { s.lage = lageVon(s); });
+            d.schichten = d.schichten
+                .map((s, i) => ({ s, i }))
+                .sort((a, b) => LAGE_FOLGE.indexOf(a.s.lage) - LAGE_FOLGE.indexOf(b.s.lage) || a.i - b.i)
+                .map(x => x.s);
+        }
+
+        // Schicht i um eine Stelle nach oben (richtung = -1) oder unten (+1) verschieben. Bei der Holzbalkendecke
+        // wechselt sie an der Grenze einer Lage in die benachbarte Lage (z. B. vom Gefach nach „über den Balken“).
+        function verschiebeSchicht(d, i, richtung) {
+            const l = d.schichten, j = i + richtung;
+            if (d.typ !== 'holz') {
+                if (j >= 0 && j < l.length) [l[i], l[j]] = [l[j], l[i]];
+                return;
+            }
+            const lage = lageVon(l[i]);
+            if (j >= 0 && j < l.length && lageVon(l[j]) === lage) {
+                [l[i], l[j]] = [l[j], l[i]];
+            } else {
+                const k = LAGE_FOLGE.indexOf(lage) + richtung;
+                if (k >= 0 && k < LAGE_FOLGE.length) l[i].lage = LAGE_FOLGE[k];
+            }
+            ordneSchichten(d);
+        }
+        const kannVerschieben = (d, i, richtung) => {
+            const j = i + richtung;
+            if (j >= 0 && j < d.schichten.length) return true;
+            if (d.typ !== 'holz') return false;
+            return richtung < 0 ? lageVon(d.schichten[i]) !== 'oben' : lageVon(d.schichten[i]) !== 'unten';
+        };
 
         // ================= Vorlagen =================
         // Schichten: [Baustoff-ID, Dicke in cm, Lage bei Holzbalkendecken] (Wichte aus dem Katalog), von oben nach unten
@@ -710,10 +746,10 @@
                 box.className = 'p-3 bg-slate-50 rounded-lg border border-slate-200 space-y-2';
                 box.innerHTML = `
                     <div class="flex items-center justify-between gap-2">
-                        <span class="text-xs font-bold text-slate-500">Schicht ${i + 1}</span>
+                        <span class="text-xs font-bold text-slate-500">Schicht ${i + 1}${decke.typ === 'holz' ? ` · ${LAGEN[lageVon(s)]}` : ''}</span>
                         <div class="la-schicht-aktionen">
-                            <button type="button" class="la-mini-btn" data-aktion="hoch" aria-label="Schicht ${i + 1} nach oben" ${i === 0 ? 'disabled' : ''}>↑</button>
-                            <button type="button" class="la-mini-btn" data-aktion="runter" aria-label="Schicht ${i + 1} nach unten" ${i === decke.schichten.length - 1 ? 'disabled' : ''}>↓</button>
+                            <button type="button" class="la-mini-btn" data-aktion="hoch" aria-label="Schicht ${i + 1} nach oben" ${kannVerschieben(decke, i, -1) ? '' : 'disabled'}>↑</button>
+                            <button type="button" class="la-mini-btn" data-aktion="runter" aria-label="Schicht ${i + 1} nach unten" ${kannVerschieben(decke, i, 1) ? '' : 'disabled'}>↓</button>
                             <button type="button" class="la-mini-btn" data-aktion="weg" aria-label="Schicht ${i + 1} entfernen" ${decke.schichten.length === 1 ? 'disabled' : ''}>✕</button>
                         </div>
                     </div>
@@ -738,13 +774,17 @@
                 box.querySelector(`#s_d${i}`).addEventListener('input', e => { decke.schichten[i].d = parseFloat(e.target.value); vorlageZuruecksetzen(); berechneRechner(); });
                 box.querySelector(`#s_g${i}`).addEventListener('input', e => { decke.schichten[i].gamma = parseFloat(e.target.value); vorlageZuruecksetzen(); berechneRechner(); });
                 const lage = box.querySelector(`#s_lage${i}`);
-                if (lage) lage.addEventListener('change', e => { decke.schichten[i].lage = e.target.value; vorlageZuruecksetzen(); berechneRechner(); });
+                if (lage) lage.addEventListener('change', e => {
+                    decke.schichten[i].lage = e.target.value;
+                    ordneSchichten(decke);
+                    vorlageZuruecksetzen(); baueSchichten(); berechneRechner();
+                });
                 const name = box.querySelector(`#s_name${i}`);
                 if (name) name.addEventListener('input', e => { decke.schichten[i].name = e.target.value.trim() || 'Eigener Baustoff'; berechneRechner(); });
                 box.querySelectorAll('[data-aktion]').forEach(btn => btn.addEventListener('click', () => {
                     const a = btn.dataset.aktion, l = decke.schichten;
-                    if (a === 'hoch' && i > 0) [l[i - 1], l[i]] = [l[i], l[i - 1]];
-                    if (a === 'runter' && i < l.length - 1) [l[i + 1], l[i]] = [l[i], l[i + 1]];
+                    if (a === 'hoch') verschiebeSchicht(decke, i, -1);
+                    if (a === 'runter') verschiebeSchicht(decke, i, 1);
                     if (a === 'weg' && l.length > 1) l.splice(i, 1);
                     vorlageZuruecksetzen(); baueSchichten(); berechneRechner();
                 }));
@@ -755,6 +795,7 @@
         function vorlageZuruecksetzen() { document.getElementById('r_vorlage').value = ''; }
 
         function formularAusDecke() {
+            ordneSchichten(decke);
             document.getElementById('r_typ').value = decke.typ;
             document.getElementById('r_b').value = decke.balken.b;
             document.getElementById('r_h').value = decke.balken.h;
@@ -849,6 +890,7 @@
         document.getElementById('btnSchichtNeu').addEventListener('click', () => {
             const b = baustoff('zementestrich');
             decke.schichten.push({ id: b.id, name: b.name, d: 5, gamma: b.gamma, lage: 'oben' });
+            ordneSchichten(decke);   // neue Schicht ans Ende der Schichten über den Balken
             vorlageZuruecksetzen(); baueSchichten(); berechneRechner();
         });
         [['r_b', 'b'], ['r_h', 'h'], ['r_e', 'e'], ['r_gh', 'gamma']].forEach(([id, k]) =>
