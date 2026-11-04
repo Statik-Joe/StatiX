@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modul 1: Kräfteaddition & Vektoren | Bautechnik-Labor</title>
-    <link rel="stylesheet" href="tailwind.min.css?v=2026-11-04">
-    <link rel="stylesheet" href="labor.css?v=2026-11-04">
+    <link rel="stylesheet" href="tailwind.min.css?v=2026-11-04b">
+    <link rel="stylesheet" href="labor.css?v=2026-11-04b">
 </head>
 <body data-modul="1" class="bg-slate-50 min-h-screen p-4 md:p-6 font-sans text-slate-800">
     <div class="max-w-7xl mx-auto bg-white p-6 rounded-2xl shadow-xl border border-slate-100">
@@ -47,14 +47,14 @@
                     </h3>
                     <div class="space-y-3">
                         <div>
-                            <label class="flex justify-between text-xs font-bold text-slate-500 mb-1">
+                            <label for="f1_val" class="flex justify-between text-xs font-bold text-slate-500 mb-1">
                                 <span>Betrag F₁ [kN]</span>
                                 <span id="val_f1" class="text-indigo-700 font-bold">80 kN</span>
                             </label>
                             <input type="range" id="f1_val" min="10" max="150" value="80" class="w-full accent-indigo-600">
                         </div>
                         <div>
-                            <label class="flex justify-between text-xs font-bold text-slate-500 mb-1">
+                            <label for="f1_ang" class="flex justify-between text-xs font-bold text-slate-500 mb-1">
                                 <span>Winkel α₁ [°]</span>
                                 <span id="val_a1" class="text-indigo-700 font-bold">30°</span>
                             </label>
@@ -71,14 +71,14 @@
                     </h3>
                     <div class="space-y-3">
                         <div>
-                            <label class="flex justify-between text-xs font-bold text-slate-500 mb-1">
+                            <label for="f2_val" class="flex justify-between text-xs font-bold text-slate-500 mb-1">
                                 <span>Betrag F₂ [kN]</span>
                                 <span id="val_f2" class="text-rose-700 font-bold">100 kN</span>
                             </label>
                             <input type="range" id="f2_val" min="10" max="150" value="100" class="w-full accent-rose-600">
                         </div>
                         <div>
-                            <label class="flex justify-between text-xs font-bold text-slate-500 mb-1">
+                            <label for="f2_ang" class="flex justify-between text-xs font-bold text-slate-500 mb-1">
                                 <span>Winkel α₂ [°]</span>
                                 <span id="val_a2" class="text-rose-700 font-bold">120°</span>
                             </label>
@@ -141,20 +141,20 @@
                             </button>
                         </div>
                     </div>
-                    <p class="text-sm text-slate-500 mt-2 mb-4">Aktiviere "Selbst berechnen" — die Lösung oben wird ausgeblendet. Rechne die Zerlegung und die Resultierende per Hand und trage deine Werte ein.</p>
+                    <p class="text-sm text-slate-500 mt-2 mb-4">Aktiviere „Selbst berechnen“ – die Lösung oben wird ausgeblendet. Rechne die Zerlegung und die Resultierende per Hand und trage deine Werte ein.</p>
 
                     <div id="practiceForm" class="hidden space-y-4">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div class="bg-amber-50/60 p-3 rounded-lg border border-amber-100 space-y-2">
                                 <p class="font-bold text-indigo-700 text-sm font-mono">F₁ Zerlegung:</p>
                                 <div class="flex items-center gap-2">
-                                    <label class="text-xs font-mono w-28">F<sub>1x</sub> = F₁·cos(α₁) =</label>
+                                    <label for="check_f1x" class="text-xs font-mono w-28">F<sub>1x</sub> = F₁·cos(α₁) =</label>
                                     <input type="number" id="check_f1x" step="0.1" class="w-24 border border-slate-300 rounded px-2 py-1 text-sm">
                                     <span class="text-xs">kN</span>
                                     <span id="fb_f1x" class="text-lg"></span>
                                 </div>
                                 <div class="flex items-center gap-2">
-                                    <label class="text-xs font-mono w-28">F<sub>1y</sub> = F₁·sin(α₁) =</label>
+                                    <label for="check_f1y" class="text-xs font-mono w-28">F<sub>1y</sub> = F₁·sin(α₁) =</label>
                                     <input type="number" id="check_f1y" step="0.1" class="w-24 border border-slate-300 rounded px-2 py-1 text-sm">
                                     <span class="text-xs">kN</span>
                                     <span id="fb_f1y" class="text-lg"></span>
@@ -163,13 +163,13 @@
                             <div class="bg-amber-50/60 p-3 rounded-lg border border-amber-100 space-y-2">
                                 <p class="font-bold text-rose-600 text-sm font-mono">F₂ Zerlegung:</p>
                                 <div class="flex items-center gap-2">
-                                    <label class="text-xs font-mono w-28">F<sub>2x</sub> = F₂·cos(α₂) =</label>
+                                    <label for="check_f2x" class="text-xs font-mono w-28">F<sub>2x</sub> = F₂·cos(α₂) =</label>
                                     <input type="number" id="check_f2x" step="0.1" class="w-24 border border-slate-300 rounded px-2 py-1 text-sm">
                                     <span class="text-xs">kN</span>
                                     <span id="fb_f2x" class="text-lg"></span>
                                 </div>
                                 <div class="flex items-center gap-2">
-                                    <label class="text-xs font-mono w-28">F<sub>2y</sub> = F₂·sin(α₂) =</label>
+                                    <label for="check_f2y" class="text-xs font-mono w-28">F<sub>2y</sub> = F₂·sin(α₂) =</label>
                                     <input type="number" id="check_f2y" step="0.1" class="w-24 border border-slate-300 rounded px-2 py-1 text-sm">
                                     <span class="text-xs">kN</span>
                                     <span id="fb_f2y" class="text-lg"></span>
@@ -180,31 +180,32 @@
                             <p class="font-bold text-emerald-700 text-sm font-mono">Resultierende F<sub>R</sub>:</p>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                 <div class="flex items-center gap-2">
-                                    <label class="text-xs font-mono w-28">F<sub>Rx</sub> =</label>
+                                    <label for="check_frx" class="text-xs font-mono w-28">F<sub>Rx</sub> =</label>
                                     <input type="number" id="check_frx" step="0.1" class="w-24 border border-slate-300 rounded px-2 py-1 text-sm">
                                     <span class="text-xs">kN</span>
                                     <span id="fb_frx" class="text-lg"></span>
                                 </div>
                                 <div class="flex items-center gap-2">
-                                    <label class="text-xs font-mono w-28">F<sub>Ry</sub> =</label>
+                                    <label for="check_fry" class="text-xs font-mono w-28">F<sub>Ry</sub> =</label>
                                     <input type="number" id="check_fry" step="0.1" class="w-24 border border-slate-300 rounded px-2 py-1 text-sm">
                                     <span class="text-xs">kN</span>
                                     <span id="fb_fry" class="text-lg"></span>
                                 </div>
                                 <div class="flex items-center gap-2">
-                                    <label class="text-xs font-mono w-28">F<sub>R</sub> =</label>
+                                    <label for="check_fr" class="text-xs font-mono w-28">F<sub>R</sub> =</label>
                                     <input type="number" id="check_fr" step="0.1" class="w-24 border border-slate-300 rounded px-2 py-1 text-sm">
                                     <span class="text-xs">kN</span>
                                     <span id="fb_fr" class="text-lg"></span>
                                 </div>
                                 <div class="flex items-center gap-2">
-                                    <label class="text-xs font-mono w-28">φ =</label>
+                                    <label for="check_ang" class="text-xs font-mono w-28">φ =</label>
                                     <input type="number" id="check_ang" step="0.1" class="w-24 border border-slate-300 rounded px-2 py-1 text-sm">
                                     <span class="text-xs">°</span>
                                     <span id="fb_ang" class="text-lg"></span>
                                 </div>
                             </div>
                         </div>
+                        <p class="text-xs text-slate-500">Rundungstoleranz 3 %, mindestens 1,5 kN bzw. 1,5°.</p>
                         <button id="btnCheck" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-lg transition-colors">
                             Prüfen
                         </button>
@@ -234,7 +235,7 @@
                         Last F
                     </h3>
                     <div>
-                        <label class="flex justify-between text-xs font-bold text-slate-500 mb-1">
+                        <label for="s_f" class="flex justify-between text-xs font-bold text-slate-500 mb-1">
                             <span>Betrag F [kN]</span>
                             <span id="val_sf" class="text-teal-700 font-bold">20 kN</span>
                         </label>
@@ -248,7 +249,7 @@
                         Winkel
                     </h3>
                     <div>
-                        <label class="flex justify-between text-xs font-bold text-slate-500 mb-1">
+                        <label for="s_beta" class="flex justify-between text-xs font-bold text-slate-500 mb-1">
                             <span>Lastwinkel zur Flächennormalen β [°]</span>
                             <span id="val_sbeta" class="text-slate-700 font-bold">25°</span>
                         </label>
@@ -262,7 +263,7 @@
                         Kräftemaßstab
                     </h3>
                     <div>
-                        <label class="block text-xs font-bold text-slate-500 mb-1">Maßstab (zum Zeichnen der Pfeile in cm)</label>
+                        <label for="s_scale" class="block text-xs font-bold text-slate-500 mb-1">Maßstab (zum Zeichnen der Pfeile in cm)</label>
                         <select id="s_scale" class="w-full border border-slate-300 rounded-lg px-2 py-1.5 text-sm bg-white">
                             <option value="4">1 kN = 0,25 cm</option>
                             <option value="2">1 kN = 0,5 cm</option>
@@ -298,8 +299,8 @@
         </div>
     </div>
 
-    <script src="labor.js?v=2026-10-01"></script>
-    <script src="version.js?v=2.0"></script>
+    <script src="labor.js?v=2026-11-04b"></script>
+    <script src="version.js?v=2.1"></script>
     <script>
         const canvas = document.getElementById('vectorCanvas');
         const ctx = canvas.getContext('2d');

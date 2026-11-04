@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modul 3: Schnittgrößen (Einfeldträger) | Bautechnik-Labor</title>
-    <link rel="stylesheet" href="tailwind.min.css?v=2026-11-04">
-    <link rel="stylesheet" href="labor.css?v=2026-11-04">
+    <link rel="stylesheet" href="tailwind.min.css?v=2026-11-04b">
+    <link rel="stylesheet" href="labor.css?v=2026-11-04b">
 </head>
 <body data-modul="3" class="bg-slate-50 min-h-screen p-4 md:p-6 font-sans text-slate-800">
     <div class="max-w-7xl mx-auto bg-white p-6 rounded-2xl shadow-xl border border-slate-100">
@@ -72,7 +72,7 @@
                     </h2>
                     
                     <div>
-                        <label class="block text-xs font-bold text-slate-500 mb-1">Länge Hauptfeld L [m]</label>
+                        <label for="length" class="block text-xs font-bold text-slate-500 mb-1">Länge Hauptfeld L [m]</label>
                         <input type="number" id="length" value="10" min="1" max="30" step="0.5" class="w-full border border-slate-300 rounded-lg p-2 font-semibold text-slate-700">
                     </div>
 
@@ -83,7 +83,7 @@
                             <input type="checkbox" id="enable_kl" class="w-4 h-4 text-teal-600 border-slate-300 rounded focus:ring-teal-500">
                         </div>
                         <div id="kl_container" class="hidden">
-                            <label class="block text-xs font-bold text-slate-500 mb-1">Länge Kragarm links [m]</label>
+                            <label for="length_kl" class="block text-xs font-bold text-slate-500 mb-1">Länge Kragarm links [m]</label>
                             <input type="number" id="length_kl" value="2" min="0.1" max="10" step="0.1" class="w-full border border-slate-300 rounded-lg p-2 text-sm">
                         </div>
                     </div>
@@ -95,7 +95,7 @@
                             <input type="checkbox" id="enable_kr" class="w-4 h-4 text-teal-600 border-slate-300 rounded focus:ring-teal-500">
                         </div>
                         <div id="kr_container" class="hidden">
-                            <label class="block text-xs font-bold text-slate-500 mb-1">Länge Kragarm rechts [m]</label>
+                            <label for="length_kr" class="block text-xs font-bold text-slate-500 mb-1">Länge Kragarm rechts [m]</label>
                             <input type="number" id="length_kr" value="2" min="0.1" max="10" step="0.1" class="w-full border border-slate-300 rounded-lg p-2 text-sm">
                         </div>
                     </div>
@@ -125,15 +125,15 @@
                         </div>
                         <div id="q1_inputs_container" class="grid grid-cols-3 gap-2">
                             <div>
-                                <label class="block text-xs font-bold text-slate-500 mb-1">Wert [kN/m]</label>
+                                <label for="q1" class="block text-xs font-bold text-slate-500 mb-1">Wert [kN/m]</label>
                                 <input type="number" id="q1" value="5" min="0" step="0.5" class="w-full border rounded p-1.5 text-sm font-semibold">
                             </div>
                             <div>
-                                <label class="block text-xs font-bold text-slate-500 mb-1">Start x [m]</label>
+                                <label for="q1_start" class="block text-xs font-bold text-slate-500 mb-1">Start x [m]</label>
                                 <input type="number" id="q1_start" value="0" step="0.1" class="w-full border rounded p-1.5 text-sm">
                             </div>
                             <div>
-                                <label class="block text-xs font-bold text-slate-500 mb-1">Ende x [m]</label>
+                                <label for="q1_end" class="block text-xs font-bold text-slate-500 mb-1">Ende x [m]</label>
                                 <input type="number" id="q1_end" value="5" step="0.1" class="w-full border rounded p-1.5 text-sm">
                             </div>
                         </div>
@@ -156,15 +156,15 @@
                         </div>
                         <div id="q2_inputs_container" class="grid grid-cols-3 gap-2">
                             <div>
-                                <label class="block text-xs font-bold text-slate-500 mb-1">Wert [kN/m]</label>
+                                <label for="q2" class="block text-xs font-bold text-slate-500 mb-1">Wert [kN/m]</label>
                                 <input type="number" id="q2" value="3" min="0" step="0.5" class="w-full border rounded p-1.5 text-sm font-semibold">
                             </div>
                             <div>
-                                <label class="block text-xs font-bold text-slate-500 mb-1">Start x [m]</label>
+                                <label for="q2_start" class="block text-xs font-bold text-slate-500 mb-1">Start x [m]</label>
                                 <input type="number" id="q2_start" value="5" step="0.1" class="w-full border rounded p-1.5 text-sm">
                             </div>
                             <div>
-                                <label class="block text-xs font-bold text-slate-500 mb-1">Ende x [m]</label>
+                                <label for="q2_end" class="block text-xs font-bold text-slate-500 mb-1">Ende x [m]</label>
                                 <input type="number" id="q2_end" value="10" step="0.1" class="w-full border rounded p-1.5 text-sm">
                             </div>
                         </div>
@@ -195,15 +195,15 @@
                         </div>
                         <div id="f1_inputs_container" class="grid grid-cols-3 gap-2">
                             <div>
-                                <label class="block text-xs font-bold text-slate-500 mb-1">Kraft [kN]</label>
+                                <label for="f1" class="block text-xs font-bold text-slate-500 mb-1">Kraft [kN]</label>
                                 <input type="number" id="f1" value="15" min="0" step="1" class="w-full border rounded p-1.5 text-sm font-semibold">
                             </div>
                             <div>
-                                <label class="block text-xs font-bold text-slate-500 mb-1">Position x [m]</label>
+                                <label for="x1" class="block text-xs font-bold text-slate-500 mb-1">Position x [m]</label>
                                 <input type="number" id="x1" value="2" step="0.1" class="w-full border rounded p-1.5 text-sm">
                             </div>
                             <div>
-                                <label class="block text-xs font-bold text-slate-500 mb-1">Winkel α [°]</label>
+                                <label for="alpha1" class="block text-xs font-bold text-slate-500 mb-1">Winkel α [°]</label>
                                 <input type="number" id="alpha1" value="90" min="0" max="360" step="1" class="w-full border rounded p-1.5 text-sm">
                             </div>
                         </div>
@@ -226,15 +226,15 @@
                         </div>
                         <div id="f2_inputs_container" class="grid grid-cols-3 gap-2">
                             <div>
-                                <label class="block text-xs font-bold text-slate-500 mb-1">Kraft [kN]</label>
+                                <label for="f2" class="block text-xs font-bold text-slate-500 mb-1">Kraft [kN]</label>
                                 <input type="number" id="f2" value="10" min="0" step="1" class="w-full border rounded p-1.5 text-sm font-semibold">
                             </div>
                             <div>
-                                <label class="block text-xs font-bold text-slate-500 mb-1">Position x [m]</label>
+                                <label for="x2" class="block text-xs font-bold text-slate-500 mb-1">Position x [m]</label>
                                 <input type="number" id="x2" value="7" step="0.1" class="w-full border rounded p-1.5 text-sm">
                             </div>
                             <div>
-                                <label class="block text-xs font-bold text-slate-500 mb-1">Winkel α [°]</label>
+                                <label for="alpha2" class="block text-xs font-bold text-slate-500 mb-1">Winkel α [°]</label>
                                 <input type="number" id="alpha2" value="90" min="0" max="360" step="1" class="w-full border rounded p-1.5 text-sm">
                             </div>
                         </div>
@@ -249,7 +249,7 @@
                         Darstellungsoptionen
                     </h3>
                     <div>
-                        <label class="block text-xs font-bold text-slate-500 mb-1">Maßstab der Kurvenhöhe</label>
+                        <label for="diagramScale" class="block text-xs font-bold text-slate-500 mb-1">Maßstab der Kurvenhöhe</label>
                         <input type="range" id="diagramScale" min="0.2" max="2.5" step="0.05" value="1" class="w-full accent-teal-600">
                     </div>
                     <div class="flex items-center justify-between border-t border-slate-200 pt-3">
@@ -332,9 +332,9 @@
         </section>
     </div>
 
-    <script src="labor.js?v=2026-10-01"></script>
-    <script src="version.js?v=2.0"></script>
-    <script src="statik-core.js?v=2026-11-04"></script>
+    <script src="labor.js?v=2026-11-04b"></script>
+    <script src="version.js?v=2.1"></script>
+    <script src="statik-core.js?v=2026-11-04b"></script>
     <script>
         const canvas = document.getElementById('statikCanvas');
         const ctx = canvas.getContext('2d');

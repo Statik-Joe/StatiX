@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modul 5: Spannungsnachweis | Bautechnik-Labor</title>
-    <link rel="stylesheet" href="tailwind.min.css?v=2026-11-04">
-    <link rel="stylesheet" href="labor.css?v=2026-11-04">
+    <link rel="stylesheet" href="tailwind.min.css?v=2026-11-04b">
+    <link rel="stylesheet" href="labor.css?v=2026-11-04b">
 </head>
 <body data-modul="5" class="bg-slate-50 min-h-screen p-4 md:p-6 font-sans text-slate-800">
     <div class="max-w-7xl mx-auto bg-white p-6 rounded-2xl shadow-xl border border-slate-100">
@@ -39,7 +39,7 @@
                         Querschnitt
                     </h3>
                     <div>
-                        <label class="block text-xs font-bold text-slate-500 mb-1">Querschnittstyp</label>
+                        <label for="qsType" class="block text-xs font-bold text-slate-500 mb-1">Querschnittstyp</label>
                         <select id="qsType" class="w-full border border-slate-300 rounded-lg px-2 py-1.5 text-sm bg-white">
                             <option value="rechteck" selected>Rechteck</option>
                             <option value="kreis">Kreis</option>
@@ -49,14 +49,14 @@
 
                     <div id="dims_rechteck" class="space-y-3">
                         <div>
-                            <label class="flex justify-between text-xs font-bold text-slate-500 mb-1">
+                            <label for="qs_b" class="flex justify-between text-xs font-bold text-slate-500 mb-1">
                                 <span>Breite b [cm]</span>
                                 <span id="val_b" class="text-teal-700 font-bold">20 cm</span>
                             </label>
                             <input type="range" id="qs_b" min="5" max="60" step="1" value="20" class="w-full accent-teal-600">
                         </div>
                         <div>
-                            <label class="flex justify-between text-xs font-bold text-slate-500 mb-1">
+                            <label for="qs_h" class="flex justify-between text-xs font-bold text-slate-500 mb-1">
                                 <span>Höhe h [cm]</span>
                                 <span id="val_h" class="text-teal-700 font-bold">40 cm</span>
                             </label>
@@ -66,7 +66,7 @@
 
                     <div id="dims_kreis" class="space-y-3 hidden">
                         <div>
-                            <label class="flex justify-between text-xs font-bold text-slate-500 mb-1">
+                            <label for="qs_d" class="flex justify-between text-xs font-bold text-slate-500 mb-1">
                                 <span>Durchmesser d [cm]</span>
                                 <span id="val_d" class="text-teal-700 font-bold">20 cm</span>
                             </label>
@@ -76,28 +76,28 @@
 
                     <div id="dims_iprofil" class="space-y-3 hidden">
                         <div>
-                            <label class="flex justify-between text-xs font-bold text-slate-500 mb-1">
+                            <label for="qs_ib" class="flex justify-between text-xs font-bold text-slate-500 mb-1">
                                 <span>Gesamtbreite b [cm]</span>
                                 <span id="val_ib" class="text-teal-700 font-bold">15 cm</span>
                             </label>
                             <input type="range" id="qs_ib" min="6" max="40" step="1" value="15" class="w-full accent-teal-600">
                         </div>
                         <div>
-                            <label class="flex justify-between text-xs font-bold text-slate-500 mb-1">
+                            <label for="qs_ih" class="flex justify-between text-xs font-bold text-slate-500 mb-1">
                                 <span>Gesamthöhe h [cm]</span>
                                 <span id="val_ih" class="text-teal-700 font-bold">30 cm</span>
                             </label>
                             <input type="range" id="qs_ih" min="10" max="80" step="1" value="30" class="w-full accent-teal-600">
                         </div>
                         <div>
-                            <label class="flex justify-between text-xs font-bold text-slate-500 mb-1">
+                            <label for="qs_is" class="flex justify-between text-xs font-bold text-slate-500 mb-1">
                                 <span>Stegdicke s [cm]</span>
                                 <span id="val_is" class="text-teal-700 font-bold">1,0 cm</span>
                             </label>
                             <input type="range" id="qs_is" min="0.5" max="4" step="0.1" value="1" class="w-full accent-teal-600">
                         </div>
                         <div>
-                            <label class="flex justify-between text-xs font-bold text-slate-500 mb-1">
+                            <label for="qs_it" class="flex justify-between text-xs font-bold text-slate-500 mb-1">
                                 <span>Flanschdicke t [cm]</span>
                                 <span id="val_it" class="text-teal-700 font-bold">1,5 cm</span>
                             </label>
@@ -113,7 +113,7 @@
                         Belastung
                     </h3>
                     <div>
-                        <label class="flex justify-between text-xs font-bold text-slate-500 mb-1">
+                        <label for="qs_m" class="flex justify-between text-xs font-bold text-slate-500 mb-1">
                             <span>Biegemoment M<sub>max</sub> [kNm]</span>
                             <span id="val_m" class="text-indigo-700 font-bold">10 kNm</span>
                         </label>
@@ -129,7 +129,7 @@
                         Werkstoff
                     </h3>
                     <div>
-                        <label class="block text-xs font-bold text-slate-500 mb-1">Material (setzt σ<sub>zul</sub> als Vorschlag)</label>
+                        <label for="material" class="block text-xs font-bold text-slate-500 mb-1">Material (setzt σ<sub>zul</sub> als Vorschlag)</label>
                         <!-- Klassische zulässige Biegespannungen, Lastfall H:
                              Holz nach DIN 1052:1988 (Nadelholz S10 / Güteklasse II: 10 N/mm², Brettschichtholz BS11: 11 N/mm²),
                              Stahl St 37 (heute S235) nach DIN 1050: 140 N/mm². -->
@@ -141,7 +141,7 @@
                         </select>
                     </div>
                     <div>
-                        <label class="flex justify-between text-xs font-bold text-slate-500 mb-1">
+                        <label for="sig_zul" class="flex justify-between text-xs font-bold text-slate-500 mb-1">
                             <span>Zulässige Spannung σ<sub>zul</sub> [N/mm²]</span>
                             <span id="val_sigzul" class="text-rose-700 font-bold">140 N/mm²</span>
                         </label>
@@ -241,6 +241,7 @@
                                 <span id="fb_nachweis" class="text-lg"></span>
                             </div>
                         </div>
+                        <p class="text-xs text-slate-500">Rundungstoleranz 2 %.</p>
                         <button id="btnCheck5" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-lg transition-colors">
                             Prüfen
                         </button>
@@ -259,9 +260,9 @@
         </div>
     </div>
 
-    <script src="labor.js?v=2026-10-01"></script>
-    <script src="version.js?v=2.0"></script>
-    <script src="statik-core.js?v=2026-11-04"></script>
+    <script src="labor.js?v=2026-11-04b"></script>
+    <script src="version.js?v=2.1"></script>
+    <script src="statik-core.js?v=2026-11-04b"></script>
     <script>
         const canvas = document.getElementById('qsCanvas');
         const ctx = canvas.getContext('2d');

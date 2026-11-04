@@ -8,6 +8,8 @@ const {
     diagrammStellen,
     berechneDurchlauftraeger,
     feldmomente,
+    biegelinie,
+    momentenNullpunkte,
     zerlegeKraft,
     istImWertebereich,
     momentParameterwert,
@@ -261,4 +263,32 @@ test('Durchlaufträger mit eigenen Werten: Gleichgewicht und Übergang zum Einfe
     nah(e.auflager[0], ref.A);
     nah(e.auflager[1], ref.B);
     nah(e.schnitt(3.3).M, ref.schnitt(3.3).M);
+});
+
+test('Biegelinie Einfeldträger mit Gleichlast: max w · EI = 5/384 · q · L⁴ in Feldmitte', () => {
+    const q = 10, L = 5;
+    const bl = biegelinie(berechneDurchlauftraeger({ spans: [L], loads: [{ q }] }));
+    nah(bl.max, 5 / 384 * q * L ** 4, 0.01);
+    nah(bl.ws[150], bl.max, 1e-9);
+});
+
+test('Biegelinie Zweifeldträger mit Gleichlast: w = 0 über B, max w · EI = 0,00542 · q · L⁴', () => {
+    const q = 10, L = 5;
+    const bl = biegelinie(berechneDurchlauftraeger({ spans: [L, L], loads: [{ q }, { q }] }));
+    nah(bl.ws[150] / bl.max, 0, 1e-3);           // bezogen auf die größte Durchbiegung
+    nah(bl.max, 0.00542 * q * L ** 4, 0.1);
+});
+
+test('Biegelinie Dreifeldträger mit ungleichen Feldern: w = 0 an allen Zwischenauflagern', () => {
+    const dlt = berechneDurchlauftraeger({ spans: [4, 6.5, 3], loads: [{ q: 5, F: 12, a: 1.5 }, { q: 8 }, { F: 20, a: 2 }] });
+    const bl = biegelinie(dlt, 1350);
+    [4, 10.5].forEach(X => nah(bl.ws[Math.round(X / dlt.L * 1350)] / bl.max, 0, 1e-3));
+});
+
+test('Momentennullpunkte Zweifeldträger mit Gleichlast bei 0,75 · L und 1,25 · L', () => {
+    const L = 5;
+    const p = momentenNullpunkte(berechneDurchlauftraeger({ spans: [L, L], loads: [{ q: 10 }, { q: 10 }] }));
+    assert.equal(p.length, 2);
+    nah(p[0], 0.75 * L, 0.01);
+    nah(p[1], 1.25 * L, 0.01);
 });
