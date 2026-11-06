@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modul 6: Spannungsnachweis | Bautechnik-Labor</title>
-    <link rel="stylesheet" href="tailwind.min.css?v=2026-11-04d">
+    <link rel="stylesheet" href="tailwind.min.css?v=2026-11-06">
     <link rel="stylesheet" href="labor.css?v=2026-11-04d">
 </head>
 <body data-modul="6" class="bg-slate-50 min-h-screen p-4 md:p-6 font-sans text-slate-800">
@@ -120,7 +120,7 @@
                         <input type="range" id="qs_m" min="0" max="100" step="0.5" value="10" class="w-full accent-indigo-600">
                     </div>
                     <p id="importNote" class="hidden text-xs font-semibold text-violet-700 bg-violet-50 border border-violet-100 rounded-lg px-2 py-1.5"></p>
-                    <p class="text-xs text-slate-400">Tipp: M<sub>max</sub> für einen Träger liefert Modul 4 (Schnittgrößen) – dort über „M<sub>max</sub> nachweisen“ direkt übernehmen.</p>
+                    <p class="text-xs text-slate-400">Tipp: M<sub>max</sub> für einen Träger liefert Modul 4 (Schnittgrößen) – dort über „Moment nachweisen“ direkt übernehmen. Dieser Nachweis arbeitet mit zulässigen Spannungen und gehört deshalb zu Momenten aus charakteristischen Lasten (ohne Teilsicherheitsbeiwerte).</p>
                 </div>
 
                 <div class="p-4 bg-rose-50/70 rounded-xl border border-rose-100 shadow-sm space-y-4">
@@ -261,8 +261,8 @@
     </div>
 
     <script src="labor.js?v=2026-11-04d"></script>
-    <script src="version.js?v=3.0"></script>
-    <script src="statik-core.js?v=2026-11-04d"></script>
+    <script src="version.js?v=3.3"></script>
+    <script src="statik-core.js?v=2026-11-06"></script>
     <script>
         const canvas = document.getElementById('qsCanvas');
         const ctx = canvas.getContext('2d');
@@ -573,11 +573,20 @@
             qs_m.max = Math.max(100, Math.ceil(M));
             qs_m.value = M;
         }
-        const mParam = momentParameterwert(new URLSearchParams(window.location.search).get('M'));
+        const params = new URLSearchParams(window.location.search);
+        const mParam = momentParameterwert(params.get('M'));
         if (mParam !== null) {
             setMoment(mParam);
             const note = document.getElementById('importNote');
-            note.innerHTML = `➡️ M<sub>max</sub> = ${fmt(mParam, 2)} kNm aus Modul 4 übernommen.`;
+            if (params.get('Ed') === '1') {
+                // Bemessungsmoment aus Eurocode-Lasten: mit zulässigen Spannungen wäre die Sicherheit doppelt enthalten
+                note.className = 'text-xs font-semibold text-amber-900 bg-amber-50 border border-amber-300 rounded-lg px-2 py-1.5';
+                note.innerHTML = `⚠️ M<sub>Ed</sub> = ${fmt(mParam, 2)} kNm aus Modul 4 übernommen. Das ist ein <strong>Bemessungsmoment</strong> mit den Teilsicherheitsbeiwerten 1,35 und 1,5. ` +
+                    `Dieser Nachweis vergleicht mit <strong>zulässigen Spannungen</strong> (DIN 1052:1988, DIN 1050), in denen die Sicherheit schon steckt – mit M<sub>Ed</sub> wäre sie doppelt eingerechnet. ` +
+                    `Für einen passenden Nachweis in Modul 4 die charakteristischen Lasten g<sub>k</sub> und q<sub>k</sub> eintragen (Schalter „Bemessungswerte“ aus) und das Moment erneut übergeben.`;
+            } else {
+                note.innerHTML = `➡️ M<sub>max</sub> = ${fmt(mParam, 2)} kNm aus Modul 4 übernommen.`;
+            }
             note.classList.remove('hidden');
         }
 

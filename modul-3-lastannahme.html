@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modul 3: Lastannahme für Decken | Bautechnik-Labor</title>
-    <link rel="stylesheet" href="tailwind.min.css?v=2026-11-04d">
+    <link rel="stylesheet" href="tailwind.min.css?v=2026-11-06">
     <link rel="stylesheet" href="labor.css?v=2026-11-04d">
     <style>
         .la-table { border-collapse: collapse; width: 100%; font-size: 0.8125rem; }
@@ -17,6 +17,8 @@
             .la-table { font-size: 0.75rem; }
             .la-table th, .la-table td { padding: 0.3rem 0.35rem; }
             .la-rechnung { display: block; color: #64748b; }   /* Rechnung über dem Ergebnis statt daneben */
+            .la-zusatz { display: none; }                       /* Zusatz in Klammern beim Baustoffnamen */
+            .la-table td:last-child { white-space: normal; min-width: 4.5rem; }   /* lange Rechnung darf umbrechen */
         }
         .la-step summary { cursor: pointer; list-style: none; }
         .la-step summary::-webkit-details-marker { display: none; }
@@ -90,7 +92,7 @@
                     </figure>
                     <p class="bg-amber-50 border border-amber-200 rounded-lg p-3"><strong>Häufigster Fehler:</strong> Die Dicke muss in <strong>Metern</strong> eingesetzt werden. 5 cm = 0,05 m. Wer 5 · 22 rechnet, erhält das Hundertfache.</p>
                     <div id="baustoffTabelle" class="overflow-x-auto"></div>
-                    <p class="text-xs text-slate-500">Richtwerte nach DIN EN 1991-1-1 (Anhang A) mit Nationalem Anhang bzw. Bautabellen. Wenn ihr im Unterricht mit einer anderen Tabelle arbeitet, gilt deren Wert – in Teil 2 lässt sich jede Wichte ändern.</p>
+                    <p class="text-xs text-slate-500">Richtwerte nach DIN EN 1991-1-1 (Anhang A) mit Nationalem Anhang bzw. Bautabellen; Gründachschichten wassergesättigt nach den FLL-Dachbegrünungsrichtlinien (Herstellerangaben haben Vorrang). Wenn ihr im Unterricht mit einer anderen Tabelle arbeitet, gilt deren Wert – in Teil 2 lässt sich jede Wichte ändern.</p>
                 </div>
             </details>
 
@@ -129,17 +131,52 @@
                     </figure>
                     <ul class="list-disc pl-5 space-y-1">
                         <li><strong>Holzbalkendecke:</strong> Einzugsbreite = Balkenabstand e. Dazu kommt das Eigengewicht des Balkens selbst: g<sub>Balken</sub> = b · h · γ<sub>Holz</sub> in kN/m.</li>
+                        <li><strong>Dämmung oder Schüttung zwischen den Balken</strong> füllt nur das Gefach, also die Breite e − b. Je m² Decke zählt sie deshalb nur mit dem Anteil (e − b) / e: g = d · γ · (e − b) / e. Beispiel: Balken 10/22 cm im Abstand e = 62,5 cm → (62,5 − 10) / 62,5 = 0,84.</li>
                         <li><strong>Stahlbetondecke:</strong> Man rechnet meist einen <strong>1 m breiten Deckenstreifen</strong>. Dann hat die Streckenlast in kN/m denselben Zahlenwert wie die Flächenlast in kN/m². Für einen Unterzug ist die Einzugsbreite der halbe Abstand zu den Nachbarauflagern auf beiden Seiten.</li>
                     </ul>
                 </div>
             </details>
 
             <details class="la-step bg-slate-50 border border-slate-200 rounded-xl p-4">
-                <summary class="font-bold text-slate-800 flex items-center gap-2"><span class="la-chevron">▶</span> Schritt 6: Kontrolle und Ausblick</summary>
+                <summary class="font-bold text-slate-800 flex items-center gap-2"><span class="la-chevron">▶</span> Exkurs: Gründach auf einem Flachdach</summary>
+                <div class="mt-3 text-sm text-slate-700 space-y-2">
+                    <p>Ein begrüntes Flachdach wird genauso Schicht für Schicht zusammengestellt. Drei Besonderheiten:</p>
+                    <ul class="list-disc pl-5 space-y-1">
+                        <li><strong>Wassergesättigt rechnen:</strong> Substrat und Drainage saugen sich bei Regen voll. Für die Statik gilt deshalb ihre <em>wassergesättigte</em> Wichte (FLL-Dachbegrünungsrichtlinien) – sie ist deutlich höher als im trockenen Zustand.</li>
+                        <li><strong>Dünne Lagen als Flächenlast:</strong> Vliese, Abdichtung und der Bewuchs selbst werden direkt in kN/m² angegeben, nicht über d · γ.</li>
+                        <li><strong>Lasten auf dem Dach:</strong> Ein nicht begehbares Dach hat die Nutzlastkategorie H (keine Flächenlast, nur 1 kN für Wartung). Ein begehbarer Dachgarten zählt als Dachterrasse (Kategorie Z, 4,0 kN/m²). Dazu kommt immer die <strong>Schneelast</strong> nach DIN EN 1991-1-3 – sie ist nicht Teil dieses Moduls.</li>
+                    </ul>
+                    <figure class="la-figur">
+                        <div><canvas id="figGruendach" width="900" height="420" data-responsive="1" role="img" aria-label="Schnitt durch ein extensives Gründach auf einer Stahlbetondecke: Vegetation, Substrat, Filtervlies, Drainageelement, Schutzvlies, Abdichtung, Wärmedämmung, Dampfsperre, Stahlbetonplatte und Putz."></canvas></div>
+                        <figcaption>Extensives Gründach auf einer Stahlbetondecke. Größenordnung: Eine extensive Begrünung mit 10 cm Substrat wiegt wassergesättigt etwa 1,5 bis 2 kN/m², ein Dachgarten ein Vielfaches davon.</figcaption>
+                    </figure>
+                    <p>In Teil 2 kannst du die Vorlagen „Gründach extensiv“ und „Dachgarten“ laden und verändern.</p>
+                </div>
+            </details>
+
+            <details class="la-step bg-slate-50 border border-slate-200 rounded-xl p-4">
+                <summary class="font-bold text-slate-800 flex items-center gap-2"><span class="la-chevron">▶</span> Schritt 6: Bemessungswerte mit Sicherheitsbeiwerten</summary>
+                <div class="mt-3 text-sm text-slate-700 space-y-2">
+                    <p>Die Werte aus den Tabellen (g<sub>k</sub>, q<sub>k</sub>) heißen <strong>charakteristisch</strong>. Für die Statik nach Eurocode werden sie mit <strong>Teilsicherheitsbeiwerten</strong> vergrößert. So bleibt das Bauteil sicher, auch wenn Lasten etwas größer ausfallen als angenommen (DIN EN 1990 mit NA):</p>
+                    <div class="bg-white border border-slate-200 rounded-lg p-3 font-mono text-xs sm:text-sm space-y-1">
+                        <p>g<sub>d</sub> = γ<sub>G</sub> · g<sub>k</sub> = 1,35 · g<sub>k</sub> &nbsp;&nbsp;(ständige Last)</p>
+                        <p>q<sub>d</sub> = γ<sub>Q</sub> · q<sub>k</sub> = 1,5 · q<sub>k</sub> &nbsp;&nbsp;&nbsp;(veränderliche Last, mit Trennwandzuschlag)</p>
+                        <p><strong>E<sub>d</sub> = g<sub>d</sub> + q<sub>d</sub></strong> &nbsp;&nbsp;(Bemessungslast)</p>
+                    </div>
+                    <p>Die veränderliche Last bekommt den größeren Beiwert, weil sie schwerer vorherzusagen ist als das Eigengewicht. Der Index <strong>d</strong> steht für <em>design</em> (Bemessung).</p>
+                    <p><strong>Beispiel aus Schritt 4</strong> (1-m-Deckenstreifen):</p>
+                    <div id="bemessungBeispiel" class="bg-white border border-slate-200 rounded-lg p-3 font-mono text-xs sm:text-sm space-y-1"></div>
+                    <p>Mit E<sub>d</sub> rechnest du in Modul 4 die Auflagerkräfte A<sub>Ed</sub>, B<sub>Ed</sub> und das Moment M<sub>Ed</sub> – so wie in der Abschlussprüfung. Der Knopf in Teil 2 übergibt g<sub>d</sub> und q<sub>d</sub> direkt.</p>
+                    <p class="text-xs text-slate-500">Hinweis: Modul 6 (Spannungsnachweis) arbeitet mit zulässigen Spannungen nach DIN 1052:1988 bzw. DIN 1050. Dort gehören die charakteristischen Werte hinein, nicht die Bemessungswerte – sonst wäre die Sicherheit doppelt eingerechnet.</p>
+                </div>
+            </details>
+
+            <details class="la-step bg-slate-50 border border-slate-200 rounded-xl p-4">
+                <summary class="font-bold text-slate-800 flex items-center gap-2"><span class="la-chevron">▶</span> Schritt 7: Kontrolle</summary>
                 <div class="mt-3 text-sm text-slate-700 space-y-2">
                     <p><strong>Plausibilität prüfen:</strong> Eine Stahlbetondecke im Wohnungsbau hat meist g<sub>k</sub> ≈ 5 bis 8 kN/m², eine Holzbalkendecke nur etwa 0,5 bis 2 kN/m². Liegt dein Ergebnis weit daneben, prüfe die Einheiten (cm → m).</p>
-                    <p><strong>Typische Fehler:</strong> Dicke in cm statt in m eingesetzt · Trennwandzuschlag zum Eigengewicht gezählt · Einzugsbreite vergessen · Balkeneigengewicht vergessen.</p>
-                    <p><strong>Ausblick Bemessung:</strong> Für Nachweise nach Eurocode werden die Lasten mit Teilsicherheitsbeiwerten erhöht: q<sub>d</sub> = 1,35 · g<sub>k</sub> + 1,5 · q<sub>k</sub>. Modul 4 und Modul 6 in diesem Labor rechnen mit den charakteristischen Werten g<sub>k</sub> und q<sub>k</sub>; der Bemessungswert wird in Teil 2 zur Information mit angezeigt.</p>
+                    <p><strong>Typische Fehler:</strong> Dicke in cm statt in m eingesetzt · Trennwandzuschlag zum Eigengewicht gezählt (er gehört zu q) · Einzugsbreite vergessen · Balkeneigengewicht vergessen · Teilsicherheitsbeiwerte vertauscht (1,35 gehört zu g, 1,5 zu q).</p>
+                    <p><strong>Größenordnung:</strong> E<sub>d</sub> ist etwa 1,4-mal so groß wie g<sub>k</sub> + q<sub>k</sub>.</p>
                 </div>
             </details>
         </section>
@@ -154,7 +191,7 @@
                             <label for="r_typ" class="block text-xs font-bold text-slate-500 mb-1">Deckenart</label>
                             <select id="r_typ" class="w-full border border-slate-300 rounded-lg p-2 text-sm bg-white">
                                 <option value="beton">Stahlbetondecke</option>
-                                <option value="holz">Holzbalkendecke</option>
+                                <option value="holz">Balkendecke (Holzbalken oder Stahlträger)</option>
                             </select>
                         </div>
                         <div>
@@ -163,8 +200,11 @@
                                 <option value="">– eigener Aufbau –</option>
                                 <option value="beton-wohnung">Stahlbetondecke, Wohnung</option>
                                 <option value="beton-schule">Stahlbetondecke, Klassenraum</option>
+                                <option value="gruendach-extensiv">Gründach extensiv auf Stahlbetondecke</option>
+                                <option value="gruendach-intensiv">Dachgarten (Gründach intensiv), begehbar</option>
                                 <option value="holz-wohnung">Holzbalkendecke, Wohnung (Neubau)</option>
                                 <option value="holz-altbau">Holzbalkendecke, Altbau mit Schüttung</option>
+                                <option value="galerie-stahl">Galerie mit Stahlträgern IPE 160 und Siebdruckplatte</option>
                             </select>
                         </div>
                     </div>
@@ -176,18 +216,27 @@
                     </div>
 
                     <div id="balkenBox" class="hidden p-4 bg-white rounded-xl border border-slate-200 shadow-sm space-y-3">
-                        <h3 class="text-lg font-bold text-slate-700 flex items-center gap-2"><span class="lab-bar"></span> Holzbalken</h3>
+                        <h3 class="text-lg font-bold text-slate-700 flex items-center gap-2"><span class="lab-bar"></span> Balken</h3>
+                        <div>
+                            <label for="r_art" class="block text-xs font-bold text-slate-500 mb-1">Balkenart</label>
+                            <select id="r_art" class="w-full border border-slate-300 rounded-lg p-2 text-sm bg-white">
+                                <option value="holz">Holzbalken (Eigengewicht b · h · γ)</option>
+                                <option value="stahl">Stahlträger, z. B. IPE (Eigengewicht g aus der Profiltabelle)</option>
+                            </select>
+                        </div>
                         <div class="grid grid-cols-2 gap-3">
-                            <div><label for="r_b" class="block text-xs font-bold text-slate-500 mb-1">Breite b [cm]</label>
+                            <div><label for="r_b" id="r_b_label" class="block text-xs font-bold text-slate-500 mb-1">Breite b [cm]</label>
                                 <input type="number" id="r_b" min="1" max="60" step="1" class="w-full border border-slate-300 rounded p-1.5 text-sm"></div>
                             <div><label for="r_h" class="block text-xs font-bold text-slate-500 mb-1">Höhe h [cm]</label>
                                 <input type="number" id="r_h" min="1" max="60" step="1" class="w-full border border-slate-300 rounded p-1.5 text-sm"></div>
                             <div><label for="r_e" class="block text-xs font-bold text-slate-500 mb-1">Balkenabstand e [cm]</label>
                                 <input type="number" id="r_e" min="10" max="300" step="0.5" class="w-full border border-slate-300 rounded p-1.5 text-sm"></div>
-                            <div><label for="r_gh" class="block text-xs font-bold text-slate-500 mb-1">Wichte Holz γ [kN/m³]</label>
+                            <div id="r_gh_box"><label for="r_gh" class="block text-xs font-bold text-slate-500 mb-1">Wichte Holz γ [kN/m³]</label>
                                 <input type="number" id="r_gh" min="0.1" max="20" step="0.1" class="w-full border border-slate-300 rounded p-1.5 text-sm"></div>
+                            <div id="r_gs_box" class="hidden"><label for="r_gs" class="block text-xs font-bold text-slate-500 mb-1">Eigengewicht g [kN/m]</label>
+                                <input type="number" id="r_gs" min="0.01" max="5" step="0.001" class="w-full border border-slate-300 rounded p-1.5 text-sm"></div>
                         </div>
-                        <p class="text-xs text-slate-500">Schichten aus „Putz und Bekleidung“ werden unter den Balken gezeichnet, alle anderen darüber.</p>
+                        <p class="text-xs text-slate-500">Bei jeder Schicht lässt sich die Lage wählen: über, zwischen oder unter den Balken. Schichten zwischen den Balken (z. B. Dämmung im Gefach) zählen nur mit dem Gefachanteil (e − b) / e, weil der Balken selbst einen Teil der Breite einnimmt. Die Liste steht immer in der Reihenfolge der Zeichnung; mit ↑ und ↓ wandert eine Schicht an der Grenze in die nächste Lage.</p>
                     </div>
 
                     <div class="p-4 bg-white rounded-xl border border-slate-200 shadow-sm space-y-3">
@@ -219,11 +268,12 @@
                     </div>
                     <div class="bg-slate-50 p-4 sm:p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
                         <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2"><span class="lab-bar"></span> Lastzusammenstellung</h3>
+                        <p class="text-xs text-slate-500">Erst die charakteristischen Werte g<sub>k</sub> und q<sub>k</sub> aus Tabellen, dann die Bemessungswerte mit Sicherheitsbeiwerten – so wie in der Abschlussprüfung.</p>
                         <div id="r_tabelle" class="overflow-x-auto"></div>
                         <div id="r_strecke" class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm"></div>
                         <p id="r_hinweis" class="text-xs text-slate-500"></p>
                         <a id="btnZuModul4" href="modul-4-statik-einfeldtraeger.html" class="block text-center w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-2.5 rounded-lg shadow transition-colors text-sm">
-                            ➡️ Lasten an Modul 4 übergeben (Auflagerkräfte und Momente)
+                            ➡️ Bemessungswerte g<sub>d</sub> und q<sub>d</sub> an Modul 4 übergeben
                         </a>
                     </div>
                 </div>
@@ -232,7 +282,7 @@
 
         <!-- ================= TEIL 3: ÜBUNG ================= -->
         <section id="teilUebung" class="hidden space-y-6">
-            <div class="bg-white p-6 rounded-2xl border-2 border-dashed border-amber-300 shadow-sm">
+            <div class="bg-white p-4 sm:p-6 rounded-2xl border-2 border-dashed border-amber-300 shadow-sm">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-1">
                     <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
                         <span class="w-2 h-5 bg-amber-500 rounded-full"></span>
@@ -247,22 +297,22 @@
 
                 <div class="bg-amber-50/60 p-3 rounded-lg border border-amber-100 grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div class="flex items-center gap-2">
-                        <label for="ue_gk" class="text-xs font-mono w-28">g<sub>k</sub> =</label>
+                        <label for="ue_gk" class="text-xs font-mono w-28">g<sub>k</sub> (Fläche) =</label>
                         <input type="number" id="ue_gk" step="0.01" class="w-28 border border-slate-300 rounded px-2 py-1 text-sm">
                         <span class="text-xs">kN/m²</span><span id="fb_gk" class="text-lg"></span>
                     </div>
                     <div class="flex items-center gap-2">
-                        <label for="ue_qk" class="text-xs font-mono w-28">q<sub>k</sub> =</label>
+                        <label for="ue_qk" class="text-xs font-mono w-28">q<sub>k</sub> (Fläche) =</label>
                         <input type="number" id="ue_qk" step="0.01" class="w-28 border border-slate-300 rounded px-2 py-1 text-sm">
                         <span class="text-xs">kN/m²</span><span id="fb_qk" class="text-lg"></span>
                     </div>
                     <div class="flex items-center gap-2">
-                        <label for="ue_gs" class="text-xs font-mono w-28">g (Strecke) =</label>
+                        <label for="ue_gs" class="text-xs font-mono w-28">g<sub>d</sub> =</label>
                         <input type="number" id="ue_gs" step="0.01" class="w-28 border border-slate-300 rounded px-2 py-1 text-sm">
                         <span class="text-xs">kN/m</span><span id="fb_gs" class="text-lg"></span>
                     </div>
                     <div class="flex items-center gap-2">
-                        <label for="ue_qs" class="text-xs font-mono w-28">q (Strecke) =</label>
+                        <label for="ue_qs" class="text-xs font-mono w-28">q<sub>d</sub> =</label>
                         <input type="number" id="ue_qs" step="0.01" class="w-28 border border-slate-300 rounded px-2 py-1 text-sm">
                         <span class="text-xs">kN/m</span><span id="fb_qs" class="text-lg"></span>
                     </div>
@@ -282,32 +332,90 @@
     </div>
 
     <script src="labor.js?v=2026-11-04d"></script>
-    <script src="version.js?v=3.0"></script>
-    <script src="statik-core.js?v=2026-11-04d"></script>
+    <script src="version.js?v=3.3"></script>
+    <script src="statik-core.js?v=2026-11-06"></script>
     <script>
         const baustoff = id => LAST_BAUSTOFFE.find(b => b.id === id) || LAST_BAUSTOFFE[LAST_BAUSTOFFE.length - 1];
         const nutzung = kat => NUTZLASTEN.find(n => n.kat === kat) || NUTZLASTEN[1];
         const trennwand = id => TRENNWANDZUSCHLAEGE.find(t => t.id === id) || TRENNWANDZUSCHLAEGE[0];
         const UNTER_BALKEN = 'Putz und Bekleidung';
+        // Lage einer Schicht in der Holzbalkendecke: 'oben' (über den Balken), 'zwischen' (im Gefach), 'unten'.
+        // Ältere gespeicherte Stände ohne Lage: Putz und Bekleidung unten, alles andere oben.
+        const LAGEN = { oben: 'über den Balken', zwischen: 'zwischen den Balken', unten: 'unter den Balken' };
+        const lageVon = s => (LAGEN[s.lage] ? s.lage : (baustoff(s.id).gruppe === UNTER_BALKEN ? 'unten' : 'oben'));
+        const LAGE_FOLGE = ['oben', 'zwischen', 'unten'];
+
+        // Neue Schicht aus dem Katalog. Baustoffe mit fester Flächenlast (Vlies, Bewuchs, Abdichtung) haben
+        // g in kN/m² statt einer Wichte; ihre Dicke dient nur der Zeichnung.
+        const istFlaechenlast = s => s.g !== undefined && s.g !== null;
+        function neueSchicht(id, d, lage = 'oben') {
+            const b = baustoff(id);
+            return b.flaeche !== undefined
+                ? { id, name: b.name, d: d !== undefined ? d : b.dicke, g: b.flaeche, lage }
+                : { id, name: b.name, d, gamma: b.gamma, lage };
+        }
+
+        // Holzbalkendecke: Die Liste steht immer in der Reihenfolge der Zeichnung – erst die Schichten über den
+        // Balken, dann die im Gefach, dann die darunter. Innerhalb einer Lage bleibt die eingegebene Reihenfolge.
+        function ordneSchichten(d) {
+            if (d.typ !== 'holz') return;
+            d.schichten.forEach(s => { s.lage = lageVon(s); });
+            d.schichten = d.schichten
+                .map((s, i) => ({ s, i }))
+                .sort((a, b) => LAGE_FOLGE.indexOf(a.s.lage) - LAGE_FOLGE.indexOf(b.s.lage) || a.i - b.i)
+                .map(x => x.s);
+        }
+
+        // Schicht i um eine Stelle nach oben (richtung = -1) oder unten (+1) verschieben. Bei der Holzbalkendecke
+        // wechselt sie an der Grenze einer Lage in die benachbarte Lage (z. B. vom Gefach nach „über den Balken“).
+        function verschiebeSchicht(d, i, richtung) {
+            const l = d.schichten, j = i + richtung;
+            if (d.typ !== 'holz') {
+                if (j >= 0 && j < l.length) [l[i], l[j]] = [l[j], l[i]];
+                return;
+            }
+            const lage = lageVon(l[i]);
+            if (j >= 0 && j < l.length && lageVon(l[j]) === lage) {
+                [l[i], l[j]] = [l[j], l[i]];
+            } else {
+                const k = LAGE_FOLGE.indexOf(lage) + richtung;
+                if (k >= 0 && k < LAGE_FOLGE.length) l[i].lage = LAGE_FOLGE[k];
+            }
+            ordneSchichten(d);
+        }
+        const kannVerschieben = (d, i, richtung) => {
+            const j = i + richtung;
+            if (j >= 0 && j < d.schichten.length) return true;
+            if (d.typ !== 'holz') return false;
+            return richtung < 0 ? lageVon(d.schichten[i]) !== 'oben' : lageVon(d.schichten[i]) !== 'unten';
+        };
 
         // ================= Vorlagen =================
-        // Schichten: [Baustoff-ID, Dicke in cm] (Wichte aus dem Katalog), von oben nach unten
+        // Schichten: [Baustoff-ID, Dicke in cm, Lage bei Holzbalkendecken] (Wichte aus dem Katalog), von oben nach unten
         const VORLAGEN = {
             'beton-wohnung': { typ: 'beton', schichten: [['parkett', 1.5], ['zementestrich', 5], ['mineralwolle', 3], ['stahlbeton', 18], ['kalkzementputz', 1.5]],
                 nutzung: 'A2', trennwand: 'bis3', breite: 1, L: 4.5 },
             'beton-schule': { typ: 'beton', schichten: [['fliesen', 1], ['zementestrich', 6], ['eps', 4], ['stahlbeton', 22], ['kalkzementputz', 1.5]],
                 nutzung: 'C1', trennwand: 'bis5', breite: 1, L: 6 },
-            'holz-wohnung': { typ: 'holz', schichten: [['nadelholz', 2.4], ['holzfaser', 2], ['osb', 2.2], ['gipskarton', 1.25]],
+            'gruendach-extensiv': { typ: 'beton', schichten: [['vegetation-extensiv'], ['substrat-extensiv', 10], ['filtervlies'], ['drainage-element'],
+                ['schutzvlies'], ['abdichtung-bitumen'], ['eps', 16], ['dampfsperre'], ['stahlbeton', 20], ['kalkzementputz', 1.5]],
+                nutzung: 'H', trennwand: 'keiner', breite: 1, L: 5 },
+            'gruendach-intensiv': { typ: 'beton', schichten: [['vegetation-rasen'], ['substrat-intensiv', 25], ['filtervlies'], ['drainage-kies', 10],
+                ['schutzvlies'], ['abdichtung-bitumen'], ['eps', 16], ['dampfsperre'], ['stahlbeton', 24], ['kalkzementputz', 1.5]],
+                nutzung: 'Z', trennwand: 'keiner', breite: 1, L: 5 },
+            'galerie-stahl': { typ: 'holz', schichten: [['kunststoffboden', 1.5], ['siebdruckplatte']],
+                balken: { art: 'stahl', b: 8.2, h: 16, e: 62.5, gamma: 78.5, g: 0.158 }, nutzung: 'Z', trennwand: 'keiner', L: 6.25 },
+            'holz-wohnung': { typ: 'holz', schichten: [['nadelholz', 2.4], ['holzfaser', 2], ['osb', 2.2], ['mineralwolle', 12, 'zwischen'], ['gipskarton', 1.25, 'unten']],
                 balken: { b: 10, h: 22, e: 62.5, gamma: 4.2 }, nutzung: 'A2', trennwand: 'bis3', L: 4 },
-            'holz-altbau': { typ: 'holz', schichten: [['nadelholz', 2.8], ['sandkies', 6], ['kalkzementputz', 2]],
+            'holz-altbau': { typ: 'holz', schichten: [['nadelholz', 2.8], ['sandkies', 6, 'zwischen'], ['kalkzementputz', 2, 'unten']],
                 balken: { b: 14, h: 24, e: 80, gamma: 4.2 }, nutzung: 'A2', trennwand: 'keiner', L: 4.5 }
         };
         function ausVorlage(name) {
             const v = VORLAGEN[name];
             return {
                 typ: v.typ,
-                schichten: v.schichten.map(([id, d]) => ({ id, d, gamma: baustoff(id).gamma, name: baustoff(id).name })),
-                balken: v.balken ? { ...v.balken } : { b: 10, h: 22, e: 62.5, gamma: 4.2 },
+                schichten: v.schichten.map(([id, d, lage]) => neueSchicht(id, d, lage || 'oben')),
+                balken: { art: 'holz', ...(v.balken || { b: 10, h: 22, e: 62.5, gamma: 4.2 }) },
                 nutzung: v.nutzung, trennwand: v.trennwand, breite: v.breite || 1, L: v.L
             };
         }
@@ -316,8 +424,11 @@
         function rechne(decke) {
             const holz = decke.typ === 'holz';
             return berechneDeckenlast({
-                schichten: decke.schichten.map(s => ({ name: s.name, d: s.d / 100, gamma: s.gamma })),
-                balken: holz ? { b: decke.balken.b / 100, h: decke.balken.h / 100, gamma: decke.balken.gamma, e: decke.balken.e / 100 } : null,
+                schichten: decke.schichten.map(s => istFlaechenlast(s)
+                    ? { name: s.name, g: s.g, lage: holz ? lageVon(s) : 'oben' }
+                    : { name: s.name, d: s.d / 100, gamma: s.gamma, lage: holz ? lageVon(s) : 'oben' }),
+                balken: holz ? { b: decke.balken.b / 100, h: decke.balken.h / 100, gamma: decke.balken.gamma, e: decke.balken.e / 100,
+                    g: decke.balken.art === 'stahl' ? decke.balken.g : undefined } : null,
                 nutzlast: nutzung(decke.nutzung).qk,
                 trennwand: trennwand(decke.trennwand).wert,
                 breite: holz ? undefined : decke.breite
@@ -329,12 +440,29 @@
 
         // ================= Lastzusammenstellung als Tabelle =================
         function lastTabelle(decke, r, { mitRechnung = true } = {}) {
-            const zeilen = r.schichten.map((s, i) => `<tr><td>${s.name}</td><td>${fmt(decke.schichten[i].d)} cm</td><td>${fmt(s.gamma, 1)}</td>` +
-                `<td>${mitRechnung ? `<span class="la-rechnung">${fmtM(s.d)} · ${fmt(s.gamma)} = </span>` : ''}<strong>${fmt(s.g, 3)}</strong></td></tr>`);
+            const b0 = decke.balken;
+            const gefach = s => (s.faktor !== 1 ? '<br><span class="text-xs text-slate-500">im Gefach, · (e − b) / e</span>' : '');
+            const name = t => t.replace(/ \(([^)]*)\)/, ' <span class="la-zusatz">($1)</span>');
+            const zeilen = r.schichten.map((s, i) => {
+                const fl = istFlaechenlast(decke.schichten[i]);
+                const faktor = s.faktor !== 1 ? ` · ${fmt(s.faktor, 3)}` : '';
+                const rechnung = fl
+                    ? (faktor ? `${fmt(decke.schichten[i].g, 3)}${faktor} = ` : 'Flächenlast ')
+                    : `${fmtM(s.d)} · ${fmt(s.gamma)}${faktor} = `;
+                return `<tr><td>${name(s.name)}${gefach(s)}</td><td>${fl ? '–' : `${fmt(decke.schichten[i].d)} cm`}</td><td>${fl ? '–' : fmt(s.gamma, 1)}</td>` +
+                    `<td>${mitRechnung ? `<span class="la-rechnung">${rechnung}</span>` : ''}<strong>${fmt(s.g, 3)}</strong></td></tr>`;
+            });
+            if (r.schichten.some(s => s.faktor !== 1)) {
+                zeilen.push(`<tr><td colspan="4" class="text-xs text-slate-600" style="white-space: normal;">Schichten zwischen den Balken füllen nur das Gefach: ` +
+                    `(e − b) / e = (${fmt(b0.e, 1)} − ${fmt(b0.b)}) / ${fmt(b0.e, 1)} = <strong>${fmt(r.gefachanteil, 3)}</strong></td></tr>`);
+            }
             if (decke.typ === 'holz') {
                 const b = decke.balken;
-                zeilen.push(`<tr><td>Holzbalken b/h = ${fmt(b.b)}/${fmt(b.h)} cm, e = ${fmt(b.e, 1)} cm</td><td>–</td><td>${fmt(b.gamma, 1)}</td>` +
-                    `<td>${mitRechnung ? `<span class="la-rechnung">${fmtM(b.b / 100)} · ${fmtM(b.h / 100)} · ${fmt(b.gamma)} / ${fmtM(b.e / 100)} = </span>` : ''}<strong>${fmt(r.gBalkenFlaeche, 3)}</strong></td></tr>`);
+                zeilen.push(b.art === 'stahl'
+                    ? `<tr><td>Stahlträger h = ${fmt(b.h)} cm, e = ${fmt(b.e, 1)} cm (g = ${fmt(b.g, 3)} kN/m)</td><td>–</td><td>–</td>` +
+                        `<td>${mitRechnung ? `<span class="la-rechnung">${fmt(b.g, 3)} / ${fmtM(b.e / 100)} = </span>` : ''}<strong>${fmt(r.gBalkenFlaeche, 3)}</strong></td></tr>`
+                    : `<tr><td>Holzbalken b/h = ${fmt(b.b)}/${fmt(b.h)} cm, e = ${fmt(b.e, 1)} cm</td><td>–</td><td>${fmt(b.gamma, 1)}</td>` +
+                        `<td>${mitRechnung ? `<span class="la-rechnung">${fmtM(b.b / 100)} · ${fmtM(b.h / 100)} · ${fmt(b.gamma)} / ${fmtM(b.e / 100)} = </span>` : ''}<strong>${fmt(r.gBalkenFlaeche, 3)}</strong></td></tr>`);
             }
             const n = nutzung(decke.nutzung), t = trennwand(decke.trennwand);
             return `<table class="la-table">
@@ -351,7 +479,12 @@
         const FARBEN = {
             stahlbeton: '#94a3b8', nadelholz: '#d9a35b', bsh: '#d9a35b', zementestrich: '#cbd5e1', calciumsulfatestrich: '#e2e8f0',
             gussasphalt: '#64748b', fliesen: '#fca5a5', parkett: '#b7793f', osb: '#e0b46c', mineralwolle: '#fde68a', eps: '#e0f2fe',
-            holzfaser: '#d6c29a', sandkies: '#e7d3a7', kalkzementputz: '#f1f5f9', gipskarton: '#f8fafc', eigen: '#ddd6fe'
+            holzfaser: '#d6c29a', sandkies: '#e7d3a7', kalkzementputz: '#f1f5f9', gipskarton: '#f8fafc', eigen: '#ddd6fe',
+            'vegetation-extensiv': '#86efac', 'vegetation-rasen': '#4ade80', 'vegetation-straeucher': '#22c55e',
+            'substrat-extensiv': '#a16207', 'substrat-intensiv': '#854d0e', filtervlies: '#f5f5f4', 'drainage-kies': '#d6d3d1',
+            'drainage-blaehschiefer': '#a8a29e', 'drainage-element': '#475569', schutzvlies: '#e7e5e4',
+            'abdichtung-bitumen': '#1f2937', dampfsperre: '#6b7280', stahl: '#64748b', kunststoffboden: '#93c5fd',
+            siebdruckplatte: '#92400e', xps: '#bae6fd', kalkgipsputz: '#f8fafc'
         };
 
         function pfeilReihe(ctx, x0, x1, yOben, yUnten, farbe) {
@@ -383,6 +516,24 @@
                 ctx.beginPath();
                 for (let px = x; px <= x + w; px += 2) ctx.lineTo(px, y + h / 2 + Math.sin((px - x) / 4) * Math.min(h / 2 - 1, 5));
                 ctx.stroke();
+            } else if (id.startsWith('vegetation')) {            // Halme
+                ctx.strokeStyle = 'rgba(21, 128, 61, 0.7)';
+                for (let px = x + 3; px < x + w; px += 6) {
+                    ctx.beginPath(); ctx.moveTo(px, y + h); ctx.lineTo(px + ((px / 6) % 2 ? 2 : -2), y + 1); ctx.stroke();
+                }
+            } else if (id.startsWith('substrat')) {               // Krümel
+                ctx.fillStyle = 'rgba(254, 243, 199, 0.55)';
+                for (let px = x + 4; px < x + w; px += 9) for (let py = y + 4; py < y + h; py += 7) {
+                    ctx.beginPath(); ctx.arc(px + (py % 3), py, 1.4, 0, Math.PI * 2); ctx.fill();
+                }
+            } else if (id === 'drainage-kies' || id === 'drainage-blaehschiefer') {
+                ctx.strokeStyle = 'rgba(68, 64, 60, 0.6)';
+                for (let px = x + 5; px < x + w; px += 10) for (let py = y + 5; py < y + h; py += 8) {
+                    ctx.beginPath(); ctx.arc(px + (py % 2) * 4, py, 3, 0, Math.PI * 2); ctx.stroke();
+                }
+            } else if (id === 'drainage-element') {               // Noppen
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
+                for (let px = x + 4; px < x + w; px += 10) ctx.fillRect(px, y + 1, 5, Math.max(1, h - 2));
             } else if (id === 'sandkies') {
                 for (let px = x + 3; px < x + w; px += 7) for (let py = y + 3; py < y + h; py += 6) {
                     ctx.beginPath(); ctx.arc(px + (py % 2) * 3, py, 0.9, 0, Math.PI * 2); ctx.fill();
@@ -401,6 +552,20 @@
             ctx.restore();
         }
 
+        // Stahlträger (I-Profil) im Querschnitt: Mitte xm, Oberkante y, Flanschbreite bw, Höhe hb
+        function stahlProfil(ctx, xm, y, bw, hb) {
+            const tf = Math.max(1.5, hb * 0.07), tw = Math.max(1.5, bw * 0.09);
+            ctx.save();
+            ctx.fillStyle = '#64748b'; ctx.strokeStyle = '#334155'; ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(xm - bw / 2, y); ctx.lineTo(xm + bw / 2, y); ctx.lineTo(xm + bw / 2, y + tf); ctx.lineTo(xm + tw / 2, y + tf);
+            ctx.lineTo(xm + tw / 2, y + hb - tf); ctx.lineTo(xm + bw / 2, y + hb - tf); ctx.lineTo(xm + bw / 2, y + hb);
+            ctx.lineTo(xm - bw / 2, y + hb); ctx.lineTo(xm - bw / 2, y + hb - tf); ctx.lineTo(xm - tw / 2, y + hb - tf);
+            ctx.lineTo(xm - tw / 2, y + tf); ctx.lineTo(xm - bw / 2, y + tf); ctx.closePath();
+            ctx.fill(); ctx.stroke();
+            ctx.restore();
+        }
+
         function text(ctx, t, x, y, { farbe = '#334155', font = '12px sans-serif', align = 'left' } = {}) {
             ctx.save(); ctx.font = font; ctx.fillStyle = farbe; ctx.textAlign = align; fillTextSub(ctx, t, x, y); ctx.restore();
         }
@@ -411,14 +576,17 @@
             const swMax = Math.round(W * (schmal ? 0.62 : 0.46));
             const rand = Math.max(0.1 * b.e, b.b / 2 + 1);   // Abstand vom Rand bis zur Mitte des ersten Balkens
             const proCm = Math.min(9, swMax / (2 * rand + 2 * b.e));
-            const schnitt = decke.schichten.reduce((a, s) => a + Math.max(s.d * proCm, 5), 0) + b.h * proCm;
+            const schnitt = decke.schichten.filter(s => lageVon(s) !== 'zwischen').reduce((a, s) => a + Math.max(s.d * proCm, 5), 0) + b.h * proCm;
             return { swMax, rand, proCm, schnitt };
         }
 
         // Höhe der Zeichenfläche: Stahlbeton fest, Holzbalkendecke passend zum maßstäblichen Schnitt
         function deckenHoehe(W, decke) {
             const schmal = W < 600;
-            if (decke.typ !== 'holz') return schmal ? 440 : 380;
+            if (decke.typ !== 'holz') {   // viele Schichten (z. B. Gründach) brauchen Platz für die Beschriftung
+                const n = decke.schichten.length;
+                return schmal ? Math.max(440, 78 + n * 30 + 76) : Math.max(380, 78 + n * 18 + 40);
+            }
             const { schnitt } = holzMassstab(W, decke);
             const marken = decke.schichten.length + 1;
             return schmal
@@ -432,7 +600,7 @@
             const r = rechne(decke);
             const holz = decke.typ === 'holz';
             const schmal = W < 600;
-            const x0 = 14, swMax = holz ? holzMassstab(W, decke).swMax : Math.round(W * (schmal ? 0.42 : 0.46));
+            const x0 = 14, swMax = holz ? holzMassstab(W, decke).swMax : Math.round(W * (schmal ? 0.36 : 0.46));
             const legende = holz && schmal;
             const lastOben = 22, lastUnten = 64, top = 78, verfuegbar = holz ? H - top : H - top - 16 - (schmal ? 30 : 0);
             const kurz = name => (W < 760 ? name.split(' (')[0] : name);   // wenig Platz: Zusatz in Klammern weglassen
@@ -440,8 +608,20 @@
             // Maßstab: Bei der Holzbalkendecke gilt derselbe Maßstab waagerecht und senkrecht, damit die Balken
             // im richtigen Verhältnis b : h erscheinen. Gezeigt werden drei Balken; der mittlere mit seiner
             // vollen Einzugsbreite e. Die Breite der Zeichnung ergibt sich daraus.
-            const gesamtCm = decke.schichten.reduce((a, s) => a + s.d, 0) + (holz ? decke.balken.h : 0);
+            const gesamtCm = decke.schichten.filter(s => !holz || lageVon(s) !== 'zwischen').reduce((a, s) => a + s.d, 0) + (holz ? decke.balken.h : 0);
+            const mindest = holz ? 5 : 7;   // dünne Schichten mindestens so hoch zeichnen, damit man sie sieht
             let proCm = Math.min(9, verfuegbar / Math.max(gesamtCm, 1));
+            if (!holz) {
+                // Maßstab so wählen, dass der Schnitt samt der auf die Mindesthöhe vergrößerten dünnen Schichten passt
+                const dicken = decke.schichten.map(s => s.d);
+                for (let k = 0; k < 6; k++) {
+                    const duenn = dicken.filter(d => d * proCm < mindest).length;
+                    const dick = dicken.filter(d => d * proCm >= mindest).reduce((a, d) => a + d, 0);
+                    const neu = Math.min(9, (verfuegbar - duenn * mindest) / Math.max(dick, 0.1));
+                    if (Math.abs(neu - proCm) < 1e-6) break;
+                    proCm = neu;
+                }
+            }
             let sw = swMax, rand = 0;
             if (holz) {
                 const b = decke.balken, m = holzMassstab(W, decke);
@@ -456,9 +636,11 @@
             // Eigengewicht: auf dem Handy unter der Zeichnung, sonst neben der Nutzlast
             text(ctx, `Eigengewicht g_{k} = ${fmt(r.gk, 2)} kN/m²`, schmal ? x0 : x0 + sw + 14, schmal ? H - 22 : lastOben + 10, { farbe: '#334155', font: 'bold 12px sans-serif' });
 
-            const oben = holz ? decke.schichten.filter(s => baustoff(s.id).gruppe !== UNTER_BALKEN) : decke.schichten;
-            const unten = holz ? decke.schichten.filter(s => baustoff(s.id).gruppe === UNTER_BALKEN) : [];
-            const mindest = holz ? 5 : 7;
+            // Flächenlast je Schicht aus dem Rechenkern (bei Schichten im Gefach schon mit (e − b) / e abgemindert)
+            const gVon = s => r.schichten[decke.schichten.indexOf(s)].g;
+            const oben = holz ? decke.schichten.filter(s => lageVon(s) === 'oben') : decke.schichten;
+            const zwischen = holz ? decke.schichten.filter(s => lageVon(s) === 'zwischen') : [];
+            const unten = holz ? decke.schichten.filter(s => lageVon(s) === 'unten') : [];
             let ueberhoeht = false;
             const hoehe = d => { const h = d * proCm; if (h < mindest) { ueberhoeht = true; return mindest; } return h; };
 
@@ -467,7 +649,7 @@
             oben.forEach(s => {
                 const h = hoehe(s.d);
                 schichtFlaeche(ctx, s.id, x0, y, sw, h);
-                marken.push({ y: y + h / 2, id: s.id, t1: `${kurz(s.name)}, ${fmt(s.d)} cm`, t2: `${fmt(s.d / 100 * s.gamma, 3)} kN/m²` });
+                marken.push({ y: y + h / 2, id: s.id, t1: istFlaechenlast(s) ? kurz(s.name) : `${kurz(s.name)}, ${fmt(s.d)} cm`, t2: `${fmt(gVon(s), 3)} kN/m²` });
                 y += h;
             });
             let einzug = null;
@@ -484,17 +666,31 @@
                 ctx.restore();
                 ctx.save(); ctx.strokeStyle = '#cbd5e1'; ctx.setLineDash([4, 4]);
                 ctx.beginPath(); ctx.moveTo(x0, y); ctx.lineTo(x0, y + hb); ctx.moveTo(x0 + sw, y); ctx.lineTo(x0 + sw, y + hb); ctx.stroke(); ctx.restore();
-                mitten.forEach(m => schichtFlaeche(ctx, 'nadelholz', m - bw / 2, y, bw, hb));
-                marken.push({ y: y + hb / 2, id: 'nadelholz', t1: `Holzbalken ${fmt(b.b)}/${fmt(b.h)} cm`, t2: `${fmt(r.gBalkenFlaeche, 3)} kN/m²${schmal ? '' : ' (über e verteilt)'}` });
+                // Schichten im Gefach: von unten nach oben gestapelt (z. B. Dämmung auf der Deckenbekleidung),
+                // die Balken werden danach darübergezeichnet und unterbrechen sie
+                const hz = zwischen.map(z => Math.min(hoehe(z.d), hb));
+                let yz = y + hb - Math.min(hb, hz.reduce((a, h) => a + h, 0));
+                zwischen.forEach((z, k) => {
+                    schichtFlaeche(ctx, z.id, x0, yz, sw, hz[k]);
+                    marken.push({ y: yz + hz[k] / 2, id: z.id, t1: `${istFlaechenlast(z) ? kurz(z.name) : `${kurz(z.name)}, ${fmt(z.d)} cm`}${schmal ? '' : ' (im Gefach)'}`, t2: `${fmt(gVon(z), 3)} kN/m²` });
+                    yz += hz[k];
+                });
+                const stahl = b.art === 'stahl';
+                mitten.forEach(m => (stahl ? stahlProfil(ctx, m, y, bw, hb) : schichtFlaeche(ctx, 'nadelholz', m - bw / 2, y, bw, hb)));
+                marken.push({ y: y + hb / 2, id: stahl ? 'stahl' : 'nadelholz',
+                    t1: stahl ? `Stahlträger, h = ${fmt(b.h)} cm` : `Holzbalken ${fmt(b.b)}/${fmt(b.h)} cm`,
+                    t2: `${fmt(r.gBalkenFlaeche, 3)} kN/m²${schmal ? '' : ' (über e verteilt)'}` });
                 einzug = [mitten[1] - b.e * proCmX / 2, mitten[1] + b.e * proCmX / 2];
                 y += hb;
             }
             unten.forEach(s => {
                 const h = hoehe(s.d);
                 schichtFlaeche(ctx, s.id, x0, y, sw, h);
-                marken.push({ y: y + h / 2, id: s.id, t1: `${kurz(s.name)}, ${fmt(s.d)} cm`, t2: `${fmt(s.d / 100 * s.gamma, 3)} kN/m²` });
+                marken.push({ y: y + h / 2, id: s.id, t1: istFlaechenlast(s) ? kurz(s.name) : `${kurz(s.name)}, ${fmt(s.d)} cm`, t2: `${fmt(gVon(s), 3)} kN/m²` });
                 y += h;
             });
+
+            marken.sort((a, b) => a.y - b.y);   // Beschriftung in der Reihenfolge von oben nach unten
 
             // Bemaßung der Einzugsbreite direkt unter dem Schnitt
             if (einzug) {
@@ -650,14 +846,24 @@
         // ================= Teil 1 =================
         const BEISPIEL = ausVorlage('beton-wohnung');
         responsiveCanvas(document.getElementById('figLasten'), W => (W < 600 ? 400 : 360), (ctx, W, H) => zeichneDecke(ctx, W, H, BEISPIEL)).neu();
+        const GRUENDACH = ausVorlage('gruendach-extensiv');
+        responsiveCanvas(document.getElementById('figGruendach'), W => deckenHoehe(W, GRUENDACH), (ctx, W, H) => zeichneDecke(ctx, W, H, GRUENDACH)).neu();
         responsiveCanvas(document.getElementById('figWuerfel'), W => (W < 600 ? 330 : 230), figWuerfel).neu();
         responsiveCanvas(document.getElementById('figEinzug'), W => (W < 600 ? 320 : 270), figEinzug).neu();
 
-        document.getElementById('baustoffTabelle').innerHTML = `<table class="la-table"><thead><tr><th>Baustoff</th><th>Wichte γ [kN/m³]</th></tr></thead><tbody>` +
-            LAST_BAUSTOFFE.filter(b => b.id !== 'eigen').map(b => `<tr><td>${b.name}</td><td>${fmt(b.gamma, 1)}</td></tr>`).join('') + `</tbody></table>`;
+        document.getElementById('baustoffTabelle').innerHTML = `<table class="la-table"><thead><tr><th>Baustoff</th><th>Wichte γ bzw. Flächenlast g</th></tr></thead><tbody>` +
+            LAST_BAUSTOFFE.filter(b => b.id !== 'eigen').map(b => `<tr><td>${b.name}</td><td>${b.flaeche !== undefined
+                ? `g = ${fmt(b.flaeche, 2)} kN/m²` : `γ = ${fmt(b.gamma, 1)} kN/m³`}</td></tr>`).join('') + `</tbody></table>`;
         document.getElementById('nutzlastTabelle').innerHTML = `<table class="la-table"><thead><tr><th>Kategorie und Nutzung</th><th>q<sub>k</sub> [kN/m²]</th></tr></thead><tbody>` +
             NUTZLASTEN.map(n => `<tr><td><strong>${n.kat}</strong> – ${n.name}</td><td>${fmt(n.qk, 1)}</td></tr>`).join('') + `</tbody></table>`;
         document.getElementById('beispielTabelle').innerHTML = lastTabelle(BEISPIEL, rechne(BEISPIEL));
+        (function bemessungBeispiel() {
+            const r = rechne(BEISPIEL);
+            document.getElementById('bemessungBeispiel').innerHTML =
+                `<p>g<sub>k</sub> = ${fmt(r.gk, 3)} kN/m² · 1,00 m = ${fmt(r.gStrecke, 3)} kN/m &nbsp;→&nbsp; g<sub>d</sub> = 1,35 · ${fmt(r.gStrecke, 3)} = <strong>${fmt(r.gdStrecke, 3)} kN/m</strong></p>` +
+                `<p>q<sub>k</sub> = ${fmt(r.qk, 2)} kN/m² · 1,00 m = ${fmt(r.qStrecke, 3)} kN/m &nbsp;→&nbsp; q<sub>d</sub> = 1,5 · ${fmt(r.qStrecke, 3)} = <strong>${fmt(r.qdStrecke, 3)} kN/m</strong></p>` +
+                `<p>E<sub>d</sub> = ${fmt(r.gdStrecke, 3)} + ${fmt(r.qdStrecke, 3)} = <strong>${fmt(r.EdStrecke, 3)} kN/m</strong></p>`;
+        })();
 
         // ================= Teil 2: Rechner =================
         let decke = ausVorlage('beton-wohnung');
@@ -682,36 +888,51 @@
                 box.className = 'p-3 bg-slate-50 rounded-lg border border-slate-200 space-y-2';
                 box.innerHTML = `
                     <div class="flex items-center justify-between gap-2">
-                        <span class="text-xs font-bold text-slate-500">Schicht ${i + 1}</span>
+                        <span class="text-xs font-bold text-slate-500">Schicht ${i + 1}${decke.typ === 'holz' ? ` · ${LAGEN[lageVon(s)]}` : ''}</span>
                         <div class="la-schicht-aktionen">
-                            <button type="button" class="la-mini-btn" data-aktion="hoch" aria-label="Schicht ${i + 1} nach oben" ${i === 0 ? 'disabled' : ''}>↑</button>
-                            <button type="button" class="la-mini-btn" data-aktion="runter" aria-label="Schicht ${i + 1} nach unten" ${i === decke.schichten.length - 1 ? 'disabled' : ''}>↓</button>
+                            <button type="button" class="la-mini-btn" data-aktion="hoch" aria-label="Schicht ${i + 1} nach oben" ${kannVerschieben(decke, i, -1) ? '' : 'disabled'}>↑</button>
+                            <button type="button" class="la-mini-btn" data-aktion="runter" aria-label="Schicht ${i + 1} nach unten" ${kannVerschieben(decke, i, 1) ? '' : 'disabled'}>↓</button>
                             <button type="button" class="la-mini-btn" data-aktion="weg" aria-label="Schicht ${i + 1} entfernen" ${decke.schichten.length === 1 ? 'disabled' : ''}>✕</button>
                         </div>
                     </div>
                     <div class="la-schicht">
                         <div><label for="s_stoff${i}" class="block text-xs font-bold text-slate-500 mb-1">Baustoff</label>
                             <select id="s_stoff${i}" class="w-full border border-slate-300 rounded p-1.5 text-sm bg-white">${baustoffOptionen(s.id)}</select></div>
-                        <div><label for="s_d${i}" class="block text-xs font-bold text-slate-500 mb-1">d [cm]</label>
+                        <div><label for="s_d${i}" class="block text-xs font-bold text-slate-500 mb-1">${istFlaechenlast(s) ? 'd [cm], nur Zeichnung' : 'd [cm]'}</label>
                             <input type="number" id="s_d${i}" min="0.1" max="100" step="0.1" value="${s.d}" class="w-full border border-slate-300 rounded p-1.5 text-sm"></div>
-                        <div><label for="s_g${i}" class="block text-xs font-bold text-slate-500 mb-1">γ [kN/m³]</label>
-                            <input type="number" id="s_g${i}" min="0.1" max="100" step="0.1" value="${s.gamma}" class="w-full border border-slate-300 rounded p-1.5 text-sm"></div>
+                        ${istFlaechenlast(s)
+                            ? `<div><label for="s_fl${i}" class="block text-xs font-bold text-slate-500 mb-1">g [kN/m²]</label>
+                                <input type="number" id="s_fl${i}" min="0" max="10" step="0.01" value="${s.g}" class="w-full border border-slate-300 rounded p-1.5 text-sm"></div>`
+                            : `<div><label for="s_g${i}" class="block text-xs font-bold text-slate-500 mb-1">γ [kN/m³]</label>
+                                <input type="number" id="s_g${i}" min="0.1" max="100" step="0.1" value="${s.gamma}" class="w-full border border-slate-300 rounded p-1.5 text-sm"></div>`}
                     </div>
+                    ${decke.typ === 'holz' ? `<div><label for="s_lage${i}" class="block text-xs font-bold text-slate-500 mb-1">Lage</label>
+                        <select id="s_lage${i}" class="w-full border border-slate-300 rounded p-1.5 text-sm bg-white">${Object.entries(LAGEN)
+                            .map(([k, t]) => `<option value="${k}"${lageVon(s) === k ? ' selected' : ''}>${t}</option>`).join('')}</select></div>` : ''}
                     ${s.id === 'eigen' ? `<div><label for="s_name${i}" class="block text-xs font-bold text-slate-500 mb-1">Bezeichnung</label>
                         <input type="text" id="s_name${i}" value="${s.name.replace(/"/g, '&quot;')}" class="w-full border border-slate-300 rounded p-1.5 text-sm"></div>` : ''}`;
                 box.querySelector(`#s_stoff${i}`).addEventListener('change', e => {
-                    const b = baustoff(e.target.value);
-                    decke.schichten[i] = { ...decke.schichten[i], id: b.id, name: b.name, gamma: b.gamma };
+                    const alt = decke.schichten[i], neu = neueSchicht(e.target.value, undefined, lageVon(alt));
+                    if (!istFlaechenlast(neu)) neu.d = istFlaechenlast(alt) ? 5 : alt.d;   // Dicke behalten, wenn sie eine Rolle spielt
+                    decke.schichten[i] = neu;
                     vorlageZuruecksetzen(); baueSchichten(); berechneRechner();
                 });
                 box.querySelector(`#s_d${i}`).addEventListener('input', e => { decke.schichten[i].d = parseFloat(e.target.value); vorlageZuruecksetzen(); berechneRechner(); });
-                box.querySelector(`#s_g${i}`).addEventListener('input', e => { decke.schichten[i].gamma = parseFloat(e.target.value); vorlageZuruecksetzen(); berechneRechner(); });
+                const gEin = box.querySelector(`#s_g${i}`), flEin = box.querySelector(`#s_fl${i}`);
+                if (gEin) gEin.addEventListener('input', e => { decke.schichten[i].gamma = parseFloat(e.target.value); vorlageZuruecksetzen(); berechneRechner(); });
+                if (flEin) flEin.addEventListener('input', e => { decke.schichten[i].g = parseFloat(e.target.value); vorlageZuruecksetzen(); berechneRechner(); });
+                const lage = box.querySelector(`#s_lage${i}`);
+                if (lage) lage.addEventListener('change', e => {
+                    decke.schichten[i].lage = e.target.value;
+                    ordneSchichten(decke);
+                    vorlageZuruecksetzen(); baueSchichten(); berechneRechner();
+                });
                 const name = box.querySelector(`#s_name${i}`);
                 if (name) name.addEventListener('input', e => { decke.schichten[i].name = e.target.value.trim() || 'Eigener Baustoff'; berechneRechner(); });
                 box.querySelectorAll('[data-aktion]').forEach(btn => btn.addEventListener('click', () => {
                     const a = btn.dataset.aktion, l = decke.schichten;
-                    if (a === 'hoch' && i > 0) [l[i - 1], l[i]] = [l[i], l[i - 1]];
-                    if (a === 'runter' && i < l.length - 1) [l[i + 1], l[i]] = [l[i], l[i + 1]];
+                    if (a === 'hoch') verschiebeSchicht(decke, i, -1);
+                    if (a === 'runter') verschiebeSchicht(decke, i, 1);
                     if (a === 'weg' && l.length > 1) l.splice(i, 1);
                     vorlageZuruecksetzen(); baueSchichten(); berechneRechner();
                 }));
@@ -722,11 +943,14 @@
         function vorlageZuruecksetzen() { document.getElementById('r_vorlage').value = ''; }
 
         function formularAusDecke() {
+            ordneSchichten(decke);
             document.getElementById('r_typ').value = decke.typ;
             document.getElementById('r_b').value = decke.balken.b;
             document.getElementById('r_h').value = decke.balken.h;
             document.getElementById('r_e').value = decke.balken.e;
             document.getElementById('r_gh').value = decke.balken.gamma;
+            document.getElementById('r_art').value = decke.balken.art || 'holz';
+            document.getElementById('r_gs').value = decke.balken.g !== undefined ? decke.balken.g : 0.158;
             document.getElementById('r_nutzung').value = decke.nutzung;
             document.getElementById('r_trennwand').value = decke.trennwand;
             document.getElementById('r_breite').value = decke.breite;
@@ -748,13 +972,23 @@
             };
             decke.schichten.forEach((s, i) => {
                 pruefe(s.d, 0.1, 100, `Schicht ${i + 1} (${s.name}), Dicke in cm`, `s_d${i}`);
-                pruefe(s.gamma, 0.1, 100, `Schicht ${i + 1} (${s.name}), Wichte`, `s_g${i}`);
+                if (istFlaechenlast(s)) pruefe(s.g, 0, 10, `Schicht ${i + 1} (${s.name}), Flächenlast in kN/m²`, `s_fl${i}`);
+                else pruefe(s.gamma, 0.1, 100, `Schicht ${i + 1} (${s.name}), Wichte`, `s_g${i}`);
             });
             if (holz) {
                 pruefe(decke.balken.b, 1, 60, 'Balkenbreite b in cm', 'r_b');
                 pruefe(decke.balken.h, 1, 60, 'Balkenhöhe h in cm', 'r_h');
                 pruefe(decke.balken.e, 10, 300, 'Balkenabstand e in cm', 'r_e');
-                pruefe(decke.balken.gamma, 0.1, 20, 'Wichte Holz', 'r_gh');
+                const stahl = decke.balken.art === 'stahl';
+                document.getElementById('r_gh_box').classList.toggle('hidden', stahl);
+                document.getElementById('r_gs_box').classList.toggle('hidden', !stahl);
+                document.getElementById('r_b_label').textContent = stahl ? 'Flanschbreite b [cm]' : 'Breite b [cm]';
+                if (stahl) pruefe(decke.balken.g, 0.01, 5, 'Eigengewicht des Stahlträgers in kN/m', 'r_gs');
+                else pruefe(decke.balken.gamma, 0.1, 20, 'Wichte Holz', 'r_gh');
+                const imGefach = decke.schichten.filter(s => lageVon(s) === 'zwischen').reduce((a, s) => a + (s.d || 0), 0);
+                if (imGefach > decke.balken.h + 1e-9) {
+                    fehler.push(`Die Schichten zwischen den Balken sind zusammen ${fmt(imGefach)} cm dick, die Balken aber nur ${fmt(decke.balken.h)} cm hoch.`);
+                }
             } else {
                 pruefe(decke.breite, 0.1, 20, 'Einzugsbreite in m', 'r_breite');
             }
@@ -776,24 +1010,39 @@
                 ? `${fmt(r.gSchichten, 3)} · ${fmt(r.einzugsbreite, 3)} + ${fmt(r.gBalkenStrecke, 3)}`
                 : `${fmt(r.gk, 2)} · ${fmt(r.einzugsbreite, 2)}`;
             const kachel = (titel, wert, rechnung, farbe) => `<div class="p-3 rounded-lg border ${farbe}">
-                <p class="text-xs font-bold uppercase tracking-wide opacity-80">${titel}</p>
-                <p class="text-xl font-extrabold">${fmt(wert, 2)} kN/m</p>
+                <p class="text-xs font-bold tracking-wide opacity-80">${titel}</p>
+                <p class="text-xl font-extrabold">${fmt(wert, 3)} kN/m</p>
                 <p class="text-xs font-mono mt-1">${rechnung}</p></div>`;
+            const ueberschrift = t => `<p class="sm:col-span-3 text-xs font-bold text-slate-500 mt-1">${t}</p>`;
             document.getElementById('r_strecke').innerHTML =
-                kachel('Streckenlast g', r.gStrecke, gRechnung, 'bg-white border-slate-200 text-slate-800') +
-                kachel('Streckenlast q', r.qStrecke, `${fmt(r.qk, 2)} · ${fmt(r.einzugsbreite, holz ? 3 : 2)}`, 'bg-rose-50 border-rose-200 text-rose-900') +
-                kachel('Summe g + q', r.gesamtStrecke, `${fmt(r.gStrecke, 2)} + ${fmt(r.qStrecke, 2)}`, 'bg-lime-50 border-lime-200 text-lime-900');
+                ueberschrift('① Charakteristische Werte (ohne Sicherheitsbeiwerte)') +
+                kachel('Ständige Last g<sub>k</sub>', r.gStrecke, gRechnung, 'bg-white border-slate-200 text-slate-800') +
+                kachel('Nutzlast q<sub>k</sub>', r.qStrecke, `${fmt(r.qk, 2)} · ${fmt(r.einzugsbreite, holz ? 3 : 2)}`, 'bg-white border-slate-200 text-slate-800') +
+                kachel('Summe g<sub>k</sub> + q<sub>k</sub>', r.gesamtStrecke, `${fmt(r.gStrecke, 3)} + ${fmt(r.qStrecke, 3)}`, 'bg-white border-slate-200 text-slate-600') +
+                ueberschrift('② Bemessungswerte nach DIN EN 1990 (Teilsicherheitsbeiwerte γ<sub>G</sub> = 1,35 und γ<sub>Q</sub> = 1,5)') +
+                kachel('g<sub>d</sub> = 1,35 · g<sub>k</sub>', r.gdStrecke, `1,35 · ${fmt(r.gStrecke, 3)}`, 'bg-slate-50 border-slate-300 text-slate-900') +
+                kachel('q<sub>d</sub> = 1,5 · q<sub>k</sub>', r.qdStrecke, `1,5 · ${fmt(r.qStrecke, 3)}`, 'bg-rose-50 border-rose-200 text-rose-900') +
+                kachel('E<sub>d</sub> = g<sub>d</sub> + q<sub>d</sub>', r.EdStrecke, `${fmt(r.gdStrecke, 3)} + ${fmt(r.qdStrecke, 3)}`, 'bg-lime-50 border-lime-300 text-lime-900');
 
-            const hinweise = [`Streckenlasten für ${breiteText}${holz ? ', Balkeneigengewicht b · h · γ eingerechnet' : ''}.`,
-                `Zur Information – Bemessungswert nach Eurocode: q<sub>d</sub> = 1,35 · ${fmt(r.gStrecke, 2)} + 1,5 · ${fmt(r.qStrecke, 2)} = <strong>${fmt(r.qdStrecke, 2)} kN/m</strong>.`];
+            const balkenText = !holz ? '' : (decke.balken.art === 'stahl' ? ', Eigengewicht der Stahlträger eingerechnet' : ', Balkeneigengewicht b · h · γ eingerechnet');
+            const hinweise = [`Streckenlasten für ${breiteText}${balkenText}. Modul 4 rechnet mit den Bemessungswerten g<sub>d</sub> und q<sub>d</sub>.`];
             if (holz && r.gk > 3) hinweise.push('⚠️ Für eine Holzbalkendecke ist g<sub>k</sub> ungewöhnlich hoch. Stimmen die Dicken (in cm) und Wichten?');
             if (!holz && (r.gk < 2 || r.gk > 12)) hinweise.push('⚠️ Für eine Stahlbetondecke liegt g<sub>k</sub> ungewöhnlich niedrig oder hoch. Stimmen die Dicken (in cm)?');
             if (nutzung(decke.nutzung).qk >= 5 && decke.trennwand !== 'keiner') hinweise.push('Hinweis: Bei Nutzlasten ab 5 kN/m² ist laut Norm kein Trennwandzuschlag nötig.');
+            const gruen = decke.schichten.some(s => baustoff(s.id).gruppe === 'Gründach und Flachdach');
+            if (nutzung(decke.nutzung).dach || gruen || decke.nutzung === 'Z') {
+                hinweise.push('🌱 Dach: Zusätzlich wirkt die <strong>Schneelast</strong> nach DIN EN 1991-1-3 (abhängig von Schneelastzone und Geländehöhe) – sie ist hier nicht enthalten.');
+            }
+            if (nutzung(decke.nutzung).dach) hinweise.push('Kategorie H: keine Flächenlast, nur eine Einzellast Q<sub>k</sub> = 1 kN für Wartungsarbeiten (nicht gleichzeitig mit Schnee anzusetzen).');
+            if (nutzung(decke.nutzung).dach && decke.trennwand !== 'keiner') hinweise.push('Auf einem Dach gibt es keine Trennwände – Trennwandzuschlag auf „kein Zuschlag“ stellen.');
+            if (gruen && decke.schichten.some(s => s.id.startsWith('substrat'))) hinweise.push('Substrat und Drainage sind wassergesättigt angesetzt – so verlangen es die FLL-Dachbegrünungsrichtlinien für die Statik.');
             document.getElementById('r_hinweis').innerHTML = hinweise.join('<br>');
 
-            const runde = x => Math.round(x * 100) / 100;
+            // Übergabe an Modul 4: Bemessungswerte g_d und q_d, dazu g_k und q_k zur Anzeige der Herkunft
+            const runde = x => Math.round(x * 1000) / 1000;
             document.getElementById('btnZuModul4').href =
-                `modul-4-statik-einfeldtraeger.html?g=${runde(r.gStrecke)}&q=${runde(r.qStrecke)}&L=${runde(decke.L)}`;
+                `modul-4-statik-einfeldtraeger.html?g=${runde(r.gdStrecke)}&q=${runde(r.qdStrecke)}&L=${runde(decke.L)}` +
+                `&gk=${runde(r.gStrecke)}&qk=${runde(r.qStrecke)}&bem=1`;
         }
 
         const zahl = id => parseFloat(document.getElementById(id).value);
@@ -810,11 +1059,16 @@
             formularAusDecke(); berechneRechner();
         });
         document.getElementById('btnSchichtNeu').addEventListener('click', () => {
-            const b = baustoff('zementestrich');
-            decke.schichten.push({ id: b.id, name: b.name, d: 5, gamma: b.gamma });
+            decke.schichten.push(neueSchicht('zementestrich', 5, 'oben'));
+            ordneSchichten(decke);   // neue Schicht ans Ende der Schichten über den Balken
             vorlageZuruecksetzen(); baueSchichten(); berechneRechner();
         });
-        [['r_b', 'b'], ['r_h', 'h'], ['r_e', 'e'], ['r_gh', 'gamma']].forEach(([id, k]) =>
+        document.getElementById('r_art').addEventListener('change', e => {
+            decke.balken.art = e.target.value;
+            if (decke.balken.art === 'stahl' && decke.balken.g === undefined) decke.balken.g = 0.158;
+            vorlageZuruecksetzen(); deckenZeichnung.neu(); berechneRechner();
+        });
+        [['r_b', 'b'], ['r_h', 'h'], ['r_e', 'e'], ['r_gh', 'gamma'], ['r_gs', 'g']].forEach(([id, k]) =>
             document.getElementById(id).addEventListener('input', () => { decke.balken[k] = zahl(id); vorlageZuruecksetzen(); berechneRechner(); }));
         document.getElementById('r_nutzung').addEventListener('change', e => { decke.nutzung = e.target.value; vorlageZuruecksetzen(); berechneRechner(); });
         document.getElementById('r_trennwand').addEventListener('change', e => { decke.trennwand = e.target.value; vorlageZuruecksetzen(); berechneRechner(); });
@@ -830,17 +1084,37 @@
         let sessionLog3 = [];
         const zufall = (min, max, step) => Math.round((min + Math.random() * (max - min)) / step) * step;
         const wahl = liste => liste[Math.floor(Math.random() * liste.length)];
-        const schicht = (id, d) => ({ id, name: baustoff(id).name, d: Math.round(d * 100) / 100, gamma: baustoff(id).gamma });
+        const schicht = (id, d, lage = 'oben') => neueSchicht(id, d === undefined ? undefined : Math.round(d * 100) / 100, lage);
 
         function neueAufgabe() {
-            const holz = Math.random() < 0.5;
+            const art = wahl(['holz', 'holz', 'beton', 'beton', 'gruen']);   // Gründach in etwa jeder fünften Aufgabe
+            const holz = art === 'holz', gruen = art === 'gruen';
             let d;
-            if (holz) {
+            if (gruen) {
+                const intensiv = Math.random() < 0.35;
+                const schichten = intensiv
+                    ? [schicht('vegetation-rasen'), schicht('substrat-intensiv', zufall(20, 35, 5)), schicht('filtervlies'), schicht('drainage-kies', zufall(6, 12, 2))]
+                    : [schicht('vegetation-extensiv'), schicht('substrat-extensiv', zufall(6, 12, 1)), schicht('filtervlies'),
+                        wahl([schicht('drainage-element'), schicht('drainage-blaehschiefer', zufall(4, 8, 1))])];
+                schichten.push(schicht('schutzvlies'), schicht('abdichtung-bitumen'), schicht('eps', zufall(12, 20, 2)), schicht('dampfsperre'),
+                    schicht('stahlbeton', zufall(18, 26, 2)));
+                d = { typ: 'beton', schichten, balken: { b: 10, h: 22, e: 62.5, gamma: 4.2 }, nutzung: intensiv ? 'Z' : 'H',
+                    trennwand: 'keiner', breite: zufall(2.5, 5, 0.25), L: 5, gruen: true };
+            } else if (holz) {
+                const balken = { b: wahl([8, 10, 12, 14]), h: wahl([18, 20, 22, 24, 26]), e: wahl([50, 62.5, 70, 80]), gamma: 4.2 };
                 const schichten = [schicht('nadelholz', zufall(2.2, 3.2, 0.2))];
-                schichten.push(wahl([schicht('holzfaser', zufall(2, 4, 1)), schicht('mineralwolle', zufall(2, 4, 1)), schicht('sandkies', zufall(4, 8, 1))]));
+                schichten.push(wahl([schicht('holzfaser', zufall(2, 4, 1)), schicht('mineralwolle', zufall(2, 4, 1))]));
                 if (Math.random() < 0.5) schichten.push(schicht('osb', wahl([1.8, 2.2, 2.5])));
-                schichten.push(wahl([schicht('gipskarton', 1.25), schicht('kalkzementputz', zufall(1.5, 2, 0.5))]));
-                d = { typ: 'holz', schichten, balken: { b: wahl([8, 10, 12, 14]), h: wahl([18, 20, 22, 24, 26]), e: wahl([50, 62.5, 70, 80]), gamma: 4.2 },
+                // meist eine Schicht im Gefach: Dämmung oder (Altbau) Schüttung, höchstens so dick wie der Balken
+                if (Math.random() < 0.7) {
+                    schichten.push(wahl([
+                        schicht('mineralwolle', zufall(8, Math.min(16, balken.h - 2), 2), 'zwischen'),
+                        schicht('holzfaser', zufall(8, Math.min(16, balken.h - 2), 2), 'zwischen'),
+                        schicht('sandkies', zufall(4, 8, 1), 'zwischen')
+                    ]));
+                }
+                schichten.push(wahl([schicht('gipskarton', 1.25, 'unten'), schicht('kalkzementputz', zufall(1.5, 2, 0.5), 'unten')]));
+                d = { typ: 'holz', schichten, balken,
                     nutzung: wahl(['A2', 'A3', 'B1']), trennwand: wahl(['keiner', 'bis3', 'bis5']), breite: 1, L: 4 };
             } else {
                 const schichten = [];
@@ -859,12 +1133,15 @@
             const n = nutzung(d.nutzung), t = trennwand(d.trennwand);
             const textBalken = holz
                 ? `Holzbalkendecke mit Balken b/h = ${fmt(d.balken.b)}/${fmt(d.balken.h)} cm (γ = ${fmt(d.balken.gamma, 1)} kN/m³) im Abstand e = ${fmt(d.balken.e, 1)} cm.`
-                : `Stahlbetondecke, die auf einem Unterzug aufliegt. Einzugsbreite des Unterzugs: ${fmt(d.breite, 2)} m (Eigengewicht des Unterzugs nicht berücksichtigen).`;
+                : `${gruen ? `${d.nutzung === 'Z' ? 'Begehbarer Dachgarten' : 'Extensives Gründach'} auf einer Stahlbetondecke` : 'Stahlbetondecke'}, die auf einem Unterzug aufliegt. Einzugsbreite des Unterzugs: ${fmt(d.breite, 2)} m (Eigengewicht des Unterzugs nicht berücksichtigen).`;
             document.getElementById('uebungText').innerHTML = `<strong>Aufgabe:</strong> ${textBalken} Nutzung: ${n.kat} – ${n.name}. ` +
-                `Trennwände: ${t.name}. Bestimme die Flächenlasten g<sub>k</sub> und q<sub>k</sub> und die Streckenlasten g und q auf ${holz ? 'einem Balken' : 'dem Unterzug'}. ` +
+                (gruen ? 'Die Schneelast bleibt in dieser Aufgabe unberücksichtigt. ' : `Trennwände: ${t.name}. `) +
+                `Bestimme die charakteristischen Flächenlasten g<sub>k</sub> und q<sub>k</sub> und daraus die Bemessungswerte g<sub>d</sub> und q<sub>d</sub> als Streckenlasten auf ${holz ? 'einem Balken' : 'dem Unterzug'} (γ<sub>G</sub> = 1,35, γ<sub>Q</sub> = 1,5). ` +
                 `Die Nutzlast liest du in Teil 1, Schritt 3 ab.`;
-            document.getElementById('uebungAufbau').innerHTML = `<table class="la-table"><thead><tr><th>Schicht (von oben)</th><th>Dicke</th><th>γ [kN/m³]</th></tr></thead><tbody>` +
-                d.schichten.map(s => `<tr><td>${s.name}</td><td>${fmt(s.d)} cm</td><td>${fmt(s.gamma, 1)}</td></tr>`).join('') + `</tbody></table>`;
+            document.getElementById('uebungAufbau').innerHTML = `<table class="la-table"><thead><tr><th>Schicht (von oben)</th>${holz ? '<th>Lage</th>' : ''}<th>Dicke</th><th>γ bzw. g</th></tr></thead><tbody>` +
+                d.schichten.map(s => `<tr><td>${s.name}</td>${holz ? `<td>${LAGEN[lageVon(s)]}</td>` : ''}` +
+                    (istFlaechenlast(s) ? `<td>–</td><td>g = ${fmt(s.g, 2)} kN/m²</td>` : `<td>${fmt(s.d)} cm</td><td>γ = ${fmt(s.gamma, 1)} kN/m³</td>`) + `</tr>`).join('') + `</tbody></table>` +
+                (holz && d.schichten.some(s => lageVon(s) === 'zwischen') ? '<p class="text-xs text-slate-500 mt-1">Tipp: Eine Schicht zwischen den Balken füllt nur das Gefach – der Balken nimmt die Breite b ein.</p>' : '');
             ['ue_gk', 'ue_qk', 'ue_gs', 'ue_qs'].forEach(id => { document.getElementById(id).value = ''; });
             ['fb_gk', 'fb_qk', 'fb_gs', 'fb_qs'].forEach(id => { document.getElementById(id).textContent = ''; });
             document.getElementById('uebungErgebnis').classList.add('hidden');
@@ -878,8 +1155,8 @@
             const pruefungen = [
                 ['ue_gk', 'fb_gk', 'g_k', r.gk, 'kN/m²'],
                 ['ue_qk', 'fb_qk', 'q_k', r.qk, 'kN/m²'],
-                ['ue_gs', 'fb_gs', 'g (Strecke)', r.gStrecke, 'kN/m'],
-                ['ue_qs', 'fb_qs', 'q (Strecke)', r.qStrecke, 'kN/m']
+                ['ue_gs', 'fb_gs', 'g_d', r.gdStrecke, 'kN/m'],
+                ['ue_qs', 'fb_qs', 'q_d', r.qdStrecke, 'kN/m']
             ];
             let richtig = 0;
             const details = [];
@@ -893,9 +1170,11 @@
             // Typischen Fehler erkennen: Dicke in cm statt m eingesetzt
             const gEingabe = parseFloat(document.getElementById('ue_gk').value);
             const cmFehler = !isNaN(gEingabe) && r.gSchichten > 0 && Math.abs(gEingabe / 100 - r.gk) <= 0.05 * r.gk;
-            const strecke = holz
-                ? `g = ${fmt(r.gSchichten, 3)} · ${fmt(r.einzugsbreite, 3)} + ${fmt(r.gBalkenStrecke, 3)} = <strong>${fmt(r.gStrecke, 2)} kN/m</strong> &nbsp;|&nbsp; q = ${fmt(r.qk, 2)} · ${fmt(r.einzugsbreite, 3)} = <strong>${fmt(r.qStrecke, 2)} kN/m</strong>`
-                : `g = ${fmt(r.gk, 2)} · ${fmt(r.einzugsbreite, 2)} = <strong>${fmt(r.gStrecke, 2)} kN/m</strong> &nbsp;|&nbsp; q = ${fmt(r.qk, 2)} · ${fmt(r.einzugsbreite, 2)} = <strong>${fmt(r.qStrecke, 2)} kN/m</strong>`;
+            const gkRechnung = holz
+                ? `${fmt(r.gSchichten, 3)} · ${fmt(r.einzugsbreite, 3)} + ${fmt(r.gBalkenStrecke, 3)}`
+                : `${fmt(r.gk, 3)} · ${fmt(r.einzugsbreite, 2)}`;
+            const strecke = `g<sub>k</sub> = ${gkRechnung} = ${fmt(r.gStrecke, 3)} kN/m → <strong>g<sub>d</sub> = 1,35 · ${fmt(r.gStrecke, 3)} = ${fmt(r.gdStrecke, 3)} kN/m</strong><br>` +
+                `q<sub>k</sub> = ${fmt(r.qk, 2)} · ${fmt(r.einzugsbreite, holz ? 3 : 2)} = ${fmt(r.qStrecke, 3)} kN/m → <strong>q<sub>d</sub> = 1,5 · ${fmt(r.qStrecke, 3)} = ${fmt(r.qdStrecke, 3)} kN/m</strong>`;
             const box = document.getElementById('uebungErgebnis');
             box.classList.remove('hidden', 'bg-emerald-50', 'text-emerald-900', 'bg-amber-50', 'text-amber-900');
             box.classList.add(richtig === 4 ? 'bg-emerald-50' : 'bg-amber-50', richtig === 4 ? 'text-emerald-900' : 'text-amber-900');

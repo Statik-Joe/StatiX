@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modul 7: Durchlaufträger | Bautechnik-Labor</title>
-    <link rel="stylesheet" href="tailwind.min.css?v=2026-11-04d">
+    <link rel="stylesheet" href="tailwind.min.css?v=2026-11-06">
     <link rel="stylesheet" href="labor.css?v=2026-11-04d">
     <style>
         .dlt-table { border-collapse: collapse; width: 100%; font-size: 0.8125rem; }
@@ -164,7 +164,7 @@
                     </div>
                     <figure class="dlt-figur">
                         <div><canvas id="figLastaufteilung" width="900" height="350" data-responsive="1" role="img" aria-label="Die Gleichlast auf dem Zweifeldträger wird an den Querkraft-Nullpunkten bei 0,375 L und 1,625 L geteilt: 18,75 kN gehen nach A, 62,50 kN nach B und 18,75 kN nach C."></canvas></div>
-                        <figcaption>So kannst du dir die Aufteilung vorstellen: Die Stellen mit Q = 0 teilen die Last. Alles links vom ersten Nullpunkt trägt A ab, alles zwischen den Nullpunkten trägt B, der Rest geht nach C. Zusammen ergibt das wieder die Gesamtlast.</figcaption>
+                        <figcaption>So kannst du dir die Aufteilung vorstellen: Die Stellen mit V = 0 teilen die Last. Alles links vom ersten Nullpunkt trägt A ab, alles zwischen den Nullpunkten trägt B, der Rest geht nach C. Zusammen ergibt das wieder die Gesamtlast.</figcaption>
                     </figure>
                     <p>Stimmt die Summe nicht, wurde ein Beiwert falsch abgelesen oder mit dem falschen Faktor multipliziert (q · L statt q · L²).</p>
                 </div>
@@ -174,7 +174,7 @@
                 <summary class="font-bold text-slate-800 flex items-center gap-2"><span class="dlt-chevron">▶</span> Schritt 6: Querkraft- und Momentenverlauf verstehen</summary>
                 <div class="mt-3 text-sm text-slate-700 space-y-2">
                     <ul class="list-disc pl-5 space-y-1">
-                        <li>Die <strong>Querkraft</strong> springt an jedem Auflager um die Auflagerkraft. Wo Q = 0 ist, hat das Feld sein größtes Moment – beim Zweifeldträger mit Gleichlast bei x = 0,375 · L vom Endauflager.</li>
+                        <li>Die <strong>Querkraft</strong> springt an jedem Auflager um die Auflagerkraft. Wo V = 0 ist, hat das Feld sein größtes Moment – beim Zweifeldträger mit Gleichlast bei x = 0,375 · L vom Endauflager.</li>
                         <li>Über dem Zwischenauflager ist das Moment <strong>negativ</strong> (Stützmoment). Der Träger hat dort Zug an der <strong>Oberseite</strong> – im Stahlbetonbau liegt die Bewehrung deshalb über der Stütze oben.</li>
                         <li>Zwischen Feld und Stütze wechselt das Moment das Vorzeichen (Momentennullpunkt).</li>
                     </ul>
@@ -309,8 +309,8 @@
     </div>
 
     <script src="labor.js?v=2026-11-04d"></script>
-    <script src="version.js?v=3.0"></script>
-    <script src="statik-core.js?v=2026-11-04d"></script>
+    <script src="version.js?v=3.3"></script>
+    <script src="statik-core.js?v=2026-11-06"></script>
     <script>
         const AUFLAGER = ['A', 'B', 'C', 'D', 'E'];
         const FARBE = {
@@ -514,7 +514,7 @@
             });
 
             const qY = 330, mY = 495, amp = 58;
-            text(ctx, 'Querkraftverlauf Q(x) [kN]', 20, qY - amp - 14, { farbe: FARBE.Q, font: 'bold 13px sans-serif', align: 'left' });
+            text(ctx, 'Querkraftverlauf V(x) [kN]', 20, qY - amp - 14, { farbe: FARBE.Q, font: 'bold 13px sans-serif', align: 'left' });
             text(ctx, 'Biegemomentenverlauf M(x) [kNm]', 20, mY - amp - 30, { farbe: FARBE.M, font: 'bold 13px sans-serif', align: 'left' });
             [qY, mY].forEach(y => {
                 ctx.save();
@@ -570,7 +570,7 @@
                 });
                 ctx.restore();
                 fm.forEach(f => {
-                    if (f.M > 1e-6) text(ctx, 'Q = 0', px(f.x) + 5, qY - 7, { farbe: FARBE.Q, font: 'bold 11px sans-serif', align: 'left', hinterlegt: true });
+                    if (f.M > 1e-6) text(ctx, 'V = 0', px(f.x) + 5, qY - 7, { farbe: FARBE.Q, font: 'bold 11px sans-serif', align: 'left', hinterlegt: true });
                 });
                 momentenNullpunkte(dlt).forEach(x => {
                     text(ctx, 'M = 0', px(x), mY + 28, { farbe: FARBE.MText, font: 'bold 11px sans-serif', W, hinterlegt: true });
@@ -763,7 +763,7 @@
             // Querkraftverlauf darunter
             const qY = 266, amp = 34;
             const maxQ = Math.max(...[0, 1, 2].map(i => Math.abs(bspZweifeld.schnitt(i * L + 1e-6).Q)), 1e-6);
-            text(ctx, 'Q', pad - 16, qY + 4, { farbe: FARBE.Q, font: 'bold 12px sans-serif' });
+            text(ctx, 'V', pad - 16, qY + 4, { farbe: FARBE.Q, font: 'bold 12px sans-serif' });
             ctx.save();
             ctx.strokeStyle = FARBE.grau; ctx.lineWidth = 1.2;
             ctx.beginPath(); ctx.moveTo(px(0), qY); ctx.lineTo(px(2 * L), qY); ctx.stroke();
@@ -779,7 +779,7 @@
             ctx.lineWidth = 1.2;
             [fm[0].x, fm[1].x].forEach(x => { ctx.beginPath(); ctx.moveTo(px(x), beam - 36); ctx.lineTo(px(x), qY + amp); ctx.stroke(); });
             ctx.restore();
-            [fm[0].x, fm[1].x].forEach(x => text(ctx, 'Q = 0', px(x), qY + amp + 14, { farbe: FARBE.Q, font: 'bold 11px sans-serif', W }));
+            [fm[0].x, fm[1].x].forEach(x => text(ctx, 'V = 0', px(x), qY + amp + 14, { farbe: FARBE.Q, font: 'bold 11px sans-serif', W }));
             const summe = '18,75 + 62,50 + 18,75 = 100 kN = q · 2 · L ✓';
             text(ctx, summe, W / 2, 338, { farbe: '#1e293b', font: 'bold 12px sans-serif', W });
         }

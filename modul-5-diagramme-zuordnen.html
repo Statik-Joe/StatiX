@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modul 5: Diagramme zuordnen | Bautechnik-Labor</title>
-    <link rel="stylesheet" href="tailwind.min.css?v=2026-11-04d">
+    <link rel="stylesheet" href="tailwind.min.css?v=2026-11-06">
     <link rel="stylesheet" href="labor.css?v=2026-11-04d">
     <style>
         .option-card {
@@ -70,13 +70,13 @@
                 🅰️ Teil A: System → Linie
             </button>
             <button id="btnPartB" class="lab-tab">
-                🅱️ Teil B: M ↔ Q direkt
+                🅱️ Teil B: M ↔ V direkt
             </button>
         </div>
 
         <label class="flex items-center gap-2 mb-6 text-xs font-semibold text-slate-500 cursor-pointer w-fit">
             <input type="checkbox" id="qFlipToggle" class="w-4 h-4 rounded">
-            🔄 Andere Q-Vorzeichenkonvention (positive Querkraft nach unten statt nach oben)
+            🔄 Andere V-Vorzeichenkonvention (positive Querkraft nach unten statt nach oben)
         </label>
 
         <!-- ================= TEIL A ================= -->
@@ -93,7 +93,7 @@
             <summary class="cursor-pointer font-bold text-indigo-900">Schrittweise Hinweise zu Teil A</summary>
             <ol class="mt-2 list-decimal space-y-1 pl-5 text-sm text-slate-700">
                 <li>Suche zuerst die Stelle, an der eine Einzellast oder das Ende einer Streckenlast liegt.</li>
-                <li>Eine Einzellast erzeugt einen Sprung in Q und einen Knick in M. Eine Streckenlast macht Q schräg und M gekrümmt.</li>
+                <li>Eine Einzellast erzeugt einen Sprung in V und einen Knick in M. Eine Streckenlast macht V schräg und M gekrümmt.</li>
                 <li>Vergleiche danach die Lage der Sprünge und Knicke sowie das Vorzeichen auf beiden Seiten der Nulllinie.</li>
             </ol>
         </details>
@@ -133,7 +133,7 @@
             </button>
         </div>
 
-        <p class="text-xs text-slate-400 text-center mb-6">💡 Merke: An einer Einzellast macht Q einen Sprung, M einen Knick. Bei einer Streckenlast ist Q linear (schräge Gerade) und M eine Parabel.</p>
+        <p class="text-xs text-slate-400 text-center mb-6">💡 Merke: An einer Einzellast macht V einen Sprung, M einen Knick. Bei einer Streckenlast ist V linear (schräge Gerade) und M eine Parabel.</p>
         </div>
 
         <!-- ================= TEIL B ================= -->
@@ -149,9 +149,9 @@
         <details class="mb-4 rounded-lg border border-amber-200 bg-white p-3">
             <summary class="cursor-pointer font-bold text-amber-900">Schrittweise Hinweise zu Teil B</summary>
             <ol class="mt-2 list-decimal space-y-1 pl-5 text-sm text-slate-700">
-                <li>Q beschreibt die Steigung des Momentenverlaufs: M'(x) = Q(x).</li>
-                <li>Wo Q null wird und das Vorzeichen wechselt, liegt bei M ein Hoch- oder Tiefpunkt.</li>
-                <li>Ein Sprung in Q durch eine Einzellast entspricht einem Knick in M. Achte zusätzlich auf das Vorzeichen.</li>
+                <li>V beschreibt die Steigung des Momentenverlaufs: M'(x) = V(x).</li>
+                <li>Wo V null wird und das Vorzeichen wechselt, liegt bei M ein Hoch- oder Tiefpunkt.</li>
+                <li>Ein Sprung in V durch eine Einzellast entspricht einem Knick in M. Achte zusätzlich auf das Vorzeichen.</li>
             </ol>
         </details>
 
@@ -191,7 +191,7 @@
             </button>
         </div>
 
-        <p class="text-xs text-slate-400 text-center mb-6">💡 Merke: M'(x) = Q(x). Wo Q = 0 ist, hat M ein Extremum (Hoch-/Tiefpunkt). Wo Q springt (Einzellast), hat M einen Knick.</p>
+        <p class="text-xs text-slate-400 text-center mb-6">💡 Merke: M'(x) = V(x). Wo V = 0 ist, hat M ein Extremum (Hoch-/Tiefpunkt). Wo V springt (Einzellast), hat M einen Knick.</p>
         </div>
 
         <!-- Protokoll-Export -->
@@ -204,11 +204,11 @@
     </div>
 
     <script src="labor.js?v=2026-11-04d"></script>
-    <script src="version.js?v=3.0"></script>
-    <script src="statik-core.js?v=2026-11-04d"></script>
+    <script src="version.js?v=3.3"></script>
+    <script src="statik-core.js?v=2026-11-06"></script>
     <script>
         // ================= Physik: geschlossene Formeln pro Systemtyp =================
-        // Konvention wie in Modul 4: Q positiv nach oben, M positiv nach unten (Zugseite) aufgetragen.
+        // Konvention wie in Modul 4: Querkraft V positiv nach oben, M positiv nach unten (Zugseite) aufgetragen.
 
         function computeSeries(task) {
             const { L, L_kl, L_kr, pointLoads, udls } = task;
@@ -653,7 +653,7 @@
                 drawDiagram(`ans${i}`, opt.curve, isM, task.computed.xmin, task.computed.xmax, sharedMax, null, markerXs);
             });
             resetAnswerCards('#partA .option-card', 'summary', 'cap', task.options, isM);
-            const label = isM ? 'Momentenverlauf M(x)' : 'Querkraftverlauf Q(x)';
+            const label = isM ? 'Momentenverlauf M(x)' : 'Querkraftverlauf V(x)';
             document.getElementById('taskPrompt').innerText = `Welches Diagramm zeigt den korrekten ${label} für dieses System?`;
             document.getElementById('feedbackBox').classList.add('hidden');
             document.getElementById('btnNext').classList.add('hidden');
@@ -741,7 +741,7 @@
             exportProtocol(5, 'Diagramme zuordnen', document.getElementById('studentName4').value, sessionLog4);
         });
 
-        // ================= TEIL B: M ↔ Q direkt (ohne System) =================
+        // ================= TEIL B: M ↔ V direkt (ohne System) =================
         let currentTaskB = null;
         let answeredB = false;
 
@@ -777,7 +777,7 @@
             });
             resetAnswerCards('#partB .option-card', 'summaryB', 'capB', task.options, isAnswerM);
 
-            const label = isAnswerM ? 'Momentenverlauf M(x)' : 'Querkraftverlauf Q(x)';
+            const label = isAnswerM ? 'Momentenverlauf M(x)' : 'Querkraftverlauf V(x)';
             document.getElementById('taskPromptB').innerText = `Welcher ${label} passt zur oben gezeigten Linie (gleiches System)?`;
             document.getElementById('feedbackBoxB').classList.add('hidden');
             document.getElementById('btnNextB').classList.add('hidden');

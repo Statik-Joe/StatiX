@@ -17,8 +17,9 @@ Modulnummern ab Labor 3.0: 1 Kräfteaddition, 2 Hebelgesetz, 3 Lastannahme, 4 Sc
 - Einheiten: Kräfte in kN, Momente in kNm, Streckenlasten in kN/m, Längen in m. Modul 2: Massen in kg, F = m · g im Rechenweg in N und kN.
 - Zahlen mit deutschem Dezimalkomma und Leerzeichen vor der Einheit („2,5 kN“): `fmt()` aus `labor.js` verwenden.
 - Indizes tiefgestellt: im HTML `<sub>`, im Canvas `fillTextSub(ctx, 'M_{max} = …')`.
-- Vorzeichen wie in Modul 4 (Schnittgrößen): Q positiv nach oben, M positiv nach unten (Zugseite). Querkraftsprünge senkrecht zeichnen – Diagramme über `diagrammStellen()` auswerten.
-- Modul 6 (Spannungsnachweis) arbeitet mit klassischen zulässigen Spannungen (Holz nach DIN 1052:1988, Stahl nach DIN 1050), nicht mit Eurocode-Bemessungswerten. Modul 3 (Lastannahme) nutzt dagegen charakteristische Lasten nach DIN EN 1991-1-1 mit NA – bei Übergängen zwischen den Modulen auf diesen Unterschied achten.
+- Querkraft heißt **V** (wie in der Abschlussprüfung), nicht Q. Vorzeichen wie in Modul 4 (Schnittgrößen): V positiv nach oben, M positiv nach unten (Zugseite). Im Code heißt das Feld weiterhin `Q`. Querkraftsprünge senkrecht zeichnen – Diagramme über `diagrammStellen()` auswerten.
+- Bemessungswerte nach Eurocode (DIN EN 1990) wie in der Abschlussprüfung: erst charakteristisch g_k, q_k (DIN EN 1991-1-1 mit NA), dann g_d = 1,35 · g_k, q_d = 1,5 · q_k, E_d = g_d + q_d; Ergebnisse mit Index Ed (A_Ed,V, B_Ed,V, V_Ed, M_Ed). Modul 3 übergibt g_d und q_d an Modul 4.
+- Modul 6 (Spannungsnachweis) arbeitet mit klassischen zulässigen Spannungen (Holz nach DIN 1052:1988, Stahl nach DIN 1050) und gehört zu charakteristischen Momenten. Ein übergebenes M_Ed wird dort mit einem Warnhinweis gekennzeichnet – bei Übergängen zwischen den Modulen auf diesen Unterschied achten.
 
 ## Aufbau und gemeinsame Bausteine
 

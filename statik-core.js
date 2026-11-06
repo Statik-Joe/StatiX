@@ -285,6 +285,8 @@ function momentenNullpunkte(dlt, n = 2000) {
 // ==========================================================================
 // Lastannahme für Decken – Modul 3
 // Richtwerte nach DIN EN 1991-1-1 (Anhang A, Tabelle 6.1DE) mit Nationalem Anhang bzw. Bautabellen.
+// Fertigparkett 6,0, XPS 0,40, Kalkgipsputz 18, Kunststoffboden 15 kN/m³ und Siebdruckplatte 0,163 kN/m²
+// wie in der Abschlussprüfung FOS Bautechnik 2026 (Hessen).
 // Alle Wichten lassen sich im Modul ändern, damit mit der Tabelle aus dem Unterricht gerechnet werden kann.
 // ==========================================================================
 const LAST_BAUSTOFFE = [
@@ -295,14 +297,32 @@ const LAST_BAUSTOFFE = [
     { id: 'calciumsulfatestrich', name: 'Calciumsulfatestrich', gamma: 22.0, gruppe: 'Estrich und Beläge' },
     { id: 'gussasphalt', name: 'Gussasphaltestrich', gamma: 23.0, gruppe: 'Estrich und Beläge' },
     { id: 'fliesen', name: 'Keramische Fliesen', gamma: 22.0, gruppe: 'Estrich und Beläge' },
-    { id: 'parkett', name: 'Parkett (Laubholz)', gamma: 6.4, gruppe: 'Estrich und Beläge' },
+    { id: 'parkett', name: 'Fertigparkett', gamma: 6.0, gruppe: 'Estrich und Beläge' },
+    { id: 'kunststoffboden', name: 'Kunststoffboden (Bodenbelag)', gamma: 15.0, gruppe: 'Estrich und Beläge' },
+    { id: 'siebdruckplatte', name: 'Siebdruckplatte 2,4 cm (Birke, Kunstharz)', flaeche: 0.163, dicke: 2.4, gruppe: 'Estrich und Beläge' },
     { id: 'osb', name: 'OSB- bzw. Spanplatte', gamma: 7.0, gruppe: 'Estrich und Beläge' },
     { id: 'mineralwolle', name: 'Mineralwolle (Tritt- und Wärmedämmung)', gamma: 1.0, gruppe: 'Dämmung und Schüttung' },
     { id: 'eps', name: 'Polystyrol-Hartschaum (EPS)', gamma: 0.3, gruppe: 'Dämmung und Schüttung' },
+    { id: 'xps', name: 'Polystyrol-Extruderschaum (XPS)', gamma: 0.4, gruppe: 'Dämmung und Schüttung' },
     { id: 'holzfaser', name: 'Holzfaser-Dämmplatte', gamma: 2.0, gruppe: 'Dämmung und Schüttung' },
     { id: 'sandkies', name: 'Sand, Kies (Schüttung, trocken)', gamma: 16.0, gruppe: 'Dämmung und Schüttung' },
     { id: 'kalkzementputz', name: 'Kalkzementputz', gamma: 20.0, gruppe: 'Putz und Bekleidung' },
+    { id: 'kalkgipsputz', name: 'Kalkgipsputz', gamma: 18.0, gruppe: 'Putz und Bekleidung' },
     { id: 'gipskarton', name: 'Gipskartonplatte', gamma: 9.0, gruppe: 'Putz und Bekleidung' },
+    // Gründach und Flachdach: Substrat und Drainage wassergesättigt (für die Statik maßgebend, FLL-Dachbegrünungsrichtlinien).
+    // Dünne Lagen und Bewuchs als Flächenlast g in kN/m²; dicke = übliche Dicke in cm, nur für die Zeichnung.
+    { id: 'vegetation-extensiv', name: 'Vegetation extensiv (Moos, Sedum, Kräuter)', flaeche: 0.10, dicke: 3, gruppe: 'Gründach und Flachdach' },
+    { id: 'vegetation-rasen', name: 'Vegetation Rasen', flaeche: 0.05, dicke: 3, gruppe: 'Gründach und Flachdach' },
+    { id: 'vegetation-straeucher', name: 'Vegetation Stauden und Sträucher bis 1,5 m', flaeche: 0.20, dicke: 5, gruppe: 'Gründach und Flachdach' },
+    { id: 'substrat-extensiv', name: 'Extensivsubstrat (wassergesättigt)', gamma: 14.0, gruppe: 'Gründach und Flachdach' },
+    { id: 'substrat-intensiv', name: 'Intensivsubstrat (wassergesättigt)', gamma: 16.0, gruppe: 'Gründach und Flachdach' },
+    { id: 'filtervlies', name: 'Filtervlies', flaeche: 0.01, dicke: 0.3, gruppe: 'Gründach und Flachdach' },
+    { id: 'drainage-kies', name: 'Drainageschicht Kies (wassergesättigt)', gamma: 18.0, gruppe: 'Gründach und Flachdach' },
+    { id: 'drainage-blaehschiefer', name: 'Drainageschicht Blähschiefer (wassergesättigt)', gamma: 10.0, gruppe: 'Gründach und Flachdach' },
+    { id: 'drainage-element', name: 'Drainageelement Kunststoff (gefüllt)', flaeche: 0.10, dicke: 2.5, gruppe: 'Gründach und Flachdach' },
+    { id: 'schutzvlies', name: 'Schutz- und Speichervlies (wassergesättigt)', flaeche: 0.05, dicke: 0.5, gruppe: 'Gründach und Flachdach' },
+    { id: 'abdichtung-bitumen', name: 'Abdichtung Bitumen (2-lagig, wurzelfest)', flaeche: 0.10, dicke: 1, gruppe: 'Gründach und Flachdach' },
+    { id: 'dampfsperre', name: 'Dampfsperre', flaeche: 0.05, dicke: 0.5, gruppe: 'Gründach und Flachdach' },
     { id: 'eigen', name: 'Eigener Baustoff', gamma: 10.0, gruppe: 'Sonstiges' }
 ];
 
@@ -319,7 +339,10 @@ const NUTZLASTEN = [
     { kat: 'D1', name: 'Verkaufsräume bis 50 m² in Wohn- und Bürogebäuden', qk: 2.0 },
     { kat: 'D2', name: 'Flächen in Einzelhandelsgeschäften und Warenhäusern', qk: 5.0 },
     { kat: 'T1', name: 'Treppen und Podeste in Wohngebäuden', qk: 3.0 },
-    { kat: 'Z', name: 'Balkone, Dachterrassen, Laubengänge', qk: 4.0 }
+    { kat: 'Z', name: 'Balkone, Dachterrassen, Laubengänge', qk: 4.0 },
+    // Dächer (DIN EN 1991-1-1/NA, Tabelle 6.10DE): nicht begehbar, nur Wartung – keine Flächenlast, Einzellast Q_k = 1 kN,
+    // nicht gleichzeitig mit Schnee. Ein Dachgarten, den man betritt, zählt als Dachterrasse (Kategorie Z).
+    { kat: 'H', name: 'Nicht begehbare Dächer (nur Wartung)', qk: 0.0, dach: true }
 ];
 
 // Zuschlag für leichte, unbelastete Trennwände (DIN EN 1991-1-1/NA, 6.3.1.2(8)); zählt zur Nutzlast
@@ -332,14 +355,24 @@ const TRENNWANDZUSCHLAEGE = [
 const TEILSICHERHEIT = { G: 1.35, Q: 1.5 };
 
 // Deckenlast aus dem Schichtaufbau.
-//   schichten: [{ name, d (Dicke in m), gamma (kN/m³) }]  – oder { name, g } mit fester Flächenlast in kN/m²
-//   balken (nur Holzbalkendecke): { b, h (m), gamma (kN/m³), e (Balkenabstand in m) }
+//   schichten: [{ name, d (Dicke in m), gamma (kN/m³), lage }]  – oder { name, g } mit fester Flächenlast in kN/m²
+//   balken (nur Balkendecke): { b, h (m), gamma (kN/m³), e (Balkenabstand in m) }; bei Stahlträgern statt
+//   b · h · γ das Eigengewicht g in kN/m aus der Profiltabelle (z. B. IPE 160: 0,158 kN/m)
 //   nutzlast, trennwand: in kN/m²;  breite: Einzugsbreite in m (ohne Balken: 1-m-Deckenstreifen)
-// Rückgabe: Flächenlasten g_k und q_k in kN/m², Streckenlasten in kN/m und Bemessungswerte (1,35 · g + 1,5 · q).
+// Rückgabe: charakteristische Flächenlasten g_k, q_k in kN/m² und Streckenlasten in kN/m sowie die
+// Bemessungswerte nach DIN EN 1990: g_d = 1,35 · g_k, q_d = 1,5 · q_k und E_d = g_d + q_d.
+//   Holzbalkendecke: Schichten mit lage: 'zwischen' (z. B. Dämmung oder Schüttung im Gefach) liegen nur
+//   zwischen den Balken. Ihr Gewicht wird deshalb mit dem Gefachanteil (e − b) / e abgemindert.
 function berechneDeckenlast({ schichten = [], balken = null, nutzlast = 0, trennwand = 0, breite } = {}) {
-    const liste = schichten.map(s => ({ ...s, g: s.g !== undefined ? s.g : s.d * s.gamma }));
+    const gefachanteil = balken ? (balken.e - balken.b) / balken.e : 1;
+    const liste = schichten.map(s => {
+        const faktor = balken && s.lage === 'zwischen' ? gefachanteil : 1;
+        const gVoll = s.g !== undefined ? s.g : s.d * s.gamma;
+        return { ...s, faktor, g: gVoll * faktor };
+    });
     const gSchichten = liste.reduce((summe, s) => summe + s.g, 0);
-    const gBalkenStrecke = balken ? balken.b * balken.h * balken.gamma : 0;          // kN/m je Balken
+    const gBalkenStrecke = !balken ? 0
+        : (balken.g !== undefined && balken.g !== null ? balken.g : balken.b * balken.h * balken.gamma);   // kN/m je Balken
     const einzugsbreite = balken ? balken.e : (breite || 1);
     const gBalkenFlaeche = balken ? gBalkenStrecke / balken.e : 0;                    // kN/m², über e verteilt
     const gk = gSchichten + gBalkenFlaeche;
@@ -347,10 +380,12 @@ function berechneDeckenlast({ schichten = [], balken = null, nutzlast = 0, trenn
     const gStrecke = gSchichten * einzugsbreite + gBalkenStrecke;                       // = gk · e
     const qStrecke = qk * einzugsbreite;
     return {
-        schichten: liste, gSchichten, gBalkenStrecke, gBalkenFlaeche, gk, qk,
+        schichten: liste, gefachanteil, gSchichten, gBalkenStrecke, gBalkenFlaeche, gk, qk,
         einzugsbreite, gStrecke, qStrecke, gesamtStrecke: gStrecke + qStrecke,
-        qdFlaeche: TEILSICHERHEIT.G * gk + TEILSICHERHEIT.Q * qk,
-        qdStrecke: TEILSICHERHEIT.G * gStrecke + TEILSICHERHEIT.Q * qStrecke
+        gdFlaeche: TEILSICHERHEIT.G * gk, qdFlaeche: TEILSICHERHEIT.Q * qk,
+        EdFlaeche: TEILSICHERHEIT.G * gk + TEILSICHERHEIT.Q * qk,
+        gdStrecke: TEILSICHERHEIT.G * gStrecke, qdStrecke: TEILSICHERHEIT.Q * qStrecke,
+        EdStrecke: TEILSICHERHEIT.G * gStrecke + TEILSICHERHEIT.Q * qStrecke
     };
 }
 
