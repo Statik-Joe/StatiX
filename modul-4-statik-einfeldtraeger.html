@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modul 4: Schnittgrößen (Einfeldträger) | Bautechnik-Labor</title>
-    <link rel="stylesheet" href="tailwind.min.css?v=2026-11-06">
+    <link rel="stylesheet" href="tailwind.min.css?v=2026-11-06b">
     <link rel="stylesheet" href="labor.css?v=2026-11-04d">
 </head>
 <body data-modul="4" class="bg-slate-50 min-h-screen p-4 md:p-6 font-sans text-slate-800">
@@ -300,6 +300,62 @@
                     </div>
                 </div>
 
+                <!-- Erfolgskontrolle: Übungsmodus im Stil der Abschlussprüfung -->
+                <div id="uebung4" class="bg-white p-4 sm:p-6 rounded-2xl border-2 border-dashed border-amber-300 shadow-sm">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-1">
+                        <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                            <span class="w-2 h-5 bg-amber-500 rounded-full"></span>
+                            Erfolgskontrolle: Übung
+                        </h3>
+                        <div class="flex flex-wrap gap-2">
+                            <label for="ue_art" class="lab-sr-only">Aufgabenart</label>
+                            <select id="ue_art" class="text-xs border border-slate-300 rounded-lg px-2 py-2 bg-white">
+                                <option value="">Aufgabenart: zufällig</option>
+                                <option value="gleichlast">Gleichlast</option>
+                                <option value="gleichlast-einzellast">Gleichlast + Einzellast</option>
+                                <option value="kragarm">Mit Kragarm</option>
+                                <option value="zwei-einzellasten">Zwei Einzellasten</option>
+                            </select>
+                            <button id="btnNeueUebung4" type="button" class="text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-lg transition-colors">🎲 Neue Aufgabe</button>
+                            <button id="btnUebungEnde4" type="button" class="hidden text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-lg transition-colors">✖ Übung beenden</button>
+                        </div>
+                    </div>
+                    <p id="uebungText4" class="text-sm text-slate-600 mt-2">Mit „Neue Aufgabe“ entsteht ein zufälliger Träger mit Bemessungslasten wie in der Abschlussprüfung. Ergebnisse, Verläufe und Rechenweg sind dann verborgen, bis du geprüft hast.</p>
+                    <div id="uebungForm4" class="hidden mt-4 space-y-3">
+                        <div class="bg-amber-50/60 p-3 rounded-lg border border-amber-100 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div class="flex items-center gap-2">
+                                <label for="ue_A" class="text-xs font-mono w-24">A<sub>Ed,V</sub> =</label>
+                                <input type="number" id="ue_A" step="0.01" class="w-28 border border-slate-300 rounded px-2 py-1 text-sm">
+                                <span class="text-xs">kN</span><span id="fb_A" class="text-lg"></span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <label for="ue_B" class="text-xs font-mono w-24">B<sub>Ed,V</sub> =</label>
+                                <input type="number" id="ue_B" step="0.01" class="w-28 border border-slate-300 rounded px-2 py-1 text-sm">
+                                <span class="text-xs">kN</span><span id="fb_B" class="text-lg"></span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <label for="ue_x0" class="text-xs font-mono w-24">x₀ (V = 0) =</label>
+                                <input type="number" id="ue_x0" step="0.01" class="w-28 border border-slate-300 rounded px-2 py-1 text-sm">
+                                <span class="text-xs">m</span><span id="fb_x0" class="text-lg"></span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <label for="ue_M" class="text-xs font-mono w-24">M<sub>Ed,F</sub> =</label>
+                                <input type="number" id="ue_M" step="0.01" class="w-28 border border-slate-300 rounded px-2 py-1 text-sm">
+                                <span class="text-xs">kNm</span><span id="fb_M" class="text-lg"></span>
+                            </div>
+                        </div>
+                        <p class="text-xs text-slate-500">x₀ von Auflager A aus gemessen. Rundungstoleranz 2 %, mindestens 0,05.</p>
+                        <button id="btnPruefen4" type="button" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-lg transition-colors">Prüfen</button>
+                    </div>
+                    <div id="uebungErgebnis4" class="hidden mt-4 text-sm p-3 rounded-lg"></div>
+                    <div class="border-t border-slate-200 mt-4 pt-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                        <input type="text" id="studentName4" placeholder="Name (optional)" aria-label="Name (optional)" class="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm">
+                        <button id="btnExportLog4" type="button" class="text-sm font-bold bg-slate-700 hover:bg-slate-800 text-white px-4 py-2 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed" disabled>
+                            📄 Protokoll exportieren (<span id="logCount4">0</span>)
+                        </button>
+                    </div>
+                </div>
+
                 <!-- Didaktischer Rechenweg -->
                 <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200 shadow-sm">
                     <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
@@ -338,8 +394,8 @@
     </div>
 
     <script src="labor.js?v=2026-11-04d"></script>
-    <script src="version.js?v=3.3"></script>
-    <script src="statik-core.js?v=2026-11-06"></script>
+    <script src="version.js?v=3.4"></script>
+    <script src="statik-core.js?v=2026-11-06b"></script>
     <script>
         const canvas = document.getElementById('statikCanvas');
         const ctx = canvas.getContext('2d');
@@ -354,6 +410,8 @@
         }
         
         let lastMouseX = -1; // Speichert Mausposition für Sondenzeichnung
+        let uebung = null;   // laufende Übungsaufgabe { aufgabe, geprueft } (siehe Übungsmodus weiter unten)
+        function uebungAktiv() { return !!uebung && !uebung.geprueft; }
         let dragElements = []; // Liste der interaktiven Anfasser im Canvas
         let activeDragId = null; // ID des aktuell gezogenen Elements
 
@@ -727,6 +785,7 @@
         }
 
         function startDrag(e) {
+            if (uebungAktiv()) return;   // während der Übung bleibt das System fest
             const coords = getEventCoords(e);
             const target = findDragTarget(coords, !!e.touches);
             if (target) {
@@ -738,6 +797,7 @@
         }
 
         function moveDrag(e) {
+            if (uebungAktiv()) { tooltip.classList.add('hidden'); return; }   // keine Sonde während der Übung
             const coords = getEventCoords(e);
             const kl_active = document.getElementById('enable_kl').checked;
             const kr_active = document.getElementById('enable_kr').checked;
@@ -918,6 +978,12 @@
 
             // Didaktischen Rechenweg generieren
             generateDidacticPathway(L, L_kl, L_kr, kl_active, kr_active, F1, x1, alpha1, f1_active, F2, x2, alpha2, f2_active, q1_val, q1_start, q1_end, q1_active, q2_val, q2_start, q2_end, q2_active, A_rnd, B_rnd, A_h, maxM, maxX0);
+
+            // Übung läuft: Ergebnisse und Rechenweg verbergen, bis geprüft wurde
+            if (uebungAktiv()) {
+                document.getElementById('output').innerHTML = '<p class="font-semibold">🔒 Die Ergebnisse erscheinen nach dem Prüfen.</p>';
+                document.getElementById('rechenweg').innerHTML = '<p class="font-sans text-slate-500">Der Rechenweg erscheint nach dem Prüfen – rechne zuerst selbst.</p>';
+            }
 
             // Canvas zeichnen
             // Stützstellen der Diagramme inkl. Punkten direkt neben jeder Sprungstelle (senkrechte Q-Sprünge)
@@ -1224,6 +1290,17 @@
             // Normgerechte automatische Bemaßungskette
             drawDimensionChain(L, L_kl, L_kr, kl_active, kr_active, F1, x1, f1_active, F2, x2, f2_active, q1_start, q1_end, q1_active, q2_start, q2_end, q2_active, getPixelX, beamY);
 
+            // Übung läuft: nur System und Lasten zeigen, keine Verläufe
+            if (uebungAktiv()) {
+                ctx.fillStyle = '#94a3b8';
+                ctx.font = 'italic 14px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('Querkraft- und Momentenverlauf erscheinen nach dem Prüfen.', W / 2, 430);
+                ctx.textAlign = 'left';
+                ctx.restore();
+                return;
+            }
+
             // Diagramm-Skalierungsfaktor
             const userScale = parseFloat(document.getElementById('diagramScale').value);
 
@@ -1466,8 +1543,167 @@
             }
         }
 
+        // ================= Übungsmodus (Erfolgskontrolle) =================
+        let sessionLog4 = [];
+
+        function sperreEingaben(an) {
+            document.querySelectorAll('#controlPanel input, #controlPanel select, #controlPanel textarea, #controlPanel button')
+                .forEach(el => { el.disabled = an; });
+            const m6 = document.getElementById('btnToModul6');
+            m6.classList.toggle('pointer-events-none', an);
+            m6.classList.toggle('opacity-40', an);
+            m6.setAttribute('aria-disabled', an ? 'true' : 'false');
+        }
+
+        function beschreibeAufgabe(a) {
+            const q = a.udls[0];
+            const teile = [];
+            if (a.L_kl > 0) teile.push(`Einfeldträger mit Kragarm links (Länge ${fmt(a.L_kl, 2)} m), Stützweite L = ${fmt(a.L, 2)} m zwischen A und B`);
+            else if (a.L_kr > 0) teile.push(`Einfeldträger mit Kragarm rechts (Länge ${fmt(a.L_kr, 2)} m), Stützweite L = ${fmt(a.L, 2)} m zwischen A und B`);
+            else teile.push(`Einfeldträger mit der Stützweite L = ${fmt(a.L, 2)} m`);
+            if (q) teile.push(`Bemessungslast E<sub>d</sub> = ${fmt(q.q, 2)} kN/m über die ganze Trägerlänge`);
+            a.pointLoads.forEach((p, i) => teile.push(`Einzellast F<sub>d,${i + 1}</sub> = ${fmt(p.F, 1)} kN bei x = ${fmt(p.x, 2)} m (von A)`));
+            return teile.join(', ') + '.';
+        }
+
+        function neueUebung() {
+            const art = document.getElementById('ue_art').value || undefined;
+            const a = erzeugeTraegerAufgabe(Math.random, art);
+            uebung = { aufgabe: a, geprueft: false };
+
+            // System in die Eingaben übernehmen (alle Lasten senkrecht, Lasten sind Bemessungswerte)
+            resetBeamInputs();
+            const setze = (id, wert) => { document.getElementById(id).value = wert; };
+            const schalte = (id, an) => { document.getElementById(id).checked = an; };
+            setze('length', a.L);
+            schalte('enable_kl', a.L_kl > 0); if (a.L_kl > 0) setze('length_kl', a.L_kl);
+            schalte('enable_kr', a.L_kr > 0); if (a.L_kr > 0) setze('length_kr', a.L_kr);
+            const u = a.udls[0];
+            schalte('enable_q1', !!u);
+            if (u) { setze('q1', u.q); setze('q1_start', u.start); setze('q1_end', u.end); }
+            schalte('enable_q2', false);
+            ['f1', 'f2'].forEach((id, i) => {
+                const p = a.pointLoads[i];
+                schalte(`enable_${id}`, !!p);
+                if (p) { setze(id, p.F); setze(`x${i + 1}`, p.x); setze(`alpha${i + 1}`, 90); }
+            });
+            schalte('bemessung_ed', true);
+            document.getElementById('presetSelect').value = 'custom';
+            updateBeamInputVisibility();
+
+            document.getElementById('uebungText4').innerHTML = `<strong>Aufgabe:</strong> ${beschreibeAufgabe(a)} ` +
+                `Berechne die Auflagerkräfte A<sub>Ed,V</sub> und B<sub>Ed,V</sub>, die Stelle x₀ im Feld, an der die Querkraft V null wird, und dort das Feldmoment M<sub>Ed,F</sub>.`;
+            ['ue_A', 'ue_B', 'ue_x0', 'ue_M'].forEach(id => { document.getElementById(id).value = ''; });
+            ['fb_A', 'fb_B', 'fb_x0', 'fb_M'].forEach(id => { document.getElementById(id).textContent = ''; });
+            document.getElementById('uebungForm4').classList.remove('hidden');
+            document.getElementById('uebungErgebnis4').classList.add('hidden');
+            document.getElementById('btnUebungEnde4').classList.remove('hidden');
+            document.getElementById('btnPruefen4').disabled = false;
+            sperreEingaben(true);
+            lastMouseX = -1;
+            calculate();
+        }
+
+        // Rechenweg mit Zahlen, Schritt für Schritt
+        function loesungsweg(a) {
+            const f3 = x => fmt(x, 3), f2 = x => fmt(x, 2);
+            const lasten = [];
+            a.udls.forEach(u => {
+                const l = u.end - u.start, R = u.q * l, xs = (u.start + u.end) / 2;
+                lasten.push({ text: `E<sub>d</sub> · l = ${f2(u.q)} · ${fmt(l)} = ${f3(R)} kN`, R, xs });
+            });
+            a.pointLoads.forEach((p, i) => lasten.push({ text: `F<sub>d,${i + 1}</sub> = ${fmt(p.F)} kN`, R: p.F, xs: p.x }));
+            const summeR = lasten.reduce((s, l) => s + l.R, 0);
+            // Hebelarme ohne Rundung auf zwei Stellen (z. B. 4,625 m), damit die Rechnung nachvollziehbar aufgeht
+            const hebelB = l => `${f3(l.R)} · ${fmt(a.L - l.xs)}`;
+            const hebelA = l => `${f3(l.R)} · ${fmt(l.xs)}`;
+            const schritte = [];
+            schritte.push(`<p><strong>1. Lasten (Resultierende):</strong> ${lasten.map(l => `${l.text} bei x = ${fmt(l.xs)} m`).join('; ')}</p>`);
+            schritte.push(`<p><strong>2. ΣM um B = 0:</strong> A<sub>Ed,V</sub> · ${fmt(a.L)} = ${lasten.map(hebelB).join(' + ')} → <strong>A<sub>Ed,V</sub> = ${f3(a.A)} kN</strong></p>`);
+            schritte.push(`<p><strong>3. ΣM um A = 0:</strong> B<sub>Ed,V</sub> · ${fmt(a.L)} = ${lasten.map(hebelA).join(' + ').replace(/\+ (-)/g, '− ').replace(/· -/g, '· −')} → <strong>B<sub>Ed,V</sub> = ${f3(a.B)} kN</strong></p>`);
+            schritte.push(`<p><strong>4. Kontrolle ΣV = 0:</strong> A + B = ${f3(a.A)} + ${f3(a.B)} = ${f3(a.A + a.B)} kN = Summe der Lasten ${f3(summeR)} kN ✓</p>`);
+            // Stelle V = 0
+            const u = a.udls[0];
+            const FLinks = a.pointLoads.filter(p => p.x < a.x0 - 1e-6).reduce((s, p) => s + p.F, 0);
+            const unterLast = a.pointLoads.find(p => Math.abs(p.x - a.x0) < 1e-6);
+            let vNull;
+            if (unterLast) {
+                vNull = `V springt unter der Einzellast bei x = ${f2(unterLast.x)} m von + nach − (links: ${f3(a.A - FLinks - (u ? u.q * (a.x0 - u.start) : 0))} kN). <strong>x₀ = ${f2(a.x0)} m</strong>`;
+            } else {
+                const zaehler = FLinks > 0 ? `(${f3(a.A)} − ${f3(FLinks)})` : f3(a.A);
+                const belastet = u.start < 0 ? `(x + ${fmt(-u.start)})` : 'x';   // bei Kragarm links beginnt die Last vor A
+                vNull = `V(x) = A<sub>Ed,V</sub> − ${FLinks > 0 ? 'ΣF<sub>d</sub> links − ' : ''}E<sub>d</sub> · ${belastet} = 0 → x₀ = ${zaehler} / ${f2(u.q)}${u.start < 0 ? ` − ${fmt(-u.start)}` : ''} = <strong>${f3(a.x0)} m</strong>`;
+            }
+            schritte.push(`<p><strong>5. Stelle V = 0:</strong> ${vNull}</p>`);
+            // Feldmoment
+            const terme = [`${f3(a.A)} · ${f3(a.x0)}`];
+            if (u) terme.push(`${f2(u.q)} · ${f3(a.x0 - u.start)}² / 2`);
+            a.pointLoads.filter(p => p.x < a.x0 - 1e-6).forEach(p => terme.push(`${f2(p.F)} · ${f3(a.x0 - p.x)}`));
+            schritte.push(`<p><strong>6. Feldmoment:</strong> M<sub>Ed,F</sub> = ${terme.join(' − ')} = <strong>${f3(a.MF)} kNm</strong></p>`);
+            return schritte.join('');
+        }
+
+        function pruefeUebung() {
+            if (!uebungAktiv()) return;
+            const a = uebung.aufgabe;
+            const felder = [
+                ['ue_A', 'fb_A', 'A_Ed,V', a.A, 'kN'],
+                ['ue_B', 'fb_B', 'B_Ed,V', a.B, 'kN'],
+                ['ue_x0', 'fb_x0', 'x₀', a.x0, 'm'],
+                ['ue_M', 'fb_M', 'M_Ed,F', a.MF, 'kNm']
+            ];
+            let richtig = 0;
+            const details = [];
+            felder.forEach(([id, fb, name, soll, einheit]) => {
+                const roh = document.getElementById(id).value;
+                const ok = pruefeWert(roh, soll);
+                document.getElementById(fb).textContent = ok ? '✅' : '❌';
+                if (ok) richtig++;
+                details.push(`${name}: eingegeben ${roh === '' ? '—' : fmt(Number(roh)) + ' ' + einheit} / richtig ${fmt(soll, 2)} ${einheit} ${ok ? '✅' : '❌'}`);
+            });
+            uebung.geprueft = true;
+            sperreEingaben(false);
+            document.getElementById('btnPruefen4').disabled = true;
+            const box = document.getElementById('uebungErgebnis4');
+            box.classList.remove('hidden', 'bg-emerald-50', 'text-emerald-900', 'bg-amber-50', 'text-amber-900');
+            box.classList.add(richtig === 4 ? 'bg-emerald-50' : 'bg-amber-50', richtig === 4 ? 'text-emerald-900' : 'text-amber-900');
+            box.innerHTML = `<p class="font-bold mb-2">${richtig === 4 ? '🎉 Alles richtig!' : `${richtig}/4 richtig.`} Rechenweg:</p>` +
+                `<div class="space-y-1 text-xs sm:text-sm">${loesungsweg(a)}</div>` +
+                `<p class="text-xs mt-2">Querkraft- und Momentenverlauf siehst du jetzt in der Zeichnung. Mit „Neue Aufgabe“ geht es weiter.</p>`;
+            sessionLog4.push({
+                zeit: new Date().toLocaleTimeString('de-DE'),
+                aufgabe: beschreibeAufgabe(a).replace(/<[^>]+>/g, ''),
+                details, richtig, gesamt: 4
+            });
+            document.getElementById('logCount4').textContent = sessionLog4.length;
+            document.getElementById('btnExportLog4').disabled = false;
+            calculate();
+            learningProgress.save();
+        }
+
+        function beendeUebung() {
+            uebung = null;
+            sperreEingaben(false);
+            document.getElementById('uebungForm4').classList.add('hidden');
+            document.getElementById('uebungErgebnis4').classList.add('hidden');
+            document.getElementById('btnUebungEnde4').classList.add('hidden');
+            document.getElementById('uebungText4').textContent = 'Übung beendet. Mit „Neue Aufgabe“ geht es weiter – oder rechne frei mit eigenen Werten.';
+            calculate();
+        }
+
+        document.getElementById('btnNeueUebung4').addEventListener('click', neueUebung);
+        document.getElementById('btnPruefen4').addEventListener('click', pruefeUebung);
+        document.getElementById('btnUebungEnde4').addEventListener('click', beendeUebung);
+        document.getElementById('btnExportLog4').addEventListener('click', () => {
+            exportProtocol(4, 'Schnittgrößen (Einfeldträger)', document.getElementById('studentName4').value, sessionLog4);
+        });
+
         const learningProgress = initLearningProgress(4, {
-            restore: () => {
+            capture: () => ({ sessionLog4 }),
+            restore: data => {
+                sessionLog4 = Array.isArray(data && data.sessionLog4) ? data.sessionLog4 : [];
+                document.getElementById('logCount4').textContent = sessionLog4.length;
+                document.getElementById('btnExportLog4').disabled = sessionLog4.length === 0;
                 updateInputVisualStates();
                 calculate();
             }

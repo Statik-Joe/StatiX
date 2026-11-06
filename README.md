@@ -8,7 +8,7 @@ Interaktive Statik- und Mechanik-Lernmodule für die Fachoberschule (FOS 12, Hes
 - `modul-1-kraefteaddition.html` – Kräfteaddition, Vektorzerlegung und schräge Last auf einer Fläche
 - `modul-2-hebelgesetz.html` – Hebelgesetz, Drehmomente und interaktive Wippe
 - `modul-3-lastannahme.html` – Lastannahme für Decken: Eigengewicht aus dem Schichtaufbau (bei Holzbalkendecken auch Dämmung oder Schüttung zwischen den Balken mit dem Gefachanteil (e − b) / e), Gründach und Dachgarten mit wassergesättigten Schichten nach FLL, Nutzlast und Trennwandzuschlag nach DIN EN 1991-1-1 mit NA, Umrechnung auf die Streckenlast eines Balkens bzw. 1-m-Deckenstreifens, Übergabe an Modul 4
-- `modul-4-statik-einfeldtraeger.html` – Auflagerkräfte, Querkraft und Biegemoment für Einfeldträger mit Kragarmen, Einzel- und Streckenlasten
+- `modul-4-statik-einfeldtraeger.html` – Auflagerkräfte, Querkraft und Biegemoment für Einfeldträger mit Kragarmen, Einzel- und Streckenlasten; Übungsmodus mit zufälligen Aufgaben im Stil der Abschlussprüfung, Selbstkontrolle und Rechenweg
 - `modul-5-diagramme-zuordnen.html` – Quiz zum Zuordnen von Systemen und Schnittgrößendiagrammen
 - `modul-6-spannungsnachweis.html` – Querschnittswerte und Biegespannungsnachweis
 - `modul-7-durchlauftraeger.html` – Selbstlernmodul Durchlaufträger: Schritt-für-Schritt-Anleitung mit Grafiken (Vergleich mit Einfeldträgern, statische Unbestimmtheit, Lastaufteilung, Zugseite und Bewehrung, Idee der Dreimomentengleichung) und Beiwert-Tabelle, Übung mit Selbstkontrolle und Rechner für Zwei- und Dreifeldträger mit eigenen Stützweiten und Lasten
@@ -89,7 +89,7 @@ Schema: kleine Verbesserungen und Fehlerbehebungen erhöhen die Unterversion (1.
 ## Gemeinsame Bausteine
 
 - `labor.css` und `labor.js` – Modulfarben, Präsentationsmodus, Vollbild für Zeichnungen, mitwachsende Zeichenflächen, Touch-Bedienung, Zahlenformatierung, Protokoll-Export und lokales Speichern des Lernfortschritts
-- `statik-core.js` – gemeinsamer Statik-Rechenkern für Modul 4, 5 und 7 (Durchlaufträger über die Dreimomentengleichung), Lastannahme für Modul 3 (Baustoff-, Nutzlast- und Trennwandtabellen, `berechneDeckenlast`) sowie getestete Validierungs-, Quiz- und Übergabehelfer
+- `statik-core.js` – gemeinsamer Statik-Rechenkern für Modul 4, 5 und 7 (Durchlaufträger über die Dreimomentengleichung, Übungsaufgaben und Feldmoment bei V = 0 für Modul 4), Lastannahme für Modul 3 (Baustoff-, Nutzlast- und Trennwandtabellen, `berechneDeckenlast`) sowie getestete Validierungs-, Quiz- und Übergabehelfer
 - `src/tailwind.css`, `tailwind.config.js`, `package.json` und `package-lock.json` – CSS-Build-Konfiguration für die Entwicklung
 - `version.js` – Versionsnummern und Aktualisierungsdatum aller Module und der Startseite
 - `tests/statik-core.test.js` – automatisierte Tests des Statik-Rechenkerns (einschließlich Biegelinie und Momentennullpunkten für die Grafiken in Modul 7)
@@ -106,5 +106,5 @@ Schema: kleine Verbesserungen und Fehlerbehebungen erhöhen die Unterversion (1.
 - Die Querkraft heißt in allen Modulen V (wie in der Abschlussprüfung)
 - In Modul 2 werden Massen in kg eingegeben und die Gewichtskraft mit `F = m · g` berechnet
 - In Modul 6 werden Querschnittsmaße in cm, Querschnittswerte in cm³ und cm⁴ und Spannungen in N/mm² angegeben, wie in den Bautabellen
-- In jeder Übung mit Selbstkontrolle steht die Rundungstoleranz direkt über dem Prüfen-Knopf (Modul 1 und 2: 3 %, Modul 3, 6 und 7: 2 %)
+- In jeder Übung mit Selbstkontrolle steht die Rundungstoleranz direkt über dem Prüfen-Knopf (Modul 1 und 2: 3 %, Modul 3, 4, 6 und 7: 2 %)
 - Hinweistexte nutzen deutsche Anführungszeichen („…“) und den Halbgeviertstrich (–)

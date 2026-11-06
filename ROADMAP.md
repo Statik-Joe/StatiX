@@ -7,10 +7,9 @@ Geplante Erweiterungen in der Reihenfolge, in der sie umgesetzt werden sollen. E
 - [ ] **Schneelast für Dächer (Modul 3)** – s = μ · s_k nach DIN EN 1991-1-3 mit NA: Schneelastzone, Geländehöhe, Formbeiwert für Flachdach; Übergabe als zusätzliche Streckenlast an Modul 4
 - [ ] **Bemessung (Modul 6)** – W_erf = M / σ_zul berechnen und ein passendes Profil aus einer Tabelle wählen (Holzbalken b × h, IPE/HEA)
 - [ ] **Zusammengesetzte Querschnitte** – Schwerpunkt, Trägheitsmoment I und Widerstandsmoment W für T- und U-Profile
-- [ ] **Übungsmodus in Modul 4** – zufälliges System; A, B und M_max selbst eintragen, danach Prüfung und schrittweise aufgedeckter Rechenweg
 - [ ] **Schwierigkeitsstufen in Modul 5** – von leicht bis schwer
-- [ ] **Prüfungstrainer** – Aufgaben im Stil der Abschlussprüfung (FOS 12, Hessen) aus mehreren Themen gemischt: Lastannahme → Schnittgrößen → Spannungsnachweis als zusammenhängende Aufgabe, zufällige Werte, Punkte je Teilaufgabe, Zeitvorgabe, aufdeckbarer Lösungsweg und Protokoll. Grundlage: alte Prüfungen, die die Lehrkraft bereitstellt (Aufgaben werden mit eigenen Werten neu formuliert)
-- [ ] **Selbstlernpfad: Schnittgrößen von Hand berechnen** – Schritt für Schritt wie in Modul 7: Freischneiden, Auflagerkräfte aus ΣM = 0 und ΣF_z = 0, Querkraft- und Momentenverlauf an Schnittstellen bestimmen, max M bei Q = 0, Kontrolle; mit Grafiken und Übungen zur Selbstkontrolle
+- [ ] **Prüfungstrainer** – Aufgaben im Stil der Abschlussprüfung (FOS 12, Hessen): Lastannahme → Bemessungswerte → Schnittgrößen als zusammenhängende Aufgabe (wie Prüfung 2026, Vorschlag A und B; ein Spannungsnachweis kam dort nicht vor), zufällige Werte, Punkte je Teilaufgabe, Zeitvorgabe, aufdeckbarer Lösungsweg und Protokoll. Grundlage: alte Prüfungen, die die Lehrkraft bereitstellt (Aufgaben werden mit eigenen Werten neu formuliert)
+- [ ] **Selbstlernpfad: Schnittgrößen von Hand berechnen** – Schritt für Schritt wie in Modul 7: Freischneiden, Auflagerkräfte aus ΣM = 0 und ΣF_z = 0, Querkraft- und Momentenverlauf (V und M) an Schnittstellen bestimmen, max M bei V = 0, Kontrolle; mit Grafiken und Übungen zur Selbstkontrolle
 
 ## Später
 
@@ -18,6 +17,7 @@ Geplante Erweiterungen in der Reihenfolge, in der sie umgesetzt werden sollen. E
 
 ## Erledigt
 
+- [x] **Übungsmodus in Modul 4** – zufällige Träger im Stil der Abschlussprüfung (Gleichlast, mit Einzellast, mit Kragarm links oder rechts, zwei Einzellasten) mit Bemessungslasten; A_Ed,V, B_Ed,V, x₀ (V = 0) und M_Ed,F selbst berechnen; Ergebnisse, Verläufe und Rechenweg bleiben bis zum Prüfen verborgen, danach Rechenweg mit Zahlen Schritt für Schritt; Protokoll-Export – Modul 4 Version 1.16 / Labor 3.4
 - [x] **Bemessungswerte nach Eurocode wie in der Abschlussprüfung** – Modul 3 zeigt erst g_k und q_k, dann g_d, q_d und E_d, übt die Bemessungswerte und übergibt sie an Modul 4; Modul 4 mit Index Ed (Schalter „Lasten sind Bemessungswerte“); Querkraft heißt in allen Modulen V; Modul 6 warnt bei übergebenem M_Ed; Baustoffe aus der Prüfung 2026 ergänzt bzw. angepasst (Fertigparkett, XPS, Kalkgipsputz, Kunststoffboden, Siebdruckplatte, Stahlträger IPE als Balken) – Labor 3.3
 - [x] **Modul 3: Gründach** – Gründach- und Flachdachschichten (Substrat und Drainage wassergesättigt nach FLL, Vliese, Abdichtung, Bewuchs als Flächenlast), Vorlagen „Gründach extensiv“ und „Dachgarten“, Nutzlastkategorie H (nicht begehbares Dach), Hinweis auf die Schneelast, Exkurs im Selbstlernpfad, Gründach-Aufgaben in der Übung – Modul 3 Version 1.2 / Labor 3.2
 - [x] **Modul 3: Dämmung und Schüttung zwischen den Balken** – Lage je Schicht wählbar (über, zwischen, unter den Balken); Schichten im Gefach zählen mit (e − b) / e, Prüfung gegen die Balkenhöhe, Vorlagen, Übung und Selbstlernpfad ergänzt – Modul 3 Version 1.1 / Labor 3.1
