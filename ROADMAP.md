@@ -17,6 +17,7 @@ Geplante Erweiterungen in der Reihenfolge, in der sie umgesetzt werden sollen. E
 
 ## Erledigt
 
+- [x] **Momentenlinie der Kachel Modul 4 korrigiert** – exakte Parabeln für Gleichstreckenlast: Feldmoment, steiler Anstieg zum Stützmoment über B, Knick am Auflager, waagerechtes Auslaufen am freien Kragarmende – Labor 3.6
 - [x] **Isometrische Grafiken auf der Startseite** – jede Modulkachel zeigt das Thema als isometrisches Bauteil in der Modulfarbe (Modul 4 mit Kragarm und Momentenlinie über Feld und Kragarm); reines SVG, offline und auf jeder Bildschirmgröße scharf. Modul 4: Eingabespalte auf dem Desktop so hoch wie die Zeichnung – Labor 3.5
 - [x] **Übungsmodus in Modul 4** – zufällige Träger im Stil der Abschlussprüfung (Gleichlast, mit Einzellast, mit Kragarm links oder rechts, zwei Einzellasten) mit Bemessungslasten; A_Ed,V, B_Ed,V, x₀ (V = 0) und M_Ed,F selbst berechnen; Ergebnisse, Verläufe und Rechenweg bleiben bis zum Prüfen verborgen, danach Rechenweg mit Zahlen Schritt für Schritt; Protokoll-Export – Modul 4 Version 1.16 / Labor 3.4
 - [x] **Bemessungswerte nach Eurocode wie in der Abschlussprüfung** – Modul 3 zeigt erst g_k und q_k, dann g_d, q_d und E_d, übt die Bemessungswerte und übergibt sie an Modul 4; Modul 4 mit Index Ed (Schalter „Lasten sind Bemessungswerte“); Querkraft heißt in allen Modulen V; Modul 6 warnt bei übergebenem M_Ed; Baustoffe aus der Prüfung 2026 ergänzt bzw. angepasst (Fertigparkett, XPS, Kalkgipsputz, Kunststoffboden, Siebdruckplatte, Stahlträger IPE als Balken) – Labor 3.3
