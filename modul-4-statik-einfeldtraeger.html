@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modul 4: Schnittgrößen (Einfeldträger) | Bautechnik-Labor</title>
-    <link rel="stylesheet" href="tailwind.min.css?v=2026-11-06b">
+    <link rel="stylesheet" href="tailwind.min.css?v=2026-11-06c">
     <link rel="stylesheet" href="labor.css?v=2026-11-04d">
 </head>
 <body data-modul="4" class="bg-slate-50 min-h-screen p-4 md:p-6 font-sans text-slate-800">
@@ -394,7 +394,7 @@
     </div>
 
     <script src="labor.js?v=2026-11-04d"></script>
-    <script src="version.js?v=3.4"></script>
+    <script src="version.js?v=3.5"></script>
     <script src="statik-core.js?v=2026-11-06b"></script>
     <script>
         const canvas = document.getElementById('statikCanvas');
@@ -402,6 +402,19 @@
         // Zeichnung wächst mit der Bildschirmbreite mit (labor.js). Die Höhe wächst, wenn sich Lasten stapeln.
         let zeichenHoehe = 900;
         const statikZeichnung = responsiveCanvas(canvas, () => zeichenHoehe, () => calculate(), { maxBreite: 900 });
+        // Desktop: Die Eingabespalte ist genau so hoch wie die Zeichnung daneben und scrollt darin.
+        // Unter 1024 px stehen beide untereinander, dann ohne eigenen Scrollbereich (siehe labor.css).
+        const controlPanel = document.getElementById('controlPanel');
+        function panelHoeheAnpassen() {
+            if (window.matchMedia('(min-width: 1024px)').matches) {
+                controlPanel.style.maxHeight = Math.max(480, Math.round(canvas.getBoundingClientRect().height)) + 'px';
+            } else {
+                controlPanel.style.maxHeight = '';
+            }
+        }
+        if (typeof ResizeObserver !== 'undefined') new ResizeObserver(panelHoeheAnpassen).observe(canvas);
+        window.addEventListener('resize', panelHoeheAnpassen);
+
         // Gemeinsames Raster für Zeichnen und Ziehen: auf dem Handy schmalere Ränder
         function zeichenRaster() {
             const W = statikZeichnung.breite();

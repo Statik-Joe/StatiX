@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Virtuelles Bautechnik-Labor | FOS 12</title>
-    <link rel="stylesheet" href="tailwind.min.css?v=2026-11-06b">
+    <link rel="stylesheet" href="tailwind.min.css?v=2026-11-06c">
     <style>
         .module-card {
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -50,9 +50,32 @@
             <!-- Modul 1: Kräfteaddition & Vektoren -->
             <div class="module-card bg-white border border-slate-200 rounded-2xl overflow-hidden flex flex-col justify-between shadow-md">
                 <div>
-                    <div class="h-44 bg-gradient-to-br from-indigo-50 to-slate-50 flex items-center justify-center border-b border-slate-100 relative overflow-hidden">
-                        <svg class="w-20 h-20 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+                    <div class="aspect-[352/200] border-b border-slate-100 overflow-hidden">
+                        <!-- Modul 1: isometrische Grafik (viewBox 352 × 200) -->
+                        <svg class="block w-full h-full" viewBox="0 0 352 200" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Isometrische Grafik: Platte mit zwei Kräften und ihrer Resultierenden">
+                        <rect width="352" height="200" fill="#eef2ff"/>
+                        <ellipse cx="176" cy="186" rx="120" ry="8" fill="#e0e7ff"/>
+                        <g stroke="#1e1b4b" stroke-opacity="0.15" stroke-width="0.8">
+                        <rect width="130" height="10" fill="#a5b4fc" transform="matrix(-0.866 0.5 0 1 288.58 105.00)"/>
+                        <rect width="130" height="10" fill="#c7d2fe" transform="matrix(0.866 0.5 0 1 63.42 105.00)"/>
+                        <rect width="130" height="130" fill="#e0e7ff" transform="matrix(0.866 0.5 -0.866 0.5 176.00 40.00)"/>
+                        </g>
+                        <g stroke="#64748b" stroke-width="1.5" stroke-dasharray="4 3" fill="none">
+                        <line x1="184.66" y1="150" x2="253.94" y2="110"/><line x1="176" y1="65" x2="253.94" y2="110"/>
+                        </g>
+                        <g stroke-width="3.5" stroke-linecap="round">
+                        <line x1="106.72" y1="105" x2="178" y2="146.2" stroke="#4f46e5"/>
+                        <line x1="106.72" y1="105" x2="168.5" y2="69.3" stroke="#e11d48"/>
+                        <line x1="106.72" y1="105" x2="245" y2="109.7" stroke="#059669" stroke-width="4.5"/>
+                        </g>
+                        <polygon points="173.5,149.33 178.5,140.67 184.66,150" fill="#4f46e5"/>
+                        <polygon points="169.84,74.33 164.84,65.67 176,65" fill="#e11d48"/>
+                        <polygon points="243.75,115.16 244.13,104.16 253.94,110" fill="#059669"/>
+                        <circle cx="106.72" cy="105" r="5" fill="#1e1b4b"/>
+                        <g font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="700">
+                        <text x="186" y="170" fill="#4338ca">F₁</text><text x="150" y="60" fill="#be123c">F₂</text>
+                        <text x="258" y="104" fill="#047857">F<tspan font-size="9" dy="3">R</tspan></text>
+                        </g>
                         </svg>
                     </div>
                     <div class="p-6">
@@ -77,9 +100,29 @@
             <!-- Modul 2: Hebelgesetz & Drehmoment -->
             <div class="module-card bg-white border border-slate-200 rounded-2xl overflow-hidden flex flex-col justify-between shadow-md">
                 <div>
-                    <div class="h-44 bg-gradient-to-br from-sky-50 to-slate-50 flex items-center justify-center border-b border-slate-100 relative overflow-hidden">
-                        <svg class="w-20 h-20 text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 14h18M12 14L9 21h6l-3-7zM7 10v4m10-4v4"></path>
+                    <div class="aspect-[352/200] border-b border-slate-100 overflow-hidden">
+                        <!-- Modul 2: isometrische Grafik (viewBox 352 × 200) -->
+                        <svg class="block w-full h-full" viewBox="0 0 352 200" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Isometrische Grafik: Wippe mit zwei Massen im Gleichgewicht">
+                        <rect width="352" height="200" fill="#f0f9ff"/>
+                        <ellipse cx="172" cy="156" rx="44" ry="7" fill="#e0f2fe"/>
+                        <g stroke="#082f49" stroke-opacity="0.18" stroke-width="0.8">
+                        <polygon points="187.94,105 200.93,138.5 174.95,153.5 161.96,120" fill="#64748b"/>
+                        <polygon points="148.97,138.5 174.95,153.5 161.96,120" fill="#94a3b8"/>
+                        <rect width="30" height="8" fill="#0ea5e9" transform="matrix(-0.866 0.5 0 1 265.88 142.00)"/>
+                        <rect width="180" height="8" fill="#7dd3fc" transform="matrix(0.866 0.5 0 1 84.02 67.00)"/>
+                        <rect width="180" height="30" fill="#bae6fd" transform="matrix(0.866 0.5 -0.866 0.5 110.00 52.00)"/>
+                        <rect width="30" height="30" fill="#6366f1" transform="matrix(-0.866 0.5 0 1 174.95 59.50)"/>
+                        <rect width="30" height="30" fill="#818cf8" transform="matrix(0.866 0.5 0 1 122.99 59.50)"/>
+                        <rect width="30" height="30" fill="#c7d2fe" transform="matrix(0.866 0.5 -0.866 0.5 148.97 44.50)"/>
+                        <rect width="22" height="22" fill="#e11d48" transform="matrix(-0.866 0.5 0 1 255.49 118.00)"/>
+                        <rect width="22" height="22" fill="#fb7185" transform="matrix(0.866 0.5 0 1 217.39 118.00)"/>
+                        <rect width="22" height="22" fill="#fecdd3" transform="matrix(0.866 0.5 -0.866 0.5 236.44 107.00)"/>
+                        </g>
+                        <g font-family="Inter, system-ui, sans-serif" font-size="12" font-weight="700">
+                        <text x="140" y="38" fill="#3730a3">m₁</text><text x="232" y="98" fill="#9f1239">m₂</text>
+                        </g>
+                        <rect x="14" y="14" width="86" height="26" rx="13" fill="#ffffff" stroke="#7dd3fc"/>
+                        <text x="57" y="31" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="12" font-weight="700" fill="#075985">ΣM = 0</text>
                         </svg>
                     </div>
                     <div class="p-6">
@@ -104,15 +147,30 @@
             <!-- Modul 3: Lastannahme für Decken -->
             <div class="module-card bg-white border border-slate-200 rounded-2xl overflow-hidden flex flex-col justify-between shadow-md">
                 <div>
-                    <div class="h-44 bg-gradient-to-br from-lime-50 to-slate-50 flex items-center justify-center border-b border-slate-100 relative overflow-hidden">
-                        <svg class="w-24 h-20 text-lime-700" fill="none" stroke="currentColor" viewBox="0 0 32 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                            <!-- Deckenaufbau: Lastpfeile, Belag, Estrich, Dämmung, Decke -->
-                            <path stroke-linecap="round" stroke-width="1.4" d="M6 1v4m5-4v4m5-4v4m5-4v4m5-4v4"></path>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4" d="M4.5 4l1.5 1.5L7.5 4m2 0L11 5.5 12.5 4m2 0L16 5.5 17.5 4m2 0L21 5.5 22.5 4m2 0L26 5.5 27.5 4"></path>
-                            <rect x="2" y="8" width="28" height="2" rx="0.4" stroke-width="1.2"></rect>
-                            <rect x="2" y="10" width="28" height="3" stroke-width="1.2"></rect>
-                            <path stroke-width="1" d="M3 13.5c1.5 1 2.5-1 4 0s2.5-1 4 0 2.5-1 4 0 2.5-1 4 0 2.5-1 4 0 2.5-1 4 0"></path>
-                            <rect x="2" y="15" width="28" height="6" stroke-width="1.4"></rect>
+                    <div class="aspect-[352/200] border-b border-slate-100 overflow-hidden">
+                        <!-- Modul 3: isometrische Grafik (viewBox 352 × 200) -->
+                        <svg class="block w-full h-full" viewBox="0 0 352 200" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Isometrische Grafik: Deckenpaket aus Parkett, Estrich, Dämmung und Stahlbeton mit Lastpfeilen">
+                        <rect width="352" height="200" fill="#f7fee7"/>
+                        <ellipse cx="182" cy="186" rx="120" ry="9" fill="#d9f99d"/>
+                        <g stroke="#1a2e05" stroke-opacity="0.18" stroke-width="0.8">
+                        <rect width="90" height="24" fill="#8291a6" transform="matrix(-0.866 0.5 0 1 277.58 125.00)"/>
+                        <rect width="130" height="24" fill="#a3b1c2" transform="matrix(0.866 0.5 0 1 87.06 105.00)"/>
+                        <rect width="90" height="8" fill="#f5c542" transform="matrix(-0.866 0.5 0 1 277.58 117.00)"/>
+                        <rect width="130" height="8" fill="#fde68a" transform="matrix(0.866 0.5 0 1 87.06 97.00)"/>
+                        <rect width="90" height="12" fill="#cbd5e1" transform="matrix(-0.866 0.5 0 1 277.58 105.00)"/>
+                        <rect width="130" height="12" fill="#e2e8f0" transform="matrix(0.866 0.5 0 1 87.06 85.00)"/>
+                        <rect width="90" height="6" fill="#a8743b" transform="matrix(-0.866 0.5 0 1 277.58 99.00)"/>
+                        <rect width="130" height="6" fill="#c8954c" transform="matrix(0.866 0.5 0 1 87.06 79.00)"/>
+                        <rect width="130" height="90" fill="#e0b46c" transform="matrix(0.866 0.5 -0.866 0.5 165.00 34.00)"/>
+                        </g>
+                        <g stroke="#4d7c0f" stroke-width="3" stroke-linecap="round" fill="#4d7c0f">
+                        <line x1="139.02" y1="52" x2="139.02" y2="77"/><polygon points="135.02,73 143.02,73 139.02,82" stroke-width="1"/>
+                        <line x1="173.66" y1="32" x2="173.66" y2="57"/><polygon points="169.66,53 177.66,53 173.66,62" stroke-width="1"/>
+                        <line x1="225.62" y1="62" x2="225.62" y2="87"/><polygon points="221.62,83 229.62,83 225.62,92" stroke-width="1"/>
+                        <line x1="190.98" y1="82" x2="190.98" y2="107"/><polygon points="186.98,103 194.98,103 190.98,112" stroke-width="1"/>
+                        </g>
+                        <rect x="14" y="14" width="96" height="26" rx="13" fill="#ffffff" stroke="#bef264"/>
+                        <text x="62" y="31" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="12" font-weight="700" fill="#3f6212">gₖ + qₖ</text>
                         </svg>
                     </div>
                     <div class="p-6">
@@ -137,9 +195,42 @@
             <!-- Modul 4: Statik-Tool (Einfeldträger) -->
             <div class="module-card bg-white border border-slate-200 rounded-2xl overflow-hidden flex flex-col justify-between shadow-md">
                 <div>
-                    <div class="h-44 bg-gradient-to-br from-teal-50 to-slate-50 flex items-center justify-center border-b border-slate-100 relative overflow-hidden">
-                        <svg class="w-20 h-20 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16m-7 6h7M4 18h7"></path>
+                    <div class="aspect-[352/200] border-b border-slate-100 overflow-hidden">
+                        <!-- Modul 4: isometrische Grafik (viewBox 352 × 200) -->
+                        <svg class="block w-full h-full" viewBox="0 0 352 200" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Isometrische Grafik: Träger mit Kragarm und Streckenlast, daneben der Momentenverlauf über Feld und Kragarm">
+                        <rect width="352" height="200" fill="#f0fdfa"/>
+                        <line x1="20" y1="150" x2="140" y2="150" stroke="#0f766e" stroke-opacity="0.35" stroke-width="1"/>
+                        <path d="M20 150 C 38 172, 66 172, 84 152 Q 94 140 104 134 Q 124 138 140 150 Z" fill="#5eead4" fill-opacity="0.35" stroke="#0d9488" stroke-width="2" stroke-linejoin="round"/>
+                        <line x1="104" y1="130" x2="104" y2="176" stroke="#0f766e" stroke-opacity="0.4" stroke-width="1" stroke-dasharray="3 3"/>
+                        <text x="22" y="134" font-family="Inter, system-ui, sans-serif" font-size="12" font-weight="700" fill="#115e59">M</text>
+                        <text x="62" y="190" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#115e59">Feld</text>
+                        <text x="122" y="190" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#115e59">Kragarm</text>
+                        <ellipse cx="102" cy="106" rx="24" ry="5" fill="#99f6e4" fill-opacity="0.7"/>
+                        <ellipse cx="218" cy="173" rx="24" ry="5" fill="#99f6e4" fill-opacity="0.7"/>
+                        <g stroke="#042f2e" stroke-opacity="0.18" stroke-width="0.8">
+                        <rect width="22" height="18" fill="#64748b" transform="matrix(-0.866 0.5 0 1 113.86 78.00)"/>
+                        <rect width="16" height="18" fill="#94a3b8" transform="matrix(0.866 0.5 0 1 80.95 81.00)"/>
+                        <rect width="22" height="18" fill="#64748b" transform="matrix(-0.866 0.5 0 1 229.90 145.00)"/>
+                        <rect width="16" height="18" fill="#94a3b8" transform="matrix(0.866 0.5 0 1 196.99 148.00)"/>
+                        <rect width="22" height="22" fill="#0d9488" transform="matrix(-0.866 0.5 0 1 273.20 148.00)"/>
+                        <rect width="200" height="22" fill="#2dd4bf" transform="matrix(0.866 0.5 0 1 80.95 59.00)"/>
+                        <rect width="200" height="22" fill="#99f6e4" transform="matrix(0.866 0.5 -0.866 0.5 100.00 48.00)"/>
+                        </g>
+                        <line x1="99.13" y1="30.5" x2="255.01" y2="120.5" stroke="#115e59" stroke-width="2" stroke-linecap="round"/>
+                        <g stroke="#115e59" stroke-width="2" stroke-linecap="round" fill="#115e59">
+                        <line x1="99.13" y1="30.5" x2="99.13" y2="52.5"/><polygon points="95.63,53.5 102.63,53.5 99.13,57.5" stroke-width="1"/>
+                        <line x1="116.45" y1="40.5" x2="116.45" y2="62.5"/><polygon points="112.95,63.5 119.95,63.5 116.45,67.5" stroke-width="1"/>
+                        <line x1="133.77" y1="50.5" x2="133.77" y2="72.5"/><polygon points="130.27,73.5 137.27,73.5 133.77,77.5" stroke-width="1"/>
+                        <line x1="151.09" y1="60.5" x2="151.09" y2="82.5"/><polygon points="147.59,83.5 154.59,83.5 151.09,87.5" stroke-width="1"/>
+                        <line x1="168.41" y1="70.5" x2="168.41" y2="92.5"/><polygon points="164.91,93.5 171.91,93.5 168.41,97.5" stroke-width="1"/>
+                        <line x1="185.73" y1="80.5" x2="185.73" y2="102.5"/><polygon points="182.23,103.5 189.23,103.5 185.73,107.5" stroke-width="1"/>
+                        <line x1="203.05" y1="90.5" x2="203.05" y2="112.5"/><polygon points="199.55,113.5 206.55,113.5 203.05,117.5" stroke-width="1"/>
+                        <line x1="220.37" y1="100.5" x2="220.37" y2="122.5"/><polygon points="216.87,123.5 223.87,123.5 220.37,127.5" stroke-width="1"/>
+                        <line x1="237.69" y1="110.5" x2="237.69" y2="132.5"/><polygon points="234.19,133.5 241.19,133.5 237.69,137.5" stroke-width="1"/>
+                        <line x1="255.01" y1="120.5" x2="255.01" y2="142.5"/><polygon points="251.51,143.5 258.51,143.5 255.01,147.5" stroke-width="1"/>
+                        </g>
+                        <rect x="232" y="14" width="106" height="26" rx="13" fill="#ffffff" stroke="#5eead4"/>
+                        <text x="285" y="31" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="12" font-weight="700" fill="#115e59">E<tspan font-size="9" dy="3">d</tspan><tspan dy="-3"> = 12,0 kN/m</tspan></text>
                         </svg>
                     </div>
                     <div class="p-6">
@@ -164,9 +255,36 @@
             <!-- Modul 5: Diagramme zuordnen (Quiz) -->
             <div class="module-card bg-white border border-slate-200 rounded-2xl overflow-hidden flex flex-col justify-between shadow-md">
                 <div>
-                    <div class="h-44 bg-gradient-to-br from-amber-50 to-slate-50 flex items-center justify-center border-b border-slate-100 relative overflow-hidden">
-                        <svg class="w-20 h-20 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    <div class="aspect-[352/200] border-b border-slate-100 overflow-hidden">
+                        <!-- Modul 5: isometrische Grafik (viewBox 352 × 200) -->
+                        <svg class="block w-full h-full" viewBox="0 0 352 200" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Isometrische Grafik: drei Karten mit Schnittgrößenverläufen, eine ist als richtig markiert">
+                        <rect width="352" height="200" fill="#fffbeb"/>
+                        <ellipse cx="190" cy="190" rx="130" ry="7" fill="#fef3c7"/>
+                        <rect width="70" height="5" fill="#fcd34d" transform="matrix(-0.866 0.5 0 1 175.26 69.00)"/>
+                        <rect width="110" height="5" fill="#fde68a" transform="matrix(0.866 0.5 0 1 19.38 49.00)"/>
+                        <g transform="matrix(0.866 0.5 -0.866 0.5 80 14)">
+                        <rect width="110" height="70" rx="4" fill="#ffffff" stroke="#fcd34d" stroke-width="1.2"/>
+                        <line x1="10" y1="35" x2="100" y2="35" stroke="#94a3b8" stroke-width="1"/>
+                        <path d="M10 35 L10 18 L100 52 L100 35" fill="none" stroke="#92400e" stroke-width="2" stroke-linejoin="round"/>
+                        </g>
+                        <rect width="70" height="5" fill="#fcd34d" transform="matrix(-0.866 0.5 0 1 255.26 107.00)"/>
+                        <rect width="110" height="5" fill="#fde68a" transform="matrix(0.866 0.5 0 1 99.38 87.00)"/>
+                        <g transform="matrix(0.866 0.5 -0.866 0.5 160 52)">
+                        <rect width="110" height="70" rx="4" fill="#fef3c7" stroke="#d97706" stroke-width="2"/>
+                        <line x1="10" y1="35" x2="100" y2="35" stroke="#94a3b8" stroke-width="1"/>
+                        <path d="M10 35 Q55 75 100 35" fill="none" stroke="#b45309" stroke-width="3" stroke-linejoin="round"/>
+                        </g>
+                        <rect width="70" height="5" fill="#fcd34d" transform="matrix(-0.866 0.5 0 1 335.26 145.00)"/>
+                        <rect width="110" height="5" fill="#fde68a" transform="matrix(0.866 0.5 0 1 179.38 125.00)"/>
+                        <g transform="matrix(0.866 0.5 -0.866 0.5 240 90)">
+                        <rect width="110" height="70" rx="4" fill="#ffffff" stroke="#fcd34d" stroke-width="1.2"/>
+                        <line x1="10" y1="35" x2="100" y2="35" stroke="#94a3b8" stroke-width="1"/>
+                        <path d="M10 35 L10 20 L55 20 L55 50 L100 50 L100 35" fill="none" stroke="#92400e" stroke-width="2" stroke-linejoin="round"/>
+                        </g>
+                        <circle cx="268" cy="98" r="12" fill="#059669"/>
+                        <path d="M262 98 L266.5 102.5 L274 94" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                        <rect x="14" y="160" width="76" height="26" rx="13" fill="#ffffff" stroke="#fcd34d"/>
+                        <text x="52" y="177" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="12" font-weight="700" fill="#92400e">V ↔ M</text>
                         </svg>
                     </div>
                     <div class="p-6">
@@ -191,9 +309,25 @@
             <!-- Modul 6: Spannungsnachweis -->
             <div class="module-card bg-white border border-slate-200 rounded-2xl overflow-hidden flex flex-col justify-between shadow-md">
                 <div>
-                    <div class="h-44 bg-gradient-to-br from-violet-50 to-slate-50 flex items-center justify-center border-b border-slate-100 relative overflow-hidden">
-                        <svg class="w-20 h-20 text-violet-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 4h12M6 20h12M12 4v16M3 12h18"></path>
+                    <div class="aspect-[352/200] border-b border-slate-100 overflow-hidden">
+                        <!-- Modul 6: isometrische Grafik (viewBox 352 × 200) -->
+                        <svg class="block w-full h-full" viewBox="0 0 352 200" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Isometrische Grafik: Balkenquerschnitt mit Druck- und Zugspannung">
+                        <rect width="352" height="200" fill="#f5f3ff"/>
+                        <ellipse cx="128" cy="180" rx="100" ry="8" fill="#ede9fe"/>
+                        <g stroke="#2e1065" stroke-opacity="0.2" stroke-width="0.8">
+                        <rect width="120" height="60" fill="#c4b5fd" transform="matrix(0.866 0.5 0 1 45.36 50.00)"/>
+                        <rect width="120" height="40" fill="#ddd6fe" transform="matrix(0.866 0.5 -0.866 0.5 80.00 30.00)"/>
+                        </g>
+                        <rect width="40" height="60" fill="#ede9fe" transform="matrix(-0.866 0.5 0 1 183.92 90.00)" stroke="#7c3aed" stroke-width="2"/>
+                        <line x1="183.92" y1="120" x2="149.28" y2="140" stroke="#5b21b6" stroke-width="1.5" stroke-dasharray="4 3"/>
+                        <polygon points="185.65,111 168.33,101 185.65,141" fill="#f43f5e" fill-opacity="0.55" stroke="#e11d48" stroke-width="2" stroke-linejoin="round"/>
+                        <polygon points="185.65,171 202.97,181 185.65,141" fill="#3b82f6" fill-opacity="0.55" stroke="#2563eb" stroke-width="2" stroke-linejoin="round"/>
+                        <line x1="185.65" y1="111" x2="185.65" y2="171" stroke="#1e293b" stroke-width="1.5"/>
+                        <g font-family="Inter, system-ui, sans-serif" font-size="12" font-weight="700">
+                        <text x="150" y="96" fill="#be123c">−σ</text><text x="208" y="190" fill="#1d4ed8">+σ</text>
+                        </g>
+                        <rect x="226" y="14" width="112" height="26" rx="13" fill="#ffffff" stroke="#c4b5fd"/>
+                        <text x="282" y="31" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="12" font-weight="700" fill="#5b21b6">σ ≤ σ<tspan font-size="9" dy="3">zul</tspan></text>
                         </svg>
                     </div>
                     <div class="p-6">
@@ -218,9 +352,42 @@
             <!-- Modul 7: Durchlaufträger (Selbstlernmodul) -->
             <div class="module-card bg-white border border-slate-200 rounded-2xl overflow-hidden flex flex-col justify-between shadow-md">
                 <div>
-                    <div class="h-44 bg-gradient-to-br from-rose-50 to-slate-50 flex items-center justify-center border-b border-slate-100 relative overflow-hidden">
-                        <svg class="w-20 h-20 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2 10h20M4 10l-1.5 4h3L4 10zm8 0l-1.5 4h3L12 10zm8 0l-1.5 4h3L20 10zM2 16h20"></path>
+                    <div class="aspect-[352/200] border-b border-slate-100 overflow-hidden">
+                        <!-- Modul 7: isometrische Grafik (viewBox 352 × 200) -->
+                        <svg class="block w-full h-full" viewBox="0 0 352 200" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Isometrische Grafik: Durchlaufträger auf drei Pfeilern mit Streckenlast, daneben der Momentenverlauf">
+                        <rect width="352" height="200" fill="#fff1f2"/>
+                        <line x1="20" y1="150" x2="132" y2="150" stroke="#be123c" stroke-opacity="0.35" stroke-width="1"/>
+                        <path d="M20 150 C 34 164, 54 163, 64 150 L 76 136 L 88 150 C 98 163, 118 164, 132 150 Z" fill="#fda4af" fill-opacity="0.45" stroke="#e11d48" stroke-width="2"/>
+                        <text x="76" y="128" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="12" font-weight="700" fill="#9f1239">M</text>
+                        <ellipse cx="96" cy="100" rx="22" ry="4.5" fill="#fecdd3"/>
+                        <ellipse cx="176" cy="146" rx="22" ry="4.5" fill="#fecdd3"/>
+                        <ellipse cx="256" cy="192" rx="22" ry="4.5" fill="#fecdd3"/>
+                        <g stroke="#4c0519" stroke-opacity="0.18" stroke-width="0.8">
+                        <rect width="18" height="26" fill="#94a3b8" transform="matrix(-0.866 0.5 0 1 108.86 64.00)"/>
+                        <rect width="16" height="26" fill="#cbd5e1" transform="matrix(0.866 0.5 0 1 79.41 65.00)"/>
+                        <rect width="18" height="26" fill="#94a3b8" transform="matrix(-0.866 0.5 0 1 188.53 110.00)"/>
+                        <rect width="16" height="26" fill="#cbd5e1" transform="matrix(0.866 0.5 0 1 159.08 111.00)"/>
+                        <rect width="18" height="26" fill="#94a3b8" transform="matrix(-0.866 0.5 0 1 268.20 156.00)"/>
+                        <rect width="16" height="26" fill="#cbd5e1" transform="matrix(0.866 0.5 0 1 238.75 157.00)"/>
+                        <rect width="18" height="16" fill="#e11d48" transform="matrix(-0.866 0.5 0 1 268.20 140.00)"/>
+                        <rect width="200" height="16" fill="#fb7185" transform="matrix(0.866 0.5 0 1 79.41 49.00)"/>
+                        <rect width="200" height="18" fill="#fecdd3" transform="matrix(0.866 0.5 -0.866 0.5 95.00 40.00)"/>
+                        </g>
+                        <line x1="95.87" y1="23.5" x2="251.75" y2="113.5" stroke="#9f1239" stroke-width="2" stroke-linecap="round"/>
+                        <g stroke="#9f1239" stroke-width="2" stroke-linecap="round" fill="#9f1239">
+                        <line x1="95.87" y1="23.5" x2="95.87" y2="44.5"/><polygon points="92.37,45.5 99.37,45.5 95.87,48.5" stroke-width="1"/>
+                        <line x1="113.19" y1="33.5" x2="113.19" y2="54.5"/><polygon points="109.69,55.5 116.69,55.5 113.19,58.5" stroke-width="1"/>
+                        <line x1="130.51" y1="43.5" x2="130.51" y2="64.5"/><polygon points="127.01,65.5 134.01,65.5 130.51,68.5" stroke-width="1"/>
+                        <line x1="147.83" y1="53.5" x2="147.83" y2="74.5"/><polygon points="144.33,75.5 151.33,75.5 147.83,78.5" stroke-width="1"/>
+                        <line x1="165.15" y1="63.5" x2="165.15" y2="84.5"/><polygon points="161.65,85.5 168.65,85.5 165.15,88.5" stroke-width="1"/>
+                        <line x1="182.47" y1="73.5" x2="182.47" y2="94.5"/><polygon points="178.97,95.5 185.97,95.5 182.47,98.5" stroke-width="1"/>
+                        <line x1="199.79" y1="83.5" x2="199.79" y2="104.5"/><polygon points="196.29,105.5 203.29,105.5 199.79,108.5" stroke-width="1"/>
+                        <line x1="217.11" y1="93.5" x2="217.11" y2="114.5"/><polygon points="213.61,115.5 220.61,115.5 217.11,118.5" stroke-width="1"/>
+                        <line x1="234.43" y1="103.5" x2="234.43" y2="124.5"/><polygon points="230.93,125.5 237.93,125.5 234.43,128.5" stroke-width="1"/>
+                        <line x1="251.75" y1="113.5" x2="251.75" y2="134.5"/><polygon points="248.25,135.5 255.25,135.5 251.75,138.5" stroke-width="1"/>
+                        </g>
+                        <rect x="222" y="14" width="116" height="26" rx="13" fill="#ffffff" stroke="#fda4af"/>
+                        <text x="280" y="31" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="12" font-weight="700" fill="#9f1239">Zweifeldträger</text>
                         </svg>
                     </div>
                     <div class="p-6">
@@ -251,7 +418,7 @@
         <p id="laborVersion" class="mt-1"></p>
     </footer>
 
-    <script src="version.js?v=3.4"></script>
+    <script src="version.js?v=3.5"></script>
 
 </body>
 </html>
