@@ -313,7 +313,9 @@ test('Stahlbetondecke: g_k = Σ d · γ, q_k = Nutzlast + Trennwandzuschlag, 1-m
     assert.equal(r.einzugsbreite, 1);
     nah(r.gStrecke, 6.43, 1e-9);
     nah(r.qStrecke, 2.3, 1e-9);
-    nah(r.qdFlaeche, 1.35 * 6.43 + 1.5 * 2.3, 1e-9);
+    nah(r.EdFlaeche, 1.35 * 6.43 + 1.5 * 2.3, 1e-9);
+    nah(r.gdStrecke, 1.35 * 6.43, 1e-9);
+    nah(r.qdStrecke, 1.5 * 2.3, 1e-9);
 });
 
 test('Holzbalkendecke: Balkeneigengewicht b · h · γ, Streckenlast = Flächenlast · e + Balken', () => {
@@ -389,4 +391,42 @@ test('Gründach extensiv auf Stahlbetondecke: Substrat wassergesättigt, Vlies u
     nah(r.gk, 0.10 + 1.40 + 0.01 + 0.10 + 5.0, 1e-9);
     nah(r.qk, 0, 1e-9);
     assert.ok(NUTZLASTEN.find(n => n.kat === 'H').dach);
+});
+
+// Nachrechnung der Abschlussprüfung FOS Bautechnik 2026 (Hessen), Vorschlag B, Aufgabe 1.1:
+// Decke über EG, 1-m-Streifen, Trennwandzuschlag 1,2 kN/m² → g_d = 7,965 kN/m, q_d = 4,05 kN/m
+test('Prüfung 2026 B 1.1: g_k = 5,90, g_d = 7,965 und q_d = 4,05 kN/m', () => {
+    const k = id => LAST_BAUSTOFFE.find(b => b.id === id);
+    const r = berechneDeckenlast({
+        schichten: [
+            { name: 'Fertigparkett', d: 0.020, gamma: k('parkett').gamma },
+            { name: 'Zementestrich', d: 0.045, gamma: k('zementestrich').gamma },
+            { name: 'XPS', d: 0.050, gamma: k('xps').gamma },
+            { name: 'Stahlbeton', d: 0.180, gamma: k('stahlbeton').gamma },
+            { name: 'Kalkgipsputz', d: 0.015, gamma: k('kalkgipsputz').gamma }
+        ],
+        nutzlast: 1.5, trennwand: 1.2
+    });
+    nah(r.gStrecke, 5.90, 1e-9);
+    nah(r.gdStrecke, 7.965, 1e-9);
+    nah(r.qdStrecke, 4.05, 1e-9);
+    nah(r.EdStrecke, 12.015, 1e-9);
+});
+
+// Abschlussprüfung 2026 A, Aufgabe 2.1 (Galerie): Stahlträger IPE 160 im Abstand 62,5 cm,
+// Siebdruckplatte als Flächenlast, Kunststoffboden 1,5 cm – Balkeneigengewicht aus der Profiltabelle
+test('Stahlträger: Eigengewicht g je m aus der Profiltabelle statt b · h · γ', () => {
+    const k = id => LAST_BAUSTOFFE.find(b => b.id === id);
+    const r = berechneDeckenlast({
+        schichten: [
+            { name: 'Kunststoffboden', d: 0.015, gamma: k('kunststoffboden').gamma },
+            { name: 'Siebdruckplatte', g: k('siebdruckplatte').flaeche }
+        ],
+        balken: { b: 0.082, h: 0.16, g: 0.158, e: 0.625 },
+        nutzlast: 4.0
+    });
+    nah(r.gBalkenStrecke, 0.158, 1e-9);
+    nah(r.gBalkenFlaeche, 0.158 / 0.625, 1e-9);
+    nah(r.gk, 0.225 + 0.163 + 0.2528, 1e-9);
+    nah(r.gdFlaeche, 1.35 * r.gk, 1e-9);
 });

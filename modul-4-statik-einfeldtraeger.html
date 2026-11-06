@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modul 4: Schnittgrößen (Einfeldträger) | Bautechnik-Labor</title>
-    <link rel="stylesheet" href="tailwind.min.css?v=2026-11-04d">
+    <link rel="stylesheet" href="tailwind.min.css?v=2026-11-06">
     <link rel="stylesheet" href="labor.css?v=2026-11-04d">
 </head>
 <body data-modul="4" class="bg-slate-50 min-h-screen p-4 md:p-6 font-sans text-slate-800">
@@ -28,7 +28,7 @@
                     📥 Grafik-Export (PNG)
                 </button>
                 <a id="btnToModul6" href="modul-6-spannungsnachweis.html" class="bg-violet-600 hover:bg-violet-700 text-white font-bold px-4 py-2.5 rounded-lg shadow transition-colors text-sm flex items-center gap-2" title="Öffnet Modul 6 mit dem aktuell berechneten maximalen Biegemoment">
-                    <span>➡️</span><span>M<sub>max</sub> nachweisen (Modul 6)</span>
+                    <span>➡️</span><span>Moment nachweisen (Modul 6)</span>
                 </a>
             </div>
         </header>
@@ -54,7 +54,7 @@
                         </select>
                         <button id="btnDemoReset" type="button" class="lab-teacher-action lab-teacher-secondary">Vorführsystem zurücksetzen</button>
                         <label for="teacherNotes" class="lab-teacher-label">Arbeitsauftrag (optional)</label>
-                        <textarea id="teacherNotes" rows="2" class="lab-teacher-notes" placeholder="Zum Beispiel: Bestimme die Auflagerkräfte und skizziere Q und M."></textarea>
+                        <textarea id="teacherNotes" rows="2" class="lab-teacher-notes" placeholder="Zum Beispiel: Bestimme die Auflagerkräfte und skizziere V und M."></textarea>
                         <label class="lab-teacher-solution">
                             <input id="teacherShowSolution" type="checkbox">
                             Lösung (Ergebnisse und Diagramm) mitdrucken
@@ -75,6 +75,12 @@
                         <label for="length" class="block text-xs font-bold text-slate-500 mb-1">Länge Hauptfeld L [m]</label>
                         <input type="number" id="length" value="10" min="1" max="30" step="0.5" class="w-full border border-slate-300 rounded-lg p-2 font-semibold text-slate-700">
                     </div>
+
+                    <!-- Bemessungswerte nach Eurocode: nur die Bezeichnungen ändern sich (Index Ed) -->
+                    <label for="bemessung_ed" class="flex items-start gap-2 text-xs text-slate-600 border-t border-slate-200 pt-3 cursor-pointer">
+                        <input type="checkbox" id="bemessung_ed" class="mt-0.5 w-4 h-4 text-teal-600 border-slate-300 rounded focus:ring-teal-500">
+                        <span><strong>Lasten sind Bemessungswerte</strong> (g<sub>d</sub>, q<sub>d</sub> nach Eurocode). Die Ergebnisse heißen dann A<sub>Ed,V</sub>, B<sub>Ed,V</sub>, V<sub>Ed</sub> und M<sub>Ed</sub>.</span>
+                    </label>
 
                     <!-- Kragarm links -->
                     <div class="border-t border-slate-200 pt-3">
@@ -281,7 +287,7 @@
                             <span id="sonde_x" class="text-teal-400">x = 0,00 m</span>
                         </div>
                         <div class="flex justify-between">
-                            <span>Querkraft Q(x):</span>
+                            <span>Querkraft V(x):</span>
                             <span id="sonde_q" class="font-bold text-sky-400">0,00 kN</span>
                         </div>
                         <div class="flex justify-between">
@@ -324,7 +330,7 @@
             <section id="teacherPrintWorkArea">
                 <h3>Arbeitsbereich</h3>
                 <p>Auflagerkräfte: A = ____________________ kN &nbsp; B = ____________________ kN</p>
-                <p>Maximale Querkraft: Q<sub>max</sub> = ____________________ kN</p>
+                <p>Maximale Querkraft: V<sub>max</sub> = ____________________ kN</p>
                 <p>Maximales Biegemoment: M<sub>max</sub> = ____________________ kNm</p>
                 <div class="teacher-print-lines"></div>
             </section>
@@ -332,8 +338,8 @@
     </div>
 
     <script src="labor.js?v=2026-11-04d"></script>
-    <script src="version.js?v=3.2"></script>
-    <script src="statik-core.js?v=2026-11-04f"></script>
+    <script src="version.js?v=3.3"></script>
+    <script src="statik-core.js?v=2026-11-06"></script>
     <script>
         const canvas = document.getElementById('statikCanvas');
         const ctx = canvas.getContext('2d');
@@ -394,6 +400,17 @@
 
         // Schalter für x0 Position neu zeichnen lassen bei Änderung
         document.getElementById('show_x0').addEventListener('change', calculate);
+        document.getElementById('bemessung_ed').addEventListener('change', calculate);
+
+        // Bezeichnungen der Ergebnisse: mit Bemessungswerten nach Eurocode Index „Ed“ wie in der Abschlussprüfung
+        function bez() {
+            const ed = document.getElementById('bemessung_ed').checked;
+            return ed
+                ? { ed, A: 'A<sub>Ed,V</sub>', B: 'B<sub>Ed,V</sub>', Ah: 'A<sub>Ed,H</sub>', M: 'M<sub>Ed</sub>', V: 'V<sub>Ed</sub>',
+                    Mc: 'M_{Ed}', At: 'A_Ed,V', Bt: 'B_Ed,V', Aht: 'A_Ed,H', Mt: 'M_Ed', Vt: 'V_Ed', Mx: 'M_{Ed}', last: ' (Bemessungswert)' }
+                : { ed, A: 'A', B: 'B', Ah: 'A<sub>h</sub>', M: 'M<sub>max</sub>', V: 'V<sub>max</sub>',
+                    Mc: 'M_{max}', At: 'A', Bt: 'B', Aht: 'Aₕ', Mt: 'M_max', Vt: 'V_max', Mx: 'M_{max}', last: '' };
+        }
         document.getElementById('diagramScale').addEventListener('input', calculate);
 
         // Inputs bei numerischer Änderung neu berechnen
@@ -562,11 +579,11 @@
             document.getElementById('teacherPrintNotes').textContent = document.getElementById('teacherNotes').value.trim();
             fillPrintTable('teacherPrintInputs', rows);
             fillPrintTable('teacherPrintResults', [
-                ['Auflagerkraft A', `${fmt(A, 2)} kN`],
-                ['Horizontalauflager Aₕ', `${fmt(A_h_global, 2)} kN`],
-                ['Auflagerkraft B', `${fmt(B, 2)} kN`],
-                ['Maximale Querkraft |Q|max', `${fmt(Math.abs(maxQ_global), 2)} kN`],
-                ['Maximales Biegemoment |M|max', `${fmt(Math.abs(maxM_global), 2)} kNm bei x = ${fmt(maxX0_global, 2)} m`]
+                [`Auflagerkraft ${bez().At}`, `${fmt(A, 2)} kN`],
+                [`Horizontalauflager ${bez().Aht}`, `${fmt(A_h_global, 2)} kN`],
+                [`Auflagerkraft ${bez().Bt}`, `${fmt(B, 2)} kN`],
+                [`Maximale Querkraft |${bez().Vt}|`, `${fmt(Math.abs(maxQ_global), 2)} kN`],
+                [`Maximales Biegemoment |${bez().Mt}|`, `${fmt(Math.abs(maxM_global), 2)} kNm bei x = ${fmt(maxX0_global, 2)} m`]
             ]);
             document.getElementById('teacherPrintSolution').hidden = !includeSolution;
             document.getElementById('teacherPrintWorkArea').hidden = includeSolution;
@@ -630,15 +647,15 @@
             // Werte in zwei Spalten
             const rowsLeft = [
                 ['Trägerlänge L', `${fmt(L_global, 2)} m`],
-                ['Horizontalauflager A_h', `${fmt(A_h_global, 2)} kN`],
-                ['Auflagerkraft A', `${fmt(A, 2)} kN`],
-                ['Auflagerkraft B', `${fmt(B, 2)} kN`],
-                ['Gesamtlast (vertikal)', `${fmt(totalLoad_global, 2)} kN`],
+                [`Horizontalauflager ${bez().ed ? 'A_{Ed,H}' : 'A_{h}'}`, `${fmt(A_h_global, 2)} kN`],
+                [`Auflagerkraft ${bez().ed ? 'A_{Ed,V}' : 'A'}`, `${fmt(A, 2)} kN`],
+                [`Auflagerkraft ${bez().ed ? 'B_{Ed,V}' : 'B'}`, `${fmt(B, 2)} kN`],
+                [`Gesamtlast (vertikal)${bez().last}`, `${fmt(totalLoad_global, 2)} kN`],
             ];
             const rowsRight = [
-                ['Max. Biegemoment |M|_{max}', `${fmt(Math.abs(maxM_global), 2)} kNm`],
-                ['Position von M_{max}', `x₀ = ${fmt(maxX0_global, 2)} m`],
-                ['Max. Querkraft |Q|_{max}', `${fmt(Math.abs(maxQ_global), 2)} kN`],
+                [`Max. Biegemoment |${bez().Mx}|`, `${fmt(Math.abs(maxM_global), 2)} kNm`],
+                [`Position von ${bez().Mx}`, `x₀ = ${fmt(maxX0_global, 2)} m`],
+                [`Max. Querkraft |${bez().ed ? 'V_{Ed}' : 'V_{max}'}|`, `${fmt(Math.abs(maxQ_global), 2)} kN`],
                 ['Erstellt am', new Date().toLocaleDateString('de-DE')],
             ];
 
@@ -866,19 +883,19 @@
 
             document.getElementById('output').innerHTML = `
                 <div class="flex justify-between py-1 border-b border-teal-200/50">
-                    <span class="font-semibold">Horizontalauflager A<sub>h</sub>:</span>
+                    <span class="font-semibold">Horizontalauflager ${bez().Ah}:</span>
                     <span class="font-extrabold text-teal-900">${fmt(A_h, 2)} kN</span>
                 </div>
                 <div class="flex justify-between py-1 border-b border-teal-200/50">
-                    <span class="font-semibold">Auflagerkraft A:</span>
+                    <span class="font-semibold">Auflagerkraft ${bez().A}:</span>
                     <span class="font-extrabold text-teal-900">${fmt(A_rnd, 2)} kN</span>
                 </div>
                 <div class="flex justify-between py-1 border-b border-teal-200/50">
-                    <span class="font-semibold">Auflagerkraft B:</span>
+                    <span class="font-semibold">Auflagerkraft ${bez().B}:</span>
                     <span class="font-extrabold text-teal-900">${fmt(B_rnd, 2)} kN</span>
                 </div>
                 <div class="flex justify-between py-1 pt-2">
-                    <span class="font-semibold text-slate-500">Gesamtlast (vertikal):</span>
+                    <span class="font-semibold text-slate-500">Gesamtlast (vertikal)${bez().last}:</span>
                     <span class="font-bold text-slate-700">${fmt(totalLoad, 2)} kN</span>
                 </div>
             `;
@@ -893,7 +910,7 @@
             maxM_global = maxM;
             // Übergabe an Modul 6: |M|max als URL-Parameter (auf 2 Nachkommastellen gerundet)
             document.getElementById('btnToModul6').href =
-                'modul-6-spannungsnachweis.html?M=' + momentParameterwert(Math.abs(maxM));
+                'modul-6-spannungsnachweis.html?M=' + momentParameterwert(Math.abs(maxM)) + (bez().ed ? '&Ed=1' : '');
             maxX0_global = maxX0;
             maxQ_global = maxQ;
             totalLoad_global = totalLoad;
@@ -939,7 +956,7 @@
                             A = [ Σ(F<sub>i</sub> · (L − x<sub>i</sub>)) + Σ(q<sub>j</sub> · l<sub>j</sub> · (L − x<sub>S,j</sub>)) ] / L
                         </div>
                         <div class="text-slate-400">l<sub>j</sub> = belastete Länge der Streckenlast, x<sub>S,j</sub> = Lage ihrer Resultierenden (Schwerpunkt)</div>
-                        <div class="pt-2 text-indigo-700 font-bold">Ergebnis: A = ${fmt(A_rnd, 2)} kN | B = ${fmt(B_rnd, 2)} kN | A<sub>h</sub> = ${fmt(A_h, 2)} kN</div>
+                        <div class="pt-2 text-indigo-700 font-bold">Ergebnis: ${bez().A} = ${fmt(A_rnd, 2)} kN | ${bez().B} = ${fmt(B_rnd, 2)} kN | ${bez().Ah} = ${fmt(A_h, 2)} kN</div>
                     </div>
                 </div>
             `;
@@ -949,10 +966,10 @@
                 <div class="p-4 bg-white rounded-lg border border-slate-200">
                     <div class="text-teal-600 font-bold mb-1">Schritt 3: Bestimmung des maximalen Biegemoments M<sub>max</sub></div>
                     <p class="text-xs text-slate-600 mb-2">
-                        Das maximale Biegemoment tritt an der Stelle des Nulldurchgangs der Querkraft auf (Q(x₀) = 0).
+                        Das maximale Biegemoment tritt an der Stelle des Nulldurchgangs der Querkraft auf (V(x₀) = 0).
                     </p>
                     <div class="bg-slate-50 p-2.5 rounded font-mono text-xs text-slate-800 space-y-1">
-                        <div>Gefundener Maximalwert: <strong class="text-amber-600">M<sub>max</sub> = ${fmt(Math.abs(maxM), 2)} kNm</strong></div>
+                        <div>Gefundener Maximalwert: <strong class="text-amber-600">${bez().ed ? 'max ' : ''}${bez().M} = ${fmt(Math.abs(maxM), 2)} kNm</strong></div>
                         <div>Position des Extremwerts: <strong>x₀ = ${fmt(maxX0, 2)} m</strong></div>
                     </div>
                 </div>
@@ -1224,7 +1241,7 @@
             // Titel links
             ctx.fillStyle = '#0284c7';
             ctx.font = 'bold 14px sans-serif';
-            ctx.fillText('Querkraftverlauf Q(x) [kN]', Math.max(10, paddingX - 40), qDiagramY - 100);
+            ctx.fillText('Querkraftverlauf V(x) [kN]', Math.max(10, paddingX - 40), qDiagramY - 100);
 
             // Skalierung Querkraftdiagramm bestimmen (max Kraftwert mappen auf 80px Höhe)
             let maxQForScale = 10;
@@ -1328,7 +1345,7 @@
                 const links = mx0 + 130 > W;
                 ctx.textAlign = links ? 'right' : 'left';
                 const tx = links ? mx0 - 10 : mx0 + 10;
-                fillTextSub(ctx, `M_{max} = ${fmt(Math.abs(maxM), 1)} kNm`, tx, my0 + 4);
+                fillTextSub(ctx, `${bez().ed ? 'max ' : ''}${bez().Mx} = ${fmt(Math.abs(maxM), 1)} kNm`, tx, my0 + 4);
                 ctx.fillText(`x₀ = ${fmt(maxX0, 1)} m`, tx, my0 + 18);
                 ctx.textAlign = 'left';
             }
@@ -1372,11 +1389,11 @@
                 // Didaktische Herleitungshilfe live generieren
                 let formulaStr = "Reine Biegespannung vorliegend.";
                 if (Math.abs(values.Q) < 0.1) {
-                    formulaStr = "Schnittpunkt / Maximum: Die Querkraft Q ist hier 0, das Biegemoment erreicht folglich einen Extrempunkt!";
+                    formulaStr = "Schnittpunkt / Maximum: Die Querkraft V ist hier 0, das Biegemoment erreicht folglich einen Extrempunkt!";
                 } else if (values.Q > 0) {
-                    formulaStr = "Positive Steigung: Da Q(x) > 0, nimmt das Biegemoment in positive x-Richtung linear/parabolisch zu.";
+                    formulaStr = "Positive Steigung: Da V(x) > 0, nimmt das Biegemoment in positive x-Richtung linear/parabolisch zu.";
                 } else {
-                    formulaStr = "Negative Steigung: Da Q(x) < 0, nimmt das Biegemoment ab.";
+                    formulaStr = "Negative Steigung: Da V(x) < 0, nimmt das Biegemoment ab.";
                 }
                 document.getElementById('sonde_didaktik').innerText = formulaStr;
             }
@@ -1476,12 +1493,21 @@
             schalte('enable_q2', q > 0);
             setze('q2', q); setze('q2_start', 0); setze('q2_end', L);
             document.getElementById('presetSelect').value = 'custom';
+            const bem = p.get('bem') === '1';
+            schalte('bemessung_ed', bem);
             updateBeamInputVisibility();
 
+            // Herkunft der Werte zeigen: charakteristisch (g_k, q_k) → Bemessungswert (g_d, q_d)
+            const gk = zahl('gk'), qk = zahl('qk');
+            const herkunft = (wk, faktor) => (Number.isFinite(wk) ? ` (= ${faktor} · ${fmt(wk, 3)} kN/m)` : '');
             const hinweis = document.getElementById('lastUebernahme');
-            hinweis.innerHTML = `<strong>Lasten aus Modul 3 übernommen:</strong> Eigengewicht g<sub>k</sub> = ${fmt(g, 2)} kN/m als q₁` +
-                (q > 0 ? `, Nutzlast q<sub>k</sub> = ${fmt(q, 2)} kN/m als q₂` : '') +
-                `, Stützweite L = ${fmt(L, 2)} m. <a href="modul-3-lastannahme.html" class="font-bold underline">Zurück zu Modul 3</a>`;
+            hinweis.innerHTML = bem
+                ? `<strong>Bemessungswerte aus Modul 3 übernommen:</strong> g<sub>d</sub> = ${fmt(g, 3)} kN/m${herkunft(gk, '1,35')} als q₁` +
+                    (q > 0 ? `, q<sub>d</sub> = ${fmt(q, 3)} kN/m${herkunft(qk, '1,5')} als q₂` : '') +
+                    `, Stützweite L = ${fmt(L, 2)} m. <a href="modul-3-lastannahme.html" class="font-bold underline">Zurück zu Modul 3</a>`
+                : `<strong>Lasten aus Modul 3 übernommen:</strong> g<sub>k</sub> = ${fmt(g, 2)} kN/m als q₁` +
+                    (q > 0 ? `, q<sub>k</sub> = ${fmt(q, 2)} kN/m als q₂` : '') +
+                    `, Stützweite L = ${fmt(L, 2)} m. <a href="modul-3-lastannahme.html" class="font-bold underline">Zurück zu Modul 3</a>`;
             hinweis.classList.remove('hidden');
             return true;
         }

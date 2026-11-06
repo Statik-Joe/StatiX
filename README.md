@@ -101,7 +101,9 @@ Schema: kleine Verbesserungen und Fehlerbehebungen erhöhen die Unterversion (1.
 - Zahlen werden mit deutschem Dezimalkomma und Einheiten mit Leerzeichen dargestellt, zum Beispiel `2,5 kN`
 - In Modul 4 wird der Winkel schräger Einzelkräfte von der Trägerachse aus gemessen: 0° nach rechts, 90° nach unten, 180° nach links und 270° nach oben
 - In Modul 3 werden Schichtdicken in cm eingegeben und für die Rechnung in m umgerechnet; Wichten in kN/m³, Flächenlasten in kN/m², Streckenlasten in kN/m. Lastwerte als Richtwerte nach DIN EN 1991-1-1 mit NA, Gründachschichten wassergesättigt nach den FLL-Dachbegrünungsrichtlinien; dünne Lagen (Vlies, Abdichtung, Bewuchs) als Flächenlast in kN/m². Jede Wichte und Flächenlast lässt sich ändern. Die Schneelast ist nicht enthalten
-- Modul 3 übergibt g_k und q_k als Streckenlasten q₁ und q₂ an Modul 4 (`?g=…&q=…&L=…`), Modul 4 übergibt |M|max an Modul 6 (`?M=…`)
+- Bemessungswerte nach Eurocode wie in der Abschlussprüfung: Modul 3 zeigt erst die charakteristischen Werte g_k und q_k, dann g_d = 1,35 · g_k, q_d = 1,5 · q_k und E_d = g_d + q_d
+- Modul 3 übergibt die Bemessungswerte g_d und q_d als Streckenlasten q₁ und q₂ an Modul 4 (`?g=…&q=…&L=…&gk=…&qk=…&bem=1`); Modul 4 kennzeichnet die Ergebnisse dann mit dem Index Ed (A_Ed,V, B_Ed,V, V_Ed, M_Ed). Modul 4 übergibt |M| an Modul 6 (`?M=…`, bei Bemessungswerten zusätzlich `&Ed=1`); Modul 6 weist darauf hin, dass zulässige Spannungen zu charakteristischen Momenten gehören
+- Die Querkraft heißt in allen Modulen V (wie in der Abschlussprüfung)
 - In Modul 2 werden Massen in kg eingegeben und die Gewichtskraft mit `F = m · g` berechnet
 - In Modul 6 werden Querschnittsmaße in cm, Querschnittswerte in cm³ und cm⁴ und Spannungen in N/mm² angegeben, wie in den Bautabellen
 - In jeder Übung mit Selbstkontrolle steht die Rundungstoleranz direkt über dem Prüfen-Knopf (Modul 1 und 2: 3 %, Modul 3, 6 und 7: 2 %)
