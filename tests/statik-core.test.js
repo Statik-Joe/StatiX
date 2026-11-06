@@ -11,6 +11,10 @@ const {
     biegelinie,
     momentenNullpunkte,
     berechneDeckenlast,
+    feldmomentBeiVNull,
+    pruefeWert,
+    erzeugeTraegerAufgabe,
+    TRAEGER_AUFGABENARTEN,
     LAST_BAUSTOFFE,
     NUTZLASTEN,
     TRENNWANDZUSCHLAEGE,
@@ -429,4 +433,63 @@ test('Stahlträger: Eigengewicht g je m aus der Profiltabelle statt b · h · γ
     nah(r.gBalkenFlaeche, 0.158 / 0.625, 1e-9);
     nah(r.gk, 0.225 + 0.163 + 0.2528, 1e-9);
     nah(r.gdFlaeche, 1.35 * r.gk, 1e-9);
+});
+
+// ---------- Übungsmodus Schnittgrößen (Modul 4) ----------
+// Abschlussprüfung FOS Bautechnik 2026 (Hessen), Vorschlag B, Aufgaben 1.3 und 1.4:
+// Einfeldträger l_eff = 3,69 m, g_d + q_d = 12,015 kN/m → A = B = 22,168 kN, M_F = 20,45 kNm in Feldmitte
+test('Prüfung 2026 B: A_Ed,V = B_Ed,V = 22,168 kN, M_Ed,F = 20,45 kNm bei x₀ = l/2', () => {
+    const t = berechneTraeger({ L: 3.69, pointLoads: [], udls: [{ q: 12.015, start: 0, end: 3.69 }] });
+    nah(t.A, 22.168, 0.001);
+    nah(t.B, 22.168, 0.001);
+    const f = feldmomentBeiVNull(t, 3.69);
+    nah(f.x0, 1.845, 1e-6);
+    nah(f.M, 20.450, 0.001);
+});
+
+// Vorschlag A, Aufgabe 2.3: Kragarm links 2,08 m, Feld 6,25 m, E_d = 9,151 kN/m
+test('Prüfung 2026 A: Kragarm links – A_Ed,V = 50,798 kN, B_Ed,V = 25,430 kN, Feldmoment bei V = 0', () => {
+    const q = 9.151;
+    const t = berechneTraeger({ L: 6.25, pointLoads: [], udls: [{ q, start: -2.08, end: 6.25 }] });
+    nah(t.A, 50.798, 0.001);
+    nah(t.B, 25.430, 0.001);
+    const f = feldmomentBeiVNull(t, 6.25);
+    const x0 = t.A / q - 2.08;                                    // V(x) = A − q · (x + 2,08) = 0
+    nah(f.x0, x0, 1e-6);
+    nah(f.M, t.A * x0 - q * (x0 + 2.08) ** 2 / 2, 1e-6);
+});
+
+test('Feldmoment bei V = 0 liegt bei zwei Einzellasten genau unter der Last, an der V das Vorzeichen wechselt', () => {
+    const t = berechneTraeger({ L: 6, pointLoads: [{ F: 30, x: 2 }, { F: 10, x: 4 }], udls: [] });
+    const f = feldmomentBeiVNull(t, 6);
+    assert.equal(f.x0, 2);
+    nah(f.M, t.A * 2, 1e-9);
+});
+
+test('Eingaben prüfen: 2 % Toleranz, mindestens 0,05, Dezimalkomma erlaubt', () => {
+    assert.ok(pruefeWert(22.0, 22.168));
+    assert.ok(pruefeWert('22,1', 22.168));
+    assert.ok(!pruefeWert(21.5, 22.168));
+    assert.ok(pruefeWert(0.04, 0));
+    assert.ok(!pruefeWert('', 1));
+    assert.ok(!pruefeWert('abc', 1));
+});
+
+test('Aufgabengenerator: 400 Aufgaben aller Arten sind lösbar und im Gleichgewicht', () => {
+    let seed = 12345;
+    const rnd = () => ((seed = (seed * 1103515245 + 12345) % 2147483648) / 2147483648);
+    const arten = new Set();
+    for (let i = 0; i < 400; i++) {
+        const a = erzeugeTraegerAufgabe(rnd);
+        arten.add(a.typ);
+        assert.ok(a.L >= 3 && a.L <= 8, `L = ${a.L}`);
+        assert.ok(a.x0 > 0 && a.x0 < a.L, `x₀ = ${a.x0}`);
+        assert.ok(a.MF > 0 && a.A > 0 && a.B > 0);
+        nah(a.A + a.B, a.traeger.totalLoad, 1e-9);
+        a.pointLoads.forEach(p => assert.ok(p.x > 0 && p.x < a.L));
+        // Das Feldmoment ist das größte Moment im Feld
+        const { maxM } = extremwerte(a.traeger, 0, a.L, 0.001);
+        assert.ok(a.MF >= maxM - 1e-6, `${a.typ}: M_F = ${a.MF}, max M = ${maxM}`);
+    }
+    assert.deepEqual([...arten].sort(), [...TRAEGER_AUFGABENARTEN].sort());
 });

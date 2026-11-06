@@ -389,6 +389,76 @@ function berechneDeckenlast({ schichten = [], balken = null, nutzlast = 0, trenn
     };
 }
 
+// ==========================================================================
+// Übungsmodus Schnittgrößen (Modul 4) – Aufgaben im Stil der Abschlussprüfung
+// ==========================================================================
+
+// Größtes Feldmoment an der Stelle, an der die Querkraft V im Feld (0 < x < L) von + nach − wechselt.
+// V ist zwischen den kritischen Stellen linear (Streckenlast) und springt an Einzellasten.
+// Rückgabe { x0, M } oder null, wenn V im Feld keinen solchen Nulldurchgang hat.
+function feldmomentBeiVNull(traeger, L) {
+    const d = 1e-7;
+    const stellen = [...new Set([0, L, ...traeger.kritischeStellen.filter(x => x > 0 && x < L)])].sort((a, b) => a - b);
+    const V = x => traeger.schnitt(x).Q;
+    let best = null;
+    const nimm = x0 => {
+        const M = traeger.schnitt(x0).M;
+        if (!best || M > best.M) best = { x0, M };
+    };
+    for (let i = 0; i < stellen.length - 1; i++) {
+        const a = stellen[i], b = stellen[i + 1];
+        const va = V(a + d), vb = V(b - d);
+        if (va > 1e-9 && vb < -1e-9) nimm(a + va / (va - vb) * (b - a));            // Nulldurchgang im Abschnitt
+        if (i > 0 && V(a - d) > 1e-9 && va <= 1e-9) nimm(a);                          // Sprung über null an einer Einzellast
+    }
+    return best;
+}
+
+// Eingabe prüfen: richtig, wenn höchstens 2 % (mindestens absTol) vom richtigen Wert entfernt
+function pruefeWert(eingabe, soll, relTol = 0.02, absTol = 0.05) {
+    const v = typeof eingabe === 'string' ? Number(eingabe.replace(',', '.')) : eingabe;
+    if (typeof v !== 'number' || !Number.isFinite(v)) return false;
+    return Math.abs(v - soll) <= Math.max(relTol * Math.abs(soll), absTol);
+}
+
+// Zufällige Übungsaufgabe. Lasten sind Bemessungswerte E_d (Streckenlast) bzw. F_d (Einzellast).
+// rnd: Zufallsfunktion wie Math.random (für Tests austauschbar).
+// Arten: 'gleichlast', 'gleichlast-einzellast', 'kragarm' (Kragarm links oder rechts, Gleichlast über alles),
+//        'zwei-einzellasten'. Es werden nur Aufgaben erzeugt, bei denen V im Feld durch null geht.
+const TRAEGER_AUFGABENARTEN = ['gleichlast', 'gleichlast-einzellast', 'kragarm', 'zwei-einzellasten'];
+function erzeugeTraegerAufgabe(rnd = Math.random, art) {
+    const stufe = (min, max, schritt) => Math.round((min + rnd() * (max - min)) / schritt) * schritt;
+    const r2 = x => Math.round(x * 100) / 100;
+    for (let versuch = 0; versuch < 50; versuch++) {
+        const typ = art || TRAEGER_AUFGABENARTEN[Math.floor(rnd() * TRAEGER_AUFGABENARTEN.length)];
+        const L = r2(stufe(3, 8, 0.25));
+        let L_kl = 0, L_kr = 0;
+        const udls = [], pointLoads = [];
+        const Ed = () => r2(stufe(5, 16, 0.05));
+        const Fd = () => r2(stufe(10, 40, 0.5));
+        const lage = () => r2(stufe(0.2 * L, 0.8 * L, 0.25));
+        if (typ === 'gleichlast') {
+            udls.push({ q: Ed(), start: 0, end: L });
+        } else if (typ === 'gleichlast-einzellast') {
+            udls.push({ q: Ed(), start: 0, end: L });
+            pointLoads.push({ F: Fd(), x: lage() });
+        } else if (typ === 'kragarm') {
+            const k = r2(stufe(1, Math.min(2.5, 0.4 * L), 0.25));
+            if (rnd() < 0.5) L_kl = k; else L_kr = k;
+            udls.push({ q: Ed(), start: -L_kl, end: L + L_kr });
+        } else {
+            const x1 = r2(stufe(0.15 * L, 0.45 * L, 0.25)), x2 = r2(stufe(0.55 * L, 0.85 * L, 0.25));
+            if (x2 - x1 < 0.25) continue;
+            pointLoads.push({ F: Fd(), x: x1 }, { F: Fd(), x: x2 });
+        }
+        const traeger = berechneTraeger({ L, pointLoads, udls });
+        const feld = feldmomentBeiVNull(traeger, L);
+        if (!feld || feld.M <= 0 || traeger.A <= 0 || traeger.B <= 0) continue;
+        return { typ, L, L_kl, L_kr, udls, pointLoads, traeger, A: traeger.A, B: traeger.B, x0: feld.x0, MF: feld.M };
+    }
+    throw new Error('Keine passende Aufgabe gefunden.');
+}
+
 // Für die automatischen Tests unter Node.js exportieren (im Browser ohne Wirkung)
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
@@ -400,6 +470,10 @@ if (typeof module !== 'undefined' && module.exports) {
         biegelinie,
         momentenNullpunkte,
         berechneDeckenlast,
+        feldmomentBeiVNull,
+        pruefeWert,
+        erzeugeTraegerAufgabe,
+        TRAEGER_AUFGABENARTEN,
         LAST_BAUSTOFFE,
         NUTZLASTEN,
         TRENNWANDZUSCHLAEGE,
