@@ -12,7 +12,7 @@
 // Datum im Format JJJJ-MM-TT.
 // ==========================================================================
 const LABOR_VERSION = {
-    version: '3.5',
+    version: '3.6',
     stand: '2026-11-06',
     module: {
         1: { version: '1.11', stand: '2026-11-04' },   // Kräfteaddition & Vektoren
