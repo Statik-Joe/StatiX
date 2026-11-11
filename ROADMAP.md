@@ -2,6 +2,44 @@
 
 Geplante Erweiterungen in der Reihenfolge, in der sie umgesetzt werden sollen. Erledigte Punkte werden abgehakt und mit der Version vermerkt, in der sie erschienen sind (siehe `version.js`).
 
+## Fundament: Befunde aus der Prüfung vom 10.11.2026
+
+To-do-Liste der Code-Prüfung (Rechenkern, Einheitlichkeit, Handy). Reihenfolge nach Schweregrad; Nummern wie in der Befundliste. Neue Funktionen kommen hier nicht hinzu.
+
+### Hoch
+
+- [x] **1 · Modul 7 / Rechenkern: Einzellast genau auf dem rechten Feldauflager (a = L) ging verloren** – Zweifeldträger 5 + 5 m, F = 20 kN auf B: Soll B = 20 kN, Ist 0 kN. Die Last wird jetzt dem Auflager zugerechnet; Tests für a = 0, a = L und Summe = Gesamtlast – Modul 7 Version 1.4 / Labor 3.7
+- [x] **2 · Modul 6: Übergebenes Moment aus Modul 4 wurde bei aktivem „Fortschritt speichern“ überschrieben** – Übergabe wird jetzt nach dem Wiederherstellen angewendet – Modul 6 Version 1.11 / Labor 3.7
+- [x] **3 · Modul 2: falsches „Perfektes Gleichgewicht“** – feste Schwelle 0,005 kNm durch den Vergleich m₁ · l₁ = m₂ · l₂ ersetzt (`hebelVergleich` in `statik-core.js`, getestet für alle Reglerstellungen) – Modul 2 Version 1.10 / Labor 3.7
+
+### Mittel
+
+- [ ] **4 · Modul 2, Übung:** Lösung l₂ wird auf 0,1 m gerundet, danach kippt die Wippe trotz „Richtig!“ (seit Befund 3 bei jeder Aufgabe, deren Lösung nicht im 0,1-m-Raster liegt) – nur Aufgaben mit Lösung im Raster erzeugen
+- [ ] **5 · Modul 4:** größtes Moment mit Vorzeichen zeigen, Stützmoment und Feldmoment getrennt nennen, Text „am Nulldurchgang der Querkraft“ anpassen – *Rückfrage offen: gewünschte Darstellung*
+- [ ] **6 · Modul 4:** roher Formelcode `$F_v = F \cdot \sin(\alpha)$` im Rechenweg durch HTML ersetzen
+- [ ] **7 · Modul 1 und 2:** „Prüfen“ nach dem Aufdecken der Lösung sperren (kein mehrfacher Protokolleintrag)
+- [ ] **8 · Modul 1:** Winkel φ modulo 360° prüfen (359,5° ≙ −0,5°, −30° ≙ 330°); φ bei F_R ≈ 0 nicht werten
+- [ ] **9 · Modul 1, 2, 6:** Rechnungen aus den HTML-Seiten nach `statik-core.js` verschieben und testen (Verhalten unverändert)
+- [ ] **10 · Handy:** `?.` in Modul 4 entfernen (alte Browser), verständliche Meldung statt leerer Zeichnung, wenn `labor.js` / `statik-core.js` fehlt – *Rückfrage offen: Verteilweg und älteste Geräte*
+- [ ] **11 · Modul 6:** σ_zul = 140 N/mm² für S235 mit Quelle belegen – *prüft die Lehrkraft im Tabellenbuch*
+
+### Niedrig
+
+- [ ] **12 · Modul 4, Übung:** Aufgaben „zwei Einzellasten“ mit V = 0 zwischen den Lasten verwerfen (x₀ nicht eindeutig)
+- [ ] **13 · Modul 6:** Nachweis und Anzeige gleich runden; Zufallsaufgaben mit 97–103 % Ausnutzung vermeiden
+- [ ] **14 · alle Module:** Toleranzen vereinheitlichen und überall `pruefeWert()` verwenden – *Rückfrage offen: gewünschte Werte*
+- [ ] **15 · Modul 1 und 4:** unterschiedliche Winkeldefinition dokumentieren, Hinweis in Modul 1
+- [ ] **16 · Modul 4 und 5:** alte Bezeichnungen bereinigen („Q(x)“ in Teil B und im Protokoll, PNG-Dateiname `modul3_…`)
+- [ ] **17 · Modul 5:** V-Linie am rechten Kragarmende zur Nulllinie schließen
+- [ ] **18 · Modul 7:** Übungsprotokoll im Fortschritt speichern
+- [ ] **19 · Modul 2 / `fmt()`:** Zwischenwerte im Rechenweg stimmig runden, kaufmännische Rundung testen
+- [ ] **20 · Modul 4:** Anfang einer Streckenlast beim Ziehen nicht über ihr Ende hinaus
+
+### Danach
+
+- [ ] **Testsuite** um die Referenzfälle der Prüfung ergänzen (Einfeldträger-Sonderfälle, Modul 1/2/6, Übergaben Modul 3 → 4 → 6)
+- [ ] **Technische Dokumentation** (Aufbau, Formeln je Modul, Vorzeichen und Einheiten, Build, Tests, bekannte Grenzen, Regeln für künftige Änderungen)
+
 ## Geplant
 
 - [ ] **Schneelast für Dächer (Modul 3)** – s = μ · s_k nach DIN EN 1991-1-3 mit NA: Schneelastzone, Geländehöhe, Formbeiwert für Flachdach; Übergabe als zusätzliche Streckenlast an Modul 4

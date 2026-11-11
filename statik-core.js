@@ -42,6 +42,17 @@ function erhoeheQuizPunktestand(punkte, versuche, richtig) {
     };
 }
 
+// Hebelgesetz (Modul 2): Gleichgewicht, wenn m₁ · l₁ = m₂ · l₂ (g kürzt sich heraus).
+// Verglichen wird relativ (nur Rechenungenauigkeit des Computers wird toleriert), nicht mit einer
+// festen Schwelle in kNm – sonst gelten kleine Massen mit verschiedenen Hebelarmen fälschlich als
+// ausgeglichen (5 kg · 0,5 m gegen 5 kg · 0,6 m).
+// Rückgabe: 0 = Gleichgewicht, +1 = Seite 2 überwiegt (m₂ · l₂ größer), −1 = Seite 1 überwiegt.
+function hebelVergleich(m1, l1, m2, l2) {
+    const p1 = m1 * l1, p2 = m2 * l2;
+    if (Math.abs(p2 - p1) <= 1e-9 * Math.max(Math.abs(p1), Math.abs(p2), 1e-12)) return 0;
+    return p2 > p1 ? 1 : -1;
+}
+
 function berechneTraeger(system) {
     const L = system.L;
     const pointLoads = system.pointLoads || [];
@@ -203,10 +214,17 @@ function berechneDurchlauftraeger(system) {
         return { Q: Q + (Mr - Ml) / L, M: M + Ml * (1 - x / L) + Mr * x / L };
     }
 
-    // Auflagerkräfte aus dem Querkraftsprung an jedem Auflager
+    // Auflagerkräfte aus dem Querkraftsprung an jedem Auflager.
+    // feldSchnitt zählt eine Einzellast erst rechts von ihrer Stelle (x > a). Steht sie genau auf dem
+    // rechten Auflager des Feldes (a = L), ist sie am Feldende deshalb noch nicht abgezogen und würde
+    // verloren gehen – sie wird hier dem Auflager zugerechnet. (Bei a = 0 steckt sie schon in Q(0).)
     const auflager = X.map((_, i) => {
         const rechts = i < n ? feldSchnitt(i, 0).Q : 0;
-        const links = i > 0 ? feldSchnitt(i - 1, spans[i - 1]).Q : 0;
+        let links = 0;
+        if (i > 0) {
+            const l = loads[i - 1], L = spans[i - 1];
+            links = feldSchnitt(i - 1, L).Q - (l.a >= L ? l.F : 0);
+        }
         return rechts - links;
     });
 
@@ -481,6 +499,7 @@ if (typeof module !== 'undefined' && module.exports) {
         zerlegeKraft,
         istImWertebereich,
         momentParameterwert,
-        erhoeheQuizPunktestand
+        erhoeheQuizPunktestand,
+        hebelVergleich
     };
 }

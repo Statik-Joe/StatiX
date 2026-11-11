@@ -223,7 +223,8 @@
     </div>
 
     <script src="labor.js?v=2026-11-04d"></script>
-    <script src="version.js?v=3.6"></script>
+    <script src="version.js?v=3.7"></script>
+    <script src="statik-core.js?v=2026-11-11a"></script>
     <script>
         // System Status
         const G = 9.81;
@@ -458,9 +459,11 @@
 
             // Zielwinkel berechnen (Kippen der Wippe)
             const maxAngle = 18 * (Math.PI / 180); // max 18 Grad
-            const momentTolerance = 0.005; // Toleranz in kNm für "Im Gleichgewicht"
+            // Gleichgewicht nur bei m₁ · l₁ = m₂ · l₂ (statik-core.js). Eine feste Schwelle in kNm
+            // hätte kleine Massen mit verschiedenen Hebelarmen fälschlich als ausgeglichen gezeigt.
+            const imGleichgewicht = hebelVergleich(m1, x1, m2, x2) === 0;
 
-            if (Math.abs(netM) <= momentTolerance) {
+            if (imGleichgewicht) {
                 targetAngle = 0; // Waagerecht
             } else {
                 // Voll kippen in die entsprechende Richtung
@@ -490,7 +493,7 @@
 
             // Kompensationsrechner: was müsste sich auf der anderen Seite ändern?
             const kompText = document.getElementById('kompensationText');
-            if (Math.abs(M1 - M2) <= momentTolerance) {
+            if (imGleichgewicht) {
                 kompText.innerHTML = `✅ Aktuell im Gleichgewicht (M₁ ≈ M₂ ≈ ${fmt(M1, 2)} kNm). Verkürzt du jetzt z. B. l₂, müsstest du m₂ im gleichen Verhältnis vergrößern, damit es so bleibt.`;
             } else {
                 const m2Needed = (m1 * x1) / x2;
@@ -503,7 +506,7 @@
             const fazit = document.getElementById('fazitBox');
             const rechenweg = document.getElementById('rechenwegBox');
 
-            if (Math.abs(netM) <= momentTolerance) {
+            if (imGleichgewicht) {
                 badge.className = "bg-emerald-50 px-4 py-2.5 rounded-lg border border-emerald-200 text-emerald-800 text-sm font-bold shadow-sm flex items-center gap-2 transition-all";
                 badge.innerHTML = "<span>✅</span> Perfektes Gleichgewicht";
                 fazit.innerHTML = `M₁ = M₂ ➔ <span class="text-emerald-600">Gleichgewicht!</span>`;

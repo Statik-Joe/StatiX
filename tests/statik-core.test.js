@@ -21,7 +21,8 @@ const {
     zerlegeKraft,
     istImWertebereich,
     momentParameterwert,
-    erhoeheQuizPunktestand
+    erhoeheQuizPunktestand,
+    hebelVergleich
 } = require('../statik-core.js');
 
 const nah = (ist, soll, tol = 0.02) =>
@@ -492,4 +493,45 @@ test('Aufgabengenerator: 400 Aufgaben aller Arten sind lösbar und im Gleichgewi
         assert.ok(a.MF >= maxM - 1e-6, `${a.typ}: M_F = ${a.MF}, max M = ${maxM}`);
     }
     assert.deepEqual([...arten].sort(), [...TRAEGER_AUFGABENARTEN].sort());
+});
+
+// ---------- Befunde aus der Prüfung vom 10.11.2026 (ROADMAP.md, Abschnitt „Fundament“) ----------
+
+test('Durchlaufträger: Einzellast genau auf einem Auflager geht ganz in dieses Auflager (a = 0 und a = L)', () => {
+    // Zweifeldträger 5 m + 5 m, F = 20 kN genau auf B – einmal als a = L in Feld 1, einmal als a = 0 in Feld 2
+    for (const loads of [[{ F: 20, a: 5 }, {}], [{}, { F: 20, a: 0 }]]) {
+        const t = dlt([5, 5], loads);
+        nah(t.auflager[0], 0);
+        nah(t.auflager[1], 20);
+        nah(t.auflager[2], 0);
+        nah(t.stuetzmomente[1], 0);
+    }
+    // zusätzlich q = 10 kN/m auf beiden Feldern: B = 1,25 · 10 · 5 + 20 = 82,5 kN, Summe = Gesamtlast 120 kN
+    const t = dlt([5, 5], [{ q: 10, F: 20, a: 5 }, { q: 10 }]);
+    nah(t.auflager[0], 18.75);
+    nah(t.auflager[1], 82.5);
+    nah(t.auflager[2], 18.75);
+    nah(t.auflager.reduce((a, b) => a + b, 0), t.totalLoad);
+    // Last auf dem Endauflager: A bzw. C trägt sie allein
+    nah(dlt([5, 5], [{ F: 20, a: 0 }, {}]).auflager[0], 20);
+    nah(dlt([5, 5], [{}, { F: 20, a: 5 }]).auflager[2], 20);
+});
+
+test('Durchlaufträger: Summe der Auflagerkräfte = Gesamtlast für jede Laststellung von 0 bis L', () => {
+    for (let a = 0; a <= 4.0001; a += 0.25) {
+        const t = dlt([4, 6.5, 3], [{ q: 5, F: 12, a }, { q: 8, F: 7, a: 6.5 }, { F: 20, a: Math.min(a, 3) }]);
+        nah(t.auflager.reduce((s, R) => s + R, 0), t.totalLoad, 1e-9);
+    }
+});
+
+test('Hebelgesetz: Gleichgewicht nur bei m₁ · l₁ = m₂ · l₂, auch bei kleinen Massen', () => {
+    assert.equal(hebelVergleich(50, 3, 30, 5), 0);       // 150 kg·m = 150 kg·m
+    assert.equal(hebelVergleich(15, 0.7, 3.5, 3), 0);    // 10,5 = 10,5 trotz Rechenungenauigkeit (0,7 · 15)
+    assert.equal(hebelVergleich(5, 0.5, 5, 0.6), 1);     // 2,5 < 3,0: Seite 2 überwiegt (früher „Gleichgewicht“)
+    assert.equal(hebelVergleich(15, 0.7, 20, 0.5), -1);  // 10,5 > 10,0: Seite 1 überwiegt (früher „Gleichgewicht“)
+    // alle Reglerstellungen: Gleichgewicht genau dann, wenn die Produkte in ganzen kg·dm übereinstimmen
+    for (let m1 = 5; m1 <= 100; m1 += 5) for (let m2 = 5; m2 <= 100; m2 += 5)
+        for (let i = 5; i <= 50; i++) for (let j = 5; j <= 50; j++) {
+            assert.equal(hebelVergleich(m1, i / 10, m2, j / 10) === 0, m1 * i === m2 * j, `${m1} kg · ${i / 10} m / ${m2} kg · ${j / 10} m`);
+        }
 });

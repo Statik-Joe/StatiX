@@ -89,7 +89,7 @@ Schema: kleine Verbesserungen und Fehlerbehebungen erhöhen die Unterversion (1.
 ## Gemeinsame Bausteine
 
 - `labor.css` und `labor.js` – Modulfarben, Präsentationsmodus, Vollbild für Zeichnungen, mitwachsende Zeichenflächen, Touch-Bedienung, Zahlenformatierung, Protokoll-Export und lokales Speichern des Lernfortschritts
-- `statik-core.js` – gemeinsamer Statik-Rechenkern für Modul 4, 5 und 7 (Durchlaufträger über die Dreimomentengleichung, Übungsaufgaben und Feldmoment bei V = 0 für Modul 4), Lastannahme für Modul 3 (Baustoff-, Nutzlast- und Trennwandtabellen, `berechneDeckenlast`) sowie getestete Validierungs-, Quiz- und Übergabehelfer
+- `statik-core.js` – gemeinsamer Statik-Rechenkern für Modul 4, 5 und 7, Gleichgewichtsprüfung des Hebels für Modul 2 (Durchlaufträger über die Dreimomentengleichung, Übungsaufgaben und Feldmoment bei V = 0 für Modul 4), Lastannahme für Modul 3 (Baustoff-, Nutzlast- und Trennwandtabellen, `berechneDeckenlast`) sowie getestete Validierungs-, Quiz- und Übergabehelfer
 - `src/tailwind.css`, `tailwind.config.js`, `package.json` und `package-lock.json` – CSS-Build-Konfiguration für die Entwicklung
 - `version.js` – Versionsnummern und Aktualisierungsdatum aller Module und der Startseite
 - `tests/statik-core.test.js` – automatisierte Tests des Statik-Rechenkerns (einschließlich Biegelinie und Momentennullpunkten für die Grafiken in Modul 7)
