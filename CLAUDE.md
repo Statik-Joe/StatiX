@@ -19,7 +19,7 @@ Modulnummern ab Labor 3.0: 1 Kräfteaddition, 2 Hebelgesetz, 3 Lastannahme, 4 Sc
 - Indizes tiefgestellt: im HTML `<sub>`, im Canvas `fillTextSub(ctx, 'M_{max} = …')`.
 - Querkraft heißt **V** (wie in der Abschlussprüfung), nicht Q. Vorzeichen wie in Modul 4 (Schnittgrößen): V positiv nach oben, M positiv nach unten (Zugseite). Im Code heißt das Feld weiterhin `Q`. Querkraftsprünge senkrecht zeichnen – Diagramme über `diagrammStellen()` auswerten.
 - Bemessungswerte nach Eurocode (DIN EN 1990) wie in der Abschlussprüfung: erst charakteristisch g_k, q_k (DIN EN 1991-1-1 mit NA), dann g_d = 1,35 · g_k, q_d = 1,5 · q_k, E_d = g_d + q_d; Ergebnisse mit Index Ed (A_Ed,V, B_Ed,V, V_Ed, M_Ed). Modul 3 übergibt g_d und q_d an Modul 4.
-- Modul 6 (Spannungsnachweis) arbeitet mit klassischen zulässigen Spannungen (Holz nach DIN 1052:1988, Stahl nach DIN 1050) und gehört zu charakteristischen Momenten. Ein übergebenes M_Ed wird dort mit einem Warnhinweis gekennzeichnet – bei Übergängen zwischen den Modulen auf diesen Unterschied achten.
+- Modul 6 (Spannungsnachweis) rechnet standardmäßig mit Bemessungswerten nach Eurocode wie in der Prüfung: σ_Ed = M_Ed / W ≤ f_d, Holz f_m,d = k_mod · f_m,k / γ_M (γ_M = 1,3), Stahl f_y,d = f_y,k / γ_M0 (γ_M0 = 1,0); Kennwerte mit Quellen in `statik-core.js` (`WERKSTOFFE_EC`, `KMOD`). Umschaltbar auf das alte Verfahren mit zulässigen Spannungen (DIN 1052:1988, DIN 1050), das zu charakteristischen Momenten gehört. Passt ein übergebenes Moment (`Ed=1` oder nicht) nicht zum gewählten Verfahren, zeigt Modul 6 einen Hinweis.
 
 ## Aufbau und gemeinsame Bausteine
 
@@ -32,5 +32,6 @@ Modulnummern ab Labor 3.0: 1 Kräfteaddition, 2 Hebelgesetz, 3 Lastannahme, 4 Sc
 ## Build, Cache und Tests
 
 - `tailwind.min.css` nie von Hand bearbeiten: nach neuen Tailwind-Klassen `npm ci` (falls nötig) und `npm run build:css`.
-- Nach Änderungen an CSS/JS die `?v=…`-Angaben in allen HTML-Dateien erhöhen (Cache-Schutz); `version.js?v=` = Gesamtversion.
+- Nach Änderungen an `labor.js`, `labor.css`, `statik-core.js` oder `tailwind.min.css`: `npm run cache` (setzt `?v=` auf eine Prüfsumme, `npm test` prüft das). `version.js?v=` = Gesamtversion. Die Schüler nutzen die App am Handy über GitHub Pages – ein vergessener Cache-Schutz führt dort zu „Script error“ und leeren Zeichnungen.
+- Kein `?.` und kein `??` in Skripten (ältere Handy-Browser lehnen sonst das ganze Skript ab; `npm test` prüft das).
 - Vor jedem Push: `npm test` muss grün sein. Zusätzlich die geänderten Seiten im Browser (Playwright, Chromium ist vorinstalliert) laden und auf JavaScript-Fehler prüfen, bei Zeichnungen Screenshots ansehen.

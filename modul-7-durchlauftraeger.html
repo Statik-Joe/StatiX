@@ -4,8 +4,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modul 7: Durchlaufträger | Bautechnik-Labor</title>
-    <link rel="stylesheet" href="tailwind.min.css?v=2026-11-06c">
-    <link rel="stylesheet" href="labor.css?v=2026-11-04d">
+    <script>
+        // Ladefehler sichtbar machen: Fehlt ein Skript oder bricht es ab (z. B. weil der Browser eine alte Datei aus
+        // dem Cache nimmt), bleiben sonst Zeichnungen und Ergebnisse kommentarlos leer („Script error“ am Handy).
+        // Bewusst einfache Schreibweise und eigene Stile, damit es auch ohne labor.js/labor.css und in alten Browsern läuft.
+        (function () {
+            var gezeigt = false;
+            function zeige() {
+                if (gezeigt) return;
+                gezeigt = true;
+                function einfuegen() {
+                    var box = document.createElement('div');
+                    box.className = 'lab-ladefehler';
+                    box.setAttribute('role', 'alert');
+                    box.style.cssText = 'margin:8px;padding:10px 14px;border:2px solid #f59e0b;border-radius:8px;background:#fffbeb;color:#78350f;font:15px/1.4 sans-serif;';
+                    box.textContent = '⚠️ Auf dieser Seite ist ein Fehler aufgetreten – Zeichnungen oder Ergebnisse können fehlen. Bitte die Seite neu laden. Hilft das nicht, die Browserdaten (Cache) für diese Seite löschen oder einen anderen Browser verwenden.';
+                    document.body.insertBefore(box, document.body.firstChild);
+                }
+                if (document.body) einfuegen(); else document.addEventListener('DOMContentLoaded', einfuegen);
+            }
+            window.addEventListener('error', function (e) {
+                if (e && e.message && /ResizeObserver/.test(e.message)) return;   // harmlose Meldung des Browsers
+                zeige();
+            }, true);   // true: auch nicht ladbare Skript- und Stildateien melden
+        })();
+    </script>
+    <link rel="stylesheet" href="tailwind.min.css?v=e7fffc10f7">
+    <link rel="stylesheet" href="labor.css?v=3c4268ad6b">
     <style>
         .dlt-table { border-collapse: collapse; width: 100%; font-size: 0.8125rem; }
         .dlt-table th, .dlt-table td { border: 1px solid #e2e8f0; padding: 0.4rem 0.5rem; text-align: center; }
@@ -308,9 +333,9 @@
         </section>
     </div>
 
-    <script src="labor.js?v=2026-11-04d"></script>
-    <script src="version.js?v=3.6"></script>
-    <script src="statik-core.js?v=2026-11-06b"></script>
+    <script src="labor.js?v=c896ff32f6"></script>
+    <script src="version.js?v=3.9"></script>
+    <script src="statik-core.js?v=e77eaedd41"></script>
     <script>
         const AUFLAGER = ['A', 'B', 'C', 'D', 'E'];
         const FARBE = {

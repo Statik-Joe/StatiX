@@ -10,7 +10,7 @@ Interaktive Statik- und Mechanik-Lernmodule für die Fachoberschule (FOS 12, Hes
 - `modul-3-lastannahme.html` – Lastannahme für Decken: Eigengewicht aus dem Schichtaufbau (bei Holzbalkendecken auch Dämmung oder Schüttung zwischen den Balken mit dem Gefachanteil (e − b) / e), Gründach und Dachgarten mit wassergesättigten Schichten nach FLL, Nutzlast und Trennwandzuschlag nach DIN EN 1991-1-1 mit NA, Umrechnung auf die Streckenlast eines Balkens bzw. 1-m-Deckenstreifens, Übergabe an Modul 4
 - `modul-4-statik-einfeldtraeger.html` – Auflagerkräfte, Querkraft und Biegemoment für Einfeldträger mit Kragarmen, Einzel- und Streckenlasten; Übungsmodus mit zufälligen Aufgaben im Stil der Abschlussprüfung, Selbstkontrolle und Rechenweg
 - `modul-5-diagramme-zuordnen.html` – Quiz zum Zuordnen von Systemen und Schnittgrößendiagrammen
-- `modul-6-spannungsnachweis.html` – Querschnittswerte und Biegespannungsnachweis
+- `modul-6-spannungsnachweis.html` – Querschnittswerte und Biegespannungsnachweis, standardmäßig mit Bemessungswerten nach Eurocode (umschaltbar auf zulässige Spannungen)
 - `modul-7-durchlauftraeger.html` – Selbstlernmodul Durchlaufträger: Schritt-für-Schritt-Anleitung mit Grafiken (Vergleich mit Einfeldträgern, statische Unbestimmtheit, Lastaufteilung, Zugseite und Bewehrung, Idee der Dreimomentengleichung) und Beiwert-Tabelle, Übung mit Selbstkontrolle und Rechner für Zwei- und Dreifeldträger mit eigenen Stützweiten und Lasten
 
 ## Unterricht
@@ -43,9 +43,10 @@ Für Entwicklung werden Node.js und npm benötigt. Im Projektordner ausführen:
 npm ci
 npm test
 npm run build:css
+npm run cache
 ```
 
-Die Tests prüfen den gemeinsamen Statik-Rechenkern gegen bekannte Tabellenwerte, einschließlich der Kraftzerlegung schräger Lasten, Eingabegrenzen, Quiz-Punktestand und Momentenübergabe von Modul 4 an Modul 6. `npm run build:css` erzeugt `tailwind.min.css` aus den Klassen in den HTML- und JavaScript-Dateien. Die erzeugte Datei nicht von Hand bearbeiten.
+Die Tests prüfen den gemeinsamen Statik-Rechenkern gegen bekannte Tabellenwerte, einschließlich der Kraftzerlegung schräger Lasten, Eingabegrenzen, Quiz-Punktestand und Momentenübergabe von Modul 4 an Modul 6. `npm run cache` setzt nach Änderungen an `labor.js`, `labor.css`, `statik-core.js` oder `tailwind.min.css` die `?v=…`-Angaben in allen Seiten auf eine Prüfsumme des Dateiinhalts (Cache-Schutz, besonders wichtig für die Handynutzung über GitHub Pages); `npm test` meldet, wenn das vergessen wurde. Jede Modulseite zeigt außerdem eine Fehlermeldung, falls ein Skript nicht geladen werden kann, statt einfach leere Zeichnungen. `npm run build:css` erzeugt `tailwind.min.css` aus den Klassen in den HTML- und JavaScript-Dateien. Die erzeugte Datei nicht von Hand bearbeiten.
 
 ## Offline-Paket erstellen
 
@@ -63,12 +64,12 @@ Die Tests prüfen den gemeinsamen Statik-Rechenkern gegen bekannte Tabellenwerte
    - `labor.css` und `labor.js`
    - `statik-core.js`
    - `version.js`
-3. Den Ausgabeordner als ZIP komprimieren. `node_modules`, Git-Dateien, `src`, `tests` und Build-Konfigurationen werden für den Unterricht nicht benötigt.
+3. Den Ausgabeordner als ZIP komprimieren. `node_modules`, Git-Dateien, `src`, `tests`, `tools` und Build-Konfigurationen werden für den Unterricht nicht benötigt.
 4. Das ZIP testweise entpacken und `index.html` sowie jedes Modul öffnen. Prüfen, dass alle Seiten und Styles geladen werden und die gewünschten Browser lokale Fortschritte speichern können.
 
 Optional können die Weiterleitungsseiten `modul-3-statik-einfeldtraeger.html`, `modul-4-diagramme-zuordnen.html`, `modul-5-spannungsnachweis.html` und `modul-6-durchlauftraeger.html` mitkopiert werden. Sie leiten alte Lesezeichen aus Labor 2.x auf die neuen Modulnummern weiter.
 
-Alle oben aufgeführten Laufzeitdateien müssen im selben Verzeichnis liegen. Nach Änderungen an `labor.css`, `labor.js` oder `statik-core.js` die zugehörigen `?v=…`-Versionsparameter in den HTML-Dateien aktualisieren, damit Browser keine veralteten Dateien aus dem Cache laden. Bei Änderungen an Tailwind-Klassen `npm run build:css` ausführen und `tailwind.min.css` mit ins Paket aufnehmen.
+Alle oben aufgeführten Laufzeitdateien müssen im selben Verzeichnis liegen. Nach Änderungen an `labor.css`, `labor.js`, `statik-core.js` oder `tailwind.min.css` `npm run cache` ausführen, damit Browser keine veralteten Dateien aus dem Cache laden. Bei Änderungen an Tailwind-Klassen `npm run build:css` ausführen und `tailwind.min.css` mit ins Paket aufnehmen.
 
 ## Roadmap
 
@@ -89,11 +90,12 @@ Schema: kleine Verbesserungen und Fehlerbehebungen erhöhen die Unterversion (1.
 ## Gemeinsame Bausteine
 
 - `labor.css` und `labor.js` – Modulfarben, Präsentationsmodus, Vollbild für Zeichnungen, mitwachsende Zeichenflächen, Touch-Bedienung, Zahlenformatierung, Protokoll-Export und lokales Speichern des Lernfortschritts
-- `statik-core.js` – gemeinsamer Statik-Rechenkern für Modul 4, 5 und 7 (Durchlaufträger über die Dreimomentengleichung, Übungsaufgaben und Feldmoment bei V = 0 für Modul 4), Lastannahme für Modul 3 (Baustoff-, Nutzlast- und Trennwandtabellen, `berechneDeckenlast`) sowie getestete Validierungs-, Quiz- und Übergabehelfer
+- `statik-core.js` – gemeinsamer Rechenkern: Kräfteaddition für Modul 1, Hebelgesetz und Übungsaufgaben für Modul 2, Einfeldträger mit Feld- und Stützmomenten für Modul 4 und 5, Querschnittswerte, Biegespannung und Eurocode-Kennwerte (`WERKSTOFFE_EC`, `KMOD`, `bemessungsfestigkeit`) für Modul 6, Durchlaufträger für Modul 7 (Durchlaufträger über die Dreimomentengleichung, Übungsaufgaben und Feldmoment bei V = 0 für Modul 4), Lastannahme für Modul 3 (Baustoff-, Nutzlast- und Trennwandtabellen, `berechneDeckenlast`) sowie getestete Validierungs-, Quiz- und Übergabehelfer
 - `src/tailwind.css`, `tailwind.config.js`, `package.json` und `package-lock.json` – CSS-Build-Konfiguration für die Entwicklung
 - `version.js` – Versionsnummern und Aktualisierungsdatum aller Module und der Startseite
 - `tests/statik-core.test.js` – automatisierte Tests des Statik-Rechenkerns (einschließlich Biegelinie und Momentennullpunkten für die Grafiken in Modul 7)
 - `tests/version.test.js` – prüft Versionsangaben und den Cache-Schutz von `version.js`
+- `tests/cache.test.js` und `tools/cache-version.js` – Cache-Schutz der übrigen CSS- und JS-Dateien über Prüfsummen, Fehlermeldung bei Ladefehlern, keine Syntax, die ältere Handy-Browser ablehnen
 
 ## Einheitliche Konventionen
 
@@ -102,7 +104,7 @@ Schema: kleine Verbesserungen und Fehlerbehebungen erhöhen die Unterversion (1.
 - In Modul 4 wird der Winkel schräger Einzelkräfte von der Trägerachse aus gemessen: 0° nach rechts, 90° nach unten, 180° nach links und 270° nach oben
 - In Modul 3 werden Schichtdicken in cm eingegeben und für die Rechnung in m umgerechnet; Wichten in kN/m³, Flächenlasten in kN/m², Streckenlasten in kN/m. Lastwerte als Richtwerte nach DIN EN 1991-1-1 mit NA, Gründachschichten wassergesättigt nach den FLL-Dachbegrünungsrichtlinien; dünne Lagen (Vlies, Abdichtung, Bewuchs) als Flächenlast in kN/m². Jede Wichte und Flächenlast lässt sich ändern. Die Schneelast ist nicht enthalten
 - Bemessungswerte nach Eurocode wie in der Abschlussprüfung: Modul 3 zeigt erst die charakteristischen Werte g_k und q_k, dann g_d = 1,35 · g_k, q_d = 1,5 · q_k und E_d = g_d + q_d
-- Modul 3 übergibt die Bemessungswerte g_d und q_d als Streckenlasten q₁ und q₂ an Modul 4 (`?g=…&q=…&L=…&gk=…&qk=…&bem=1`); Modul 4 kennzeichnet die Ergebnisse dann mit dem Index Ed (A_Ed,V, B_Ed,V, V_Ed, M_Ed). Modul 4 übergibt |M| an Modul 6 (`?M=…`, bei Bemessungswerten zusätzlich `&Ed=1`); Modul 6 weist darauf hin, dass zulässige Spannungen zu charakteristischen Momenten gehören
+- Modul 3 übergibt die Bemessungswerte g_d und q_d als Streckenlasten q₁ und q₂ an Modul 4 (`?g=…&q=…&L=…&gk=…&qk=…&bem=1`); Modul 4 kennzeichnet die Ergebnisse dann mit dem Index Ed (A_Ed,V, B_Ed,V, V_Ed, M_Ed). Modul 4 übergibt |M| an Modul 6 (`?M=…`, bei Bemessungswerten zusätzlich `&Ed=1`). Modul 6 rechnet standardmäßig mit Bemessungswerten nach Eurocode (σ_Ed = M_Ed / W ≤ f_d, f_m,d = k_mod · f_m,k / γ_M für Holz, f_y,d = f_y,k / γ_M0 für Stahl) und lässt sich auf zulässige Spannungen (altes Verfahren) umschalten; passt das übergebene Moment nicht zum Verfahren, erscheint ein Hinweis
 - Die Querkraft heißt in allen Modulen V (wie in der Abschlussprüfung)
 - In Modul 2 werden Massen in kg eingegeben und die Gewichtskraft mit `F = m · g` berechnet
 - In Modul 6 werden Querschnittsmaße in cm, Querschnittswerte in cm³ und cm⁴ und Spannungen in N/mm² angegeben, wie in den Bautabellen
