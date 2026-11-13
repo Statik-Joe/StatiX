@@ -30,6 +30,9 @@ const {
     erzeugeHebelAufgabe,
     querschnittswerte,
     biegespannung,
+    WERKSTOFFE_EC,
+    KMOD,
+    bemessungsfestigkeit,
     momenteEinfeldtraeger
 } = require('../statik-core.js');
 
@@ -661,4 +664,35 @@ test('Nur Kragarm belastet: kein Nulldurchgang von V im Feld, Stützmoment M_A =
     assert.equal(m.feld, null);
     nah(m.MA, -20, 1e-9);
     assert.equal(m.MB, 0);
+});
+
+// ---------- Modul 6: Bemessung nach Eurocode ----------
+
+const werkstoff = id => WERKSTOFFE_EC.find(w => w.id === id);
+const kmod = id => KMOD.find(k => k.id === id).kmod;
+
+test('Kennwerte Eurocode: C24 / GL24h f_m,k = 24, γ_M = 1,3; S235 f_y = 235, S355 f_y = 355, γ_M0 = 1,0; k_mod 0,6 … 1,1', () => {
+    assert.deepEqual([werkstoff('c24').fk, werkstoff('c24').gammaM], [24, 1.3]);
+    assert.deepEqual([werkstoff('gl24h').fk, werkstoff('gl24h').gammaM], [24, 1.3]);
+    assert.deepEqual([werkstoff('s235').fk, werkstoff('s235').gammaM], [235, 1.0]);
+    assert.deepEqual([werkstoff('s355').fk, werkstoff('s355').gammaM], [355, 1.0]);
+    assert.deepEqual(KMOD.map(k => k.kmod), [0.6, 0.7, 0.8, 0.9, 1.1]);
+});
+
+test('Bemessungsfestigkeit: C24, KLED mittel → f_m,d = 0,8 · 24 / 1,3 = 14,77 N/mm²; S235 → f_y,d = 235 N/mm²', () => {
+    nah(bemessungsfestigkeit(werkstoff('c24'), kmod('mittel')), 14.77, 0.005);
+    nah(bemessungsfestigkeit(werkstoff('c24'), kmod('staendig')), 11.08, 0.005);   // 0,6 · 24 / 1,3
+    nah(bemessungsfestigkeit(werkstoff('gl24h'), kmod('kurz')), 16.62, 0.005);     // 0,9 · 24 / 1,3
+    assert.equal(bemessungsfestigkeit(werkstoff('s235'), 0.8), 235);                 // k_mod gilt nur für Holz
+    assert.equal(bemessungsfestigkeit(werkstoff('s355')), 355);
+});
+
+test('Nachweis nach Eurocode: Balken C24 10/20 cm, M_Ed = 9 kNm → σ_Ed = 13,50 N/mm² ≤ 14,77 N/mm², η = 91 %', () => {
+    const W = querschnittswerte('rechteck', { b: 10, h: 20 }).W;   // 10 · 20² / 6 = 666,67 cm³
+    nah(W, 666.67, 0.005);
+    const sigma = biegespannung(9, W);
+    nah(sigma, 13.5, 1e-9);
+    const fd = bemessungsfestigkeit(werkstoff('c24'), kmod('mittel'));
+    assert.ok(sigma <= fd);
+    nah(sigma / fd, 0.914, 0.001);
 });

@@ -133,6 +133,39 @@ function biegespannung(M, W) {
     return W > 0 ? 1000 * M / W : 0;
 }
 
+// Bemessung nach Eurocode (Modul 6, Standard wie in der Abschlussprüfung): σ_Ed = M_Ed / W ≤ f_d
+//   Holz:  f_m,d = k_mod · f_m,k / γ_M   (DIN EN 1995-1-1, Gl. 2.17)
+//   Stahl: f_y,d = f_y,k / γ_M0          (DIN EN 1993-1-1, 6.2.1(5), elastischer Nachweis mit W_el)
+// Kennwerte (bitte im Tabellenbuch gegenprüfen, siehe ROADMAP Befund 11):
+//   C24:   f_m,k = 24 N/mm²   (DIN EN 338, Tabelle 1)
+//   GL24h: f_m,g,k = 24 N/mm² (DIN EN 14080, Tabelle 5)
+//   γ_M = 1,3 für Vollholz und Brettschichtholz (DIN EN 1995-1-1/NA, Tabelle NA.2)
+//   S235: f_y = 235 N/mm², S355: f_y = 355 N/mm² für t ≤ 40 mm (DIN EN 1993-1-1, Tabelle 3.1)
+//   γ_M0 = 1,0 (DIN EN 1993-1-1/NA)
+// Nicht berücksichtigt: Höhenbeiwert k_h (liegt auf der sicheren Seite), Kippen, Schub, Durchbiegung.
+const WERKSTOFFE_EC = [
+    { id: 'c24', name: 'Nadelholz C24', art: 'holz', fk: 24, gammaM: 1.3 },
+    { id: 'gl24h', name: 'Brettschichtholz GL24h', art: 'holz', fk: 24, gammaM: 1.3 },
+    { id: 's235', name: 'Baustahl S235', art: 'stahl', fk: 235, gammaM: 1.0 },
+    { id: 's355', name: 'Baustahl S355', art: 'stahl', fk: 355, gammaM: 1.0 }
+];
+
+// Modifikationsbeiwert k_mod für Vollholz und Brettschichtholz, Nutzungsklasse 1 und 2 (DIN EN 1995-1-1, Tabelle 3.1).
+// Klasse der Lasteinwirkungsdauer (KLED) nach DIN EN 1995-1-1/NA. Wirken mehrere Lasten zusammen (z. B. g + q),
+// gilt k_mod der Last mit der kürzesten Dauer (DIN EN 1995-1-1, 3.1.3(2)).
+const KMOD = [
+    { id: 'staendig', name: 'ständig (nur Eigengewicht)', kmod: 0.6 },
+    { id: 'lang', name: 'lang (z. B. Lagerflächen)', kmod: 0.7 },
+    { id: 'mittel', name: 'mittel (z. B. Nutzlast in Wohn-, Büro- und Schulräumen)', kmod: 0.8 },
+    { id: 'kurz', name: 'kurz (z. B. Schnee bis 1000 m ü. NN)', kmod: 0.9 },
+    { id: 'sehrkurz', name: 'sehr kurz', kmod: 1.1 }
+];
+
+// Bemessungswert der Festigkeit f_d [N/mm²]; kmod nur für Holz
+function bemessungsfestigkeit(werkstoff, kmod) {
+    return werkstoff.art === 'holz' ? kmod * werkstoff.fk / werkstoff.gammaM : werkstoff.fk / werkstoff.gammaM;
+}
+
 function berechneTraeger(system) {
     const L = system.L;
     const pointLoads = system.pointLoads || [];
@@ -604,6 +637,9 @@ if (typeof module !== 'undefined' && module.exports) {
         erzeugeHebelAufgabe,
         querschnittswerte,
         biegespannung,
+        WERKSTOFFE_EC,
+        KMOD,
+        bemessungsfestigkeit,
         momenteEinfeldtraeger
     };
 }

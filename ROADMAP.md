@@ -21,7 +21,7 @@ To-do-Liste der Code-Prüfung (Rechenkern, Einheitlichkeit, Handy). Reihenfolge 
 - [x] **8 · Modul 1:** Winkel φ modulo 360° geprüft (`winkelAbstand`); bei F_R < 1,5 kN wird φ nicht gewertet – Modul 1 Version 1.12 / Labor 3.8
 - [x] **9 · Modul 1, 2, 6:** Rechnungen im Rechenkern (`addiereKraefte`, `zerlegeSchraegeLast`, `hebelMomente`, `querschnittswerte`, `biegespannung`) mit Referenzfällen getestet – Labor 3.8
 - [x] **10 · Handy (GitHub Pages):** `?.` entfernt; Cache-Schutz über Prüfsummen (`npm run cache`, von `npm test` geprüft), damit keine neue Seite mit alter Skriptdatei läuft; sichtbare Fehlermeldung statt leerer Zeichnung; Test gegen `?.`/`??` – alle Module / Labor 3.8
-- [ ] **11 · Modul 6:** zulässige Spannungen mit Quelle belegen bzw. klären, ob Modul 6 auf Bemessungswerte nach Eurocode umgestellt wird – *Rückfrage an die Lehrkraft*
+- [x] **11 · Modul 6:** Nachweis mit Bemessungswerten nach Eurocode als Standard (σ_Ed ≤ f_d; C24, GL24h, S235, S355; k_mod nach Lasteinwirkungsdauer; f_d als zusätzliches Prüffeld in der Übung), umschaltbar auf zulässige Spannungen; Kennwerte mit Normquelle im Rechenkern – *Werte bitte im Tabellenbuch gegenprüfen* – Modul 6 Version 1.13 / Labor 3.9
 
 ### Niedrig
 

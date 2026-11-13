@@ -45,12 +45,12 @@
                     <span class="lab-badge">Modul 6</span>
                 </div>
                 <h1 class="text-3xl font-extrabold text-slate-800">Spannungsnachweis</h1>
-                <p class="text-sm text-slate-500 mt-1">Querschnittswerte berechnen, Biegespannung ermitteln und gegen die zulässige Spannung nachweisen.</p>
+                <p class="text-sm text-slate-500 mt-1">Querschnittswerte berechnen, Biegespannung ermitteln und gegen die Festigkeit des Werkstoffs nachweisen.</p>
             </div>
         </header>
 
         <p class="text-xs text-amber-700 bg-amber-50 border border-amber-100 rounded-lg px-3 py-2 mb-6">
-            💡 Dieses Modul nutzt die klassische Methode mit <strong>zulässigen Spannungen</strong> (σ<sub>vorh</sub> ≤ σ<sub>zul</sub>) zur Einführung des Grundprinzips. Die aktuelle Bemessung nach Eurocode arbeitet mit Bemessungswerten und Teilsicherheitsbeiwerten (Grenzzustandsmethode) – das Grundprinzip „Spannung ≤ Grenzwert“ bleibt aber dasselbe.
+            💡 Standard ist der Nachweis mit <strong>Bemessungswerten nach Eurocode</strong> wie in der Abschlussprüfung: σ<sub>Ed</sub> = M<sub>Ed</sub> / W ≤ f<sub>d</sub>. Unter „Werkstoff“ lässt sich auf das alte Verfahren mit <strong>zulässigen Spannungen</strong> (σ<sub>vorh</sub> ≤ σ<sub>zul</sub>) umschalten – das Grundprinzip „Spannung ≤ Grenzwert“ ist bei beiden gleich.
         </p>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
@@ -139,13 +139,13 @@
                     </h3>
                     <div>
                         <label for="qs_m" class="flex justify-between text-xs font-bold text-slate-500 mb-1">
-                            <span>Biegemoment M<sub>max</sub> [kNm]</span>
+                            <span id="m_label">Bemessungsmoment M<sub>Ed</sub> [kNm]</span>
                             <span id="val_m" class="text-indigo-700 font-bold">10 kNm</span>
                         </label>
                         <input type="range" id="qs_m" min="0" max="100" step="0.5" value="10" class="w-full accent-indigo-600">
                     </div>
                     <p id="importNote" class="hidden text-xs font-semibold text-violet-700 bg-violet-50 border border-violet-100 rounded-lg px-2 py-1.5"></p>
-                    <p class="text-xs text-slate-400">Tipp: M<sub>max</sub> für einen Träger liefert Modul 4 (Schnittgrößen) – dort über „Moment nachweisen“ direkt übernehmen. Dieser Nachweis arbeitet mit zulässigen Spannungen und gehört deshalb zu Momenten aus charakteristischen Lasten (ohne Teilsicherheitsbeiwerte).</p>
+                    <p id="m_tipp" class="text-xs text-slate-400">Tipp: Das Moment für einen Träger liefert Modul 4 (Schnittgrößen) – dort über „Moment nachweisen“ direkt übernehmen.</p>
                 </div>
 
                 <div class="p-4 bg-rose-50/70 rounded-xl border border-rose-100 shadow-sm space-y-4">
@@ -154,6 +154,26 @@
                         Werkstoff
                     </h3>
                     <div>
+                        <label for="verfahren" class="block text-xs font-bold text-slate-500 mb-1">Nachweisverfahren</label>
+                        <select id="verfahren" class="w-full border border-slate-300 rounded-lg px-2 py-1.5 text-sm bg-white">
+                            <option value="ec" selected>Eurocode: Bemessungswerte (wie in der Prüfung)</option>
+                            <option value="zul">Zulässige Spannungen (altes Verfahren)</option>
+                        </select>
+                    </div>
+                    <!-- Eurocode: Werkstoffe und k_mod kommen aus statik-core.js (WERKSTOFFE_EC, KMOD, mit Quellen) -->
+                    <div id="box_ec" class="space-y-3">
+                        <div>
+                            <label for="material_ec" class="block text-xs font-bold text-slate-500 mb-1">Werkstoff (setzt f<sub>d</sub>)</label>
+                            <select id="material_ec" class="w-full border border-slate-300 rounded-lg px-2 py-1.5 text-sm bg-white"></select>
+                        </div>
+                        <div id="box_kmod">
+                            <label for="kmod" class="block text-xs font-bold text-slate-500 mb-1">Lasteinwirkungsdauer (k<sub>mod</sub>, Nutzungsklasse 1 und 2)</label>
+                            <select id="kmod" class="w-full border border-slate-300 rounded-lg px-2 py-1.5 text-sm bg-white"></select>
+                            <p class="text-xs text-slate-400 mt-1">Wirken mehrere Lasten zusammen (z. B. g + q), gilt die kürzeste Dauer.</p>
+                        </div>
+                        <p id="fd_formel" class="text-xs font-mono text-rose-900 bg-white border border-rose-100 rounded-lg px-2 py-1.5"></p>
+                    </div>
+                    <div id="box_zul" class="hidden">
                         <label for="material" class="block text-xs font-bold text-slate-500 mb-1">Material (setzt σ<sub>zul</sub> als Vorschlag)</label>
                         <!-- Klassische zulässige Biegespannungen, Lastfall H:
                              Holz nach DIN 1052:1988 (Nadelholz S10 / Güteklasse II: 10 N/mm², Brettschichtholz BS11: 11 N/mm²),
@@ -167,12 +187,12 @@
                     </div>
                     <div>
                         <label for="sig_zul" class="flex justify-between text-xs font-bold text-slate-500 mb-1">
-                            <span>Zulässige Spannung σ<sub>zul</sub> [N/mm²]</span>
+                            <span id="grenz_label">Bemessungswert der Festigkeit f<sub>d</sub> [N/mm²]</span>
                             <span id="val_sigzul" class="text-rose-700 font-bold">140 N/mm²</span>
                         </label>
-                        <input type="range" id="sig_zul" min="5" max="250" step="1" value="140" class="w-full accent-rose-600">
+                        <input type="range" id="sig_zul" min="5" max="400" step="any" value="235" class="w-full accent-rose-600">
                     </div>
-                    <p class="text-xs text-slate-400">Klassische zulässige Biegespannungen (Lastfall H): Holz nach DIN 1052:1988, Stahl nach DIN 1050.</p>
+                    <p id="werkstoff_quelle" class="text-xs text-slate-400">Charakteristische Festigkeiten nach DIN EN 338, DIN EN 14080 und DIN EN 1993-1-1, Teilsicherheitsbeiwerte γ<sub>M</sub> nach den Nationalen Anhängen. Höhenbeiwert k<sub>h</sub>, Kippen und Schub sind nicht berücksichtigt.</p>
                 </div>
 
             </div>
@@ -200,9 +220,10 @@
                         <p>I = <span id="rw_i">0</span> cm⁴</p>
                         <p class="pt-2 border-t border-slate-100" id="rw_formula_w">W = I / e</p>
                         <p>W = <span id="rw_w">0</span> cm³</p>
-                        <p class="pt-2 border-t border-slate-100">σ<sub>vorh</sub> = M / W = <span id="rw_m_nmm">0</span> Nmm / <span id="rw_w_mm">0</span> mm³</p>
-                        <p class="font-bold text-indigo-700">σ<sub>vorh</sub> = <span id="rw_sigma">0</span> N/mm²</p>
-                        <p class="pt-2 border-t border-slate-100">Ausnutzungsgrad = σ<sub>vorh</sub> / σ<sub>zul</sub> = <span id="rw_ausnutzung">0</span> %</p>
+                        <p class="pt-2 border-t border-slate-100"><span class="bz-sigma">σ<sub>Ed</sub></span> = <span class="bz-m">M<sub>Ed</sub></span> / W = <span id="rw_m_nmm">0</span> Nmm / <span id="rw_w_mm">0</span> mm³</p>
+                        <p class="font-bold text-indigo-700"><span class="bz-sigma">σ<sub>Ed</sub></span> = <span id="rw_sigma">0</span> N/mm²</p>
+                        <p id="rw_fd" class="pt-2 border-t border-slate-100"></p>
+                        <p class="pt-2 border-t border-slate-100">Ausnutzungsgrad = <span class="bz-sigma">σ<sub>Ed</sub></span> / <span class="bz-grenz">f<sub>d</sub></span> = <span id="rw_ausnutzung">0</span> %</p>
                     </div>
                     <p class="text-xs text-slate-400 font-sans mt-2">💡 Umrechnung: 1 kNm = 1 000 000 Nmm und 1 cm³ = 1000 mm³, also σ [N/mm²] = 1000 · M [kNm] / W [cm³].</p>
                 </div>
@@ -234,7 +255,7 @@
                             </button>
                         </div>
                     </div>
-                    <p id="taskText5" class="text-sm text-slate-600 mt-2 mb-4">Aktiviere „Selbst berechnen“ für eine Aufgabe: Querschnitt, Moment und Werkstoff werden zufällig gewählt, der Rechenweg oben wird ausgeblendet. Berechne I, W und σ<sub>vorh</sub> von Hand und entscheide, ob der Nachweis erfüllt ist.</p>
+                    <p id="taskText5" class="text-sm text-slate-600 mt-2 mb-4">Aktiviere „Selbst berechnen“ für eine Aufgabe: Querschnitt, Moment und Werkstoff werden zufällig gewählt, der Rechenweg oben wird ausgeblendet. Berechne I, W und die Biegespannung von Hand und entscheide, ob der Nachweis erfüllt ist.</p>
 
                     <div id="practiceForm5" class="hidden space-y-4">
                         <div class="bg-amber-50/60 p-3 rounded-lg border border-amber-100 grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -251,10 +272,16 @@
                                 <span id="fb_w" class="text-lg"></span>
                             </div>
                             <div class="flex items-center gap-2">
-                                <label for="check_sigma" class="text-xs font-mono w-24">σ<sub>vorh</sub> =</label>
+                                <label for="check_sigma" class="text-xs font-mono w-24"><span class="bz-sigma">σ<sub>Ed</sub></span> =</label>
                                 <input type="number" id="check_sigma" step="0.01" class="w-28 border border-slate-300 rounded px-2 py-1 text-sm">
                                 <span class="text-xs">N/mm²</span>
                                 <span id="fb_sigma" class="text-lg"></span>
+                            </div>
+                            <div id="box_check_fd" class="flex items-center gap-2">
+                                <label for="check_fd" class="text-xs font-mono w-24">f<sub>d</sub> =</label>
+                                <input type="number" id="check_fd" step="0.01" class="w-28 border border-slate-300 rounded px-2 py-1 text-sm">
+                                <span class="text-xs">N/mm²</span>
+                                <span id="fb_fd" class="text-lg"></span>
                             </div>
                             <div class="flex items-center gap-2">
                                 <label for="check_nachweis" class="text-xs font-mono w-24">Nachweis</label>
@@ -286,8 +313,8 @@
     </div>
 
     <script src="labor.js?v=c896ff32f6"></script>
-    <script src="version.js?v=3.8"></script>
-    <script src="statik-core.js?v=ca8549452e"></script>
+    <script src="version.js?v=3.9"></script>
+    <script src="statik-core.js?v=e77eaedd41"></script>
     <script>
         const canvas = document.getElementById('qsCanvas');
         const ctx = canvas.getContext('2d');
@@ -305,6 +332,62 @@
         const qs_m = document.getElementById('qs_m');
         const material = document.getElementById('material');
         const sig_zul = document.getElementById('sig_zul');
+        const verfahren = document.getElementById('verfahren');
+        const material_ec = document.getElementById('material_ec');
+        const kmodSel = document.getElementById('kmod');
+
+        // Nachweisverfahren: 'ec' = Bemessungswerte nach Eurocode (Standard, wie in der Prüfung), 'zul' = zulässige Spannungen
+        WERKSTOFFE_EC.forEach(w => material_ec.add(new Option(
+            `${w.name} (${w.art === 'holz' ? 'Biegefestigkeit' : 'Streckgrenze'} ${w.fk} N/mm²)`, w.id)));
+        material_ec.add(new Option('Eigener Wert …', 'custom'));
+        material_ec.value = 's235';
+        KMOD.forEach(k => kmodSel.add(new Option(`k_mod = ${fmt(k.kmod, 1)}: ${k.name}`, k.id)));
+        kmodSel.value = 'mittel';
+        const istEC = () => verfahren.value === 'ec';
+
+        // Bezeichnungen je Verfahren (HTML)
+        const BZ = {
+            ec: { sigma: 'σ<sub>Ed</sub>', m: 'M<sub>Ed</sub>', grenz: 'f<sub>d</sub>', sigmaText: 'σ_Ed', grenzText: 'f_d', vergleich: 'Bemessungsfestigkeit' },
+            zul: { sigma: 'σ<sub>vorh</sub>', m: 'M', grenz: 'σ<sub>zul</sub>', sigmaText: 'σ_vorh', grenzText: 'σ_zul', vergleich: 'zulässig' }
+        };
+        const bz = () => BZ[istEC() ? 'ec' : 'zul'];
+
+        // Grenzwert (f_d bzw. σ_zul) aus der Auswahl; bei „Eigener Wert“ gilt der Regler.
+        // Liefert { wert, formel } – formel ist der Rechenweg für f_d (nur Eurocode).
+        function grenzwert() {
+            if (!istEC()) {
+                if (material.value !== 'custom') sig_zul.value = material.value;
+                return { wert: parseFloat(sig_zul.value), formel: '' };
+            }
+            const w = WERKSTOFFE_EC.find(x => x.id === material_ec.value);
+            const k = KMOD.find(x => x.id === kmodSel.value) || KMOD[2];
+            if (!w) return { wert: parseFloat(sig_zul.value), formel: `f<sub>d</sub> = ${fmt(parseFloat(sig_zul.value), 2)} N/mm² (eigener Wert)` };
+            const fd = bemessungsfestigkeit(w, k.kmod);
+            sig_zul.value = fd;
+            const formel = w.art === 'holz'
+                ? `f<sub>m,d</sub> = k<sub>mod</sub> · f<sub>m,k</sub> / γ<sub>M</sub> = ${fmt(k.kmod, 1)} · ${fmt(w.fk)} / ${fmt(w.gammaM, 1)} = ${fmt(fd, 2)} N/mm²`
+                : `f<sub>y,d</sub> = f<sub>y,k</sub> / γ<sub>M0</sub> = ${fmt(w.fk)} / ${fmt(w.gammaM, 1)} = ${fmt(fd, 2)} N/mm²`;
+            return { wert: fd, formel };
+        }
+
+        // Anzeige an das gewählte Verfahren anpassen (Bezeichnungen, sichtbare Auswahlfelder)
+        function verfahrenAnzeigen() {
+            const ec = istEC();
+            const b = bz();
+            document.getElementById('box_ec').classList.toggle('hidden', !ec);
+            document.getElementById('box_zul').classList.toggle('hidden', ec);
+            document.getElementById('box_check_fd').classList.toggle('hidden', !ec);
+            const w = WERKSTOFFE_EC.find(x => x.id === material_ec.value);
+            document.getElementById('box_kmod').classList.toggle('hidden', !w || w.art !== 'holz');
+            document.getElementById('m_label').innerHTML = ec ? 'Bemessungsmoment M<sub>Ed</sub> [kNm]' : 'Biegemoment M<sub>max</sub> (charakteristisch) [kNm]';
+            document.getElementById('grenz_label').innerHTML = ec ? 'Bemessungswert der Festigkeit f<sub>d</sub> [N/mm²]' : 'Zulässige Spannung σ<sub>zul</sub> [N/mm²]';
+            document.getElementById('werkstoff_quelle').innerHTML = ec
+                ? 'Charakteristische Festigkeiten nach DIN EN 338, DIN EN 14080 und DIN EN 1993-1-1, Teilsicherheitsbeiwerte γ<sub>M</sub> nach den Nationalen Anhängen. Höhenbeiwert k<sub>h</sub>, Kippen und Schub sind nicht berücksichtigt.'
+                : 'Klassische zulässige Biegespannungen (Lastfall H): Holz nach DIN 1052:1988, Stahl nach DIN 1050. Gehören zu Momenten aus charakteristischen Lasten (ohne Teilsicherheitsbeiwerte).';
+            document.querySelectorAll('.bz-sigma').forEach(el => { el.innerHTML = b.sigma; });
+            document.querySelectorAll('.bz-m').forEach(el => { el.innerHTML = b.m; });
+            document.querySelectorAll('.bz-grenz').forEach(el => { el.innerHTML = b.grenz; });
+        }
 
         qsType.addEventListener('change', () => {
             document.getElementById('dims_rechteck').classList.toggle('hidden', qsType.value !== 'rechteck');
@@ -313,14 +396,12 @@
             update();
         });
 
-        material.addEventListener('change', () => {
-            if (material.value !== 'custom') {
-                sig_zul.value = material.value;
-            }
-            update();
-        });
+        material.addEventListener('change', update);   // grenzwert() übernimmt den Wert der Auswahl
+        material_ec.addEventListener('change', update);
+        kmodSel.addEventListener('change', update);
+        verfahren.addEventListener('change', () => { update(); importHinweis(); });
         sig_zul.addEventListener('input', () => {
-            material.value = 'custom';
+            (istEC() ? material_ec : material).value = 'custom';
             update();
         });
 
@@ -356,10 +437,17 @@
         function update() {
             const qv = getQuerschnittswerte();
             const M = parseFloat(qs_m.value); // kNm
-            const sigZul = parseFloat(sig_zul.value); // N/mm²
+            verfahrenAnzeigen();
+            const grenz = grenzwert();
+            const sigZul = grenz.wert;   // Grenzwert in N/mm²: f_d (Eurocode) bzw. σ_zul (altes Verfahren)
+            const b = bz();
 
             document.getElementById('val_m').innerText = fmt(M) + ' kNm';
-            document.getElementById('val_sigzul').innerText = sigZul + ' N/mm²';
+            document.getElementById('val_sigzul').innerText = fmt(sigZul, 2) + ' N/mm²';
+            document.getElementById('fd_formel').innerHTML = grenz.formel;
+            const rwFd = document.getElementById('rw_fd');
+            rwFd.innerHTML = grenz.formel;
+            rwFd.classList.toggle('hidden', !grenz.formel);
             if (qv.type === 'rechteck') {
                 document.getElementById('val_b').innerText = qv.b + ' cm';
                 document.getElementById('val_h').innerText = qv.h + ' cm';
@@ -406,10 +494,10 @@
             const erfuellt = sigma <= sigZul;
             box.className = 'p-5 rounded-2xl border-2 shadow-sm text-center ' + (erfuellt ? 'bg-emerald-50 border-emerald-300' : 'bg-rose-50 border-rose-300');
             document.getElementById('nachweisLabel').className = 'text-sm font-bold tracking-wide mb-1 ' + (erfuellt ? 'text-emerald-700' : 'text-rose-700');
-            document.getElementById('nachweisLabel').innerHTML = 'Nachweis σ<sub>vorh</sub> ≤ σ<sub>zul</sub>';
+            document.getElementById('nachweisLabel').innerHTML = `Nachweis ${b.sigma} ≤ ${b.grenz}`;
             document.getElementById('nachweisText').className = 'text-2xl font-extrabold ' + (erfuellt ? 'text-emerald-700' : 'text-rose-700');
             document.getElementById('nachweisText').innerText = erfuellt ? '✅ Erfüllt' : '❌ Nicht erfüllt';
-            document.getElementById('nachweisSub').innerText = `${fmt(sigma, 2)} N/mm² ${erfuellt ? '≤' : '>'} ${sigZul} N/mm² (zulässig)`;
+            document.getElementById('nachweisSub').innerText = `${fmt(sigma, 2)} N/mm² ${erfuellt ? '≤' : '>'} ${fmt(sigZul, 2)} N/mm² (${b.vergleich})`;
 
             currentResult = { I: qv.I, W: qv.W, sigma, erfuellt, qv, M, sigZul };
             if (solutionHidden) maskSolution();
@@ -596,10 +684,10 @@
         let practiceMode5 = false;
         let solutionHidden = false;
         let sessionLog5 = [];
-        const lockableInputs = [qsType, qs_b, qs_h, qs_d, qs_ib, qs_ih, qs_is, qs_it, qs_m, material, sig_zul];
+        const lockableInputs = [qsType, qs_b, qs_h, qs_d, qs_ib, qs_ih, qs_is, qs_it, qs_m, material, sig_zul, verfahren, material_ec, kmodSel];
         const maskIds = ['rw_i', 'rw_w', 'rw_w_mm', 'rw_sigma', 'rw_ausnutzung'];
-        const checkIds = ['check_i', 'check_w', 'check_sigma', 'check_nachweis'];
-        const fbIds = ['fb_i', 'fb_w', 'fb_sigma', 'fb_nachweis'];
+        const checkIds = ['check_i', 'check_w', 'check_sigma', 'check_fd', 'check_nachweis'];
+        const fbIds = ['fb_i', 'fb_w', 'fb_sigma', 'fb_fd', 'fb_nachweis'];
         const defaultTaskText = document.getElementById('taskText5').innerHTML;
 
         // Werte im Rechenweg, Nachweis-Box und Ausnutzungsbalken verbergen (würden die Lösung verraten)
@@ -609,7 +697,15 @@
             document.getElementById('nachweisLabel').className = 'text-sm font-bold tracking-wide mb-1 text-slate-500';
             document.getElementById('nachweisText').className = 'text-2xl font-extrabold text-slate-500';
             document.getElementById('nachweisText').innerText = '❓ Erst berechnen …';
-            document.getElementById('nachweisSub').innerHTML = `σ<sub>zul</sub> = ${currentResult.sigZul} N/mm²`;
+            if (istEC()) {
+                // f_d gehört zur Aufgabe (k_mod, γ_M aus der Aufgabenstellung) und bleibt bis zum Prüfen verborgen
+                document.getElementById('nachweisSub').innerHTML = 'f<sub>d</sub> = ? (selbst bestimmen)';
+                document.getElementById('fd_formel').innerHTML = 'f<sub>d</sub> = ?';
+                document.getElementById('rw_fd').innerHTML = 'f<sub>d</sub> = ?';
+                document.getElementById('val_sigzul').innerText = '?';
+            } else {
+                document.getElementById('nachweisSub').innerHTML = `${bz().grenz} = ${fmt(currentResult.sigZul, 2)} N/mm²`;
+            }
             document.getElementById('ausnutzungCard').classList.add('hidden');
         }
 
@@ -629,8 +725,13 @@
             if (q.type === 'rechteck') qs = `Rechteck b = ${q.b} cm, h = ${q.h} cm`;
             else if (q.type === 'kreis') qs = `Kreis d = ${q.d} cm`;
             else qs = `I-Profil b = ${q.b} cm, h = ${q.h} cm, s = ${fmt(q.s, 1)} cm, t = ${fmt(q.t, 1)} cm`;
-            const mat = material.options[material.selectedIndex].text;
-            return `${qs}; M = ${fmt(r.M)} kNm; ${mat}`;
+            if (!istEC()) return `${qs}; M = ${fmt(r.M)} kNm; ${material.options[material.selectedIndex].text}`;
+            const w = WERKSTOFFE_EC.find(x => x.id === material_ec.value);
+            const k = KMOD.find(x => x.id === kmodSel.value);
+            const mat = !w ? `f_d = ${fmt(r.sigZul, 2)} N/mm²`
+                : w.art === 'holz' ? `${w.name}, Lasteinwirkungsdauer ${k.name.replace(/ \(.*\)/, '')} (k_mod = ${fmt(k.kmod, 1)}, γ_M = ${fmt(w.gammaM, 1)})`
+                : `${w.name} (γ_M0 = ${fmt(w.gammaM, 1)})`;
+            return `${qs}; M_Ed = ${fmt(r.M)} kNm; ${mat}`;
         }
 
         function newTask5() {
@@ -651,24 +752,30 @@
                 qs_is.value = (randStep(6, 15, 1) / 10).toFixed(1);
                 qs_it.value = (randStep(8, 25, 1) / 10).toFixed(1);
             }
-            // Zufälliger Werkstoff; ein I-Profil ist in der Praxis immer ein Stahlprofil
-            const matVal = type === 'iprofil' ? '140' : pick(['10', '11', '140']);
-            material.value = matVal;
-            sig_zul.value = matVal;
+            // Zufälliger Werkstoff im gewählten Verfahren; ein I-Profil ist in der Praxis immer ein Stahlprofil
+            if (istEC()) {
+                material_ec.value = type === 'iprofil' ? 's235' : pick(['c24', 'gl24h', 's235']);
+                kmodSel.value = pick(['staendig', 'mittel', 'mittel', 'kurz']);
+            } else {
+                material.value = type === 'iprofil' ? '140' : pick(['10', '11', '140']);
+            }
+            const grenz = grenzwert().wert;
 
             // Moment so wählen, dass die Ausnutzung zwischen etwa 40 % und 160 % liegt (Nachweis mal erfüllt, mal nicht)
             const W = getQuerschnittswerte().W;
             const ratio = 0.4 + Math.random() * 1.2;
-            const M = Math.max(0.5, Math.round(ratio * parseFloat(matVal) * W / 1000 * 2) / 2);
+            const M = Math.max(0.5, Math.round(ratio * grenz * W / 1000 * 2) / 2);
             setMoment(M);
-            document.getElementById('importNote').classList.add('hidden');
+            const note = document.getElementById('importNote');
+            note.classList.add('hidden');
+            note.dataset.verworfen = '1';   // Übungsaufgabe ersetzt das übernommene Moment
 
             checkIds.forEach(id => { document.getElementById(id).value = ''; });
             fbIds.forEach(id => { document.getElementById(id).innerText = ''; });
             document.getElementById('checkResult5').classList.add('hidden');
             document.getElementById('practiceForm5').classList.remove('hidden');
             setSolutionHidden(true);
-            document.getElementById('taskText5').innerHTML = `<strong>Aufgabe:</strong> ${describeTask(currentResult)}. Berechne I, W und σ<sub>vorh</sub> und entscheide, ob der Nachweis σ<sub>vorh</sub> ≤ σ<sub>zul</sub> erfüllt ist.`;
+            document.getElementById('taskText5').innerHTML = `<strong>Aufgabe:</strong> ${describeTask(currentResult)}. Berechne I, W und ${bz().sigma}${istEC() ? ', bestimme f<sub>d</sub>' : ''} und entscheide, ob der Nachweis ${bz().sigma} ≤ ${bz().grenz} erfüllt ist.`;
         }
 
         document.getElementById('btnPracticeMode5').addEventListener('click', () => {
@@ -699,8 +806,10 @@
             const numChecks = [
                 ['check_i', 'fb_i', r.I, 'I', 'cm⁴', 1],
                 ['check_w', 'fb_w', r.W, 'W', 'cm³', 1],
-                ['check_sigma', 'fb_sigma', r.sigma, 'σ_vorh', 'N/mm²', 2],
+                ['check_sigma', 'fb_sigma', r.sigma, bz().sigmaText, 'N/mm²', 2],
             ];
+            if (istEC()) numChecks.push(['check_fd', 'fb_fd', r.sigZul, 'f_d', 'N/mm²', 2]);   // nur bei Bemessungswerten
+            const gesamt = numChecks.length + 1;
             let correctCount = 0;
             const detailLines = [];
             numChecks.forEach(([inputId, fbId, real, label, unit, digits]) => {
@@ -723,7 +832,7 @@
                 aufgabe: describeTask(r),
                 details: detailLines,
                 richtig: correctCount,
-                gesamt: 4
+                gesamt
             });
             document.getElementById('logCount5').innerText = sessionLog5.length;
             document.getElementById('btnExportLog5').disabled = false;
@@ -733,12 +842,12 @@
             setSolutionHidden(false);
             const box = document.getElementById('checkResult5');
             box.classList.remove('hidden', 'bg-emerald-50', 'text-emerald-800', 'bg-amber-50', 'text-amber-800');
-            if (correctCount === 4) {
+            if (correctCount === gesamt) {
                 box.classList.add('bg-emerald-50', 'text-emerald-800');
-                box.innerText = '🎉 Alles richtig! (4/4) Rechenweg und Nachweis sind jetzt oben sichtbar.';
+                box.innerText = `🎉 Alles richtig! (${gesamt}/${gesamt}) Rechenweg und Nachweis sind jetzt oben sichtbar.`;
             } else {
                 box.classList.add('bg-amber-50', 'text-amber-800');
-                box.innerText = `${correctCount}/4 richtig. Vergleiche deine ❌-Werte mit dem jetzt sichtbaren Rechenweg oben.`;
+                box.innerText = `${correctCount}/${gesamt} richtig. Vergleiche deine ❌-Werte mit dem jetzt sichtbaren Rechenweg oben.`;
             }
         });
 
@@ -765,20 +874,34 @@
         // übergebene Moment, während der Hinweis noch den übergebenen Wert nennt.
         const params = new URLSearchParams(window.location.search);
         const mParam = momentParameterwert(params.get('M'));
-        if (mParam !== null) {
-            setMoment(mParam);
+        const mIstEd = params.get('Ed') === '1';
+        if (mParam !== null) setMoment(mParam);
+
+        // Hinweis zum übernommenen Moment – passt es zum gewählten Verfahren?
+        //   Eurocode braucht M_Ed (Bemessungswerte), zulässige Spannungen brauchen charakteristische Momente.
+        function importHinweis() {
             const note = document.getElementById('importNote');
-            if (params.get('Ed') === '1') {
-                // Bemessungsmoment aus Eurocode-Lasten: mit zulässigen Spannungen wäre die Sicherheit doppelt enthalten
-                note.className = 'text-xs font-semibold text-amber-900 bg-amber-50 border border-amber-300 rounded-lg px-2 py-1.5';
-                note.innerHTML = `⚠️ M<sub>Ed</sub> = ${fmt(mParam, 2)} kNm aus Modul 4 übernommen. Das ist ein <strong>Bemessungsmoment</strong> mit den Teilsicherheitsbeiwerten 1,35 und 1,5. ` +
-                    `Dieser Nachweis vergleicht mit <strong>zulässigen Spannungen</strong> (DIN 1052:1988, DIN 1050), in denen die Sicherheit schon steckt – mit M<sub>Ed</sub> wäre sie doppelt eingerechnet. ` +
-                    `Für einen passenden Nachweis in Modul 4 die charakteristischen Lasten g<sub>k</sub> und q<sub>k</sub> eintragen (Schalter „Bemessungswerte“ aus) und das Moment erneut übergeben.`;
+            if (mParam === null || note.dataset.verworfen) return;
+            const passt = istEC() === mIstEd;
+            note.className = passt
+                ? 'text-xs font-semibold text-violet-700 bg-violet-50 border border-violet-100 rounded-lg px-2 py-1.5'
+                : 'text-xs font-semibold text-amber-900 bg-amber-50 border border-amber-300 rounded-lg px-2 py-1.5';
+            const wert = fmt(mParam, 2);
+            if (passt) {
+                note.innerHTML = mIstEd
+                    ? `➡️ Bemessungsmoment M<sub>Ed</sub> = ${wert} kNm aus Modul 4 übernommen.`
+                    : `➡️ M<sub>max</sub> = ${wert} kNm (charakteristisch) aus Modul 4 übernommen.`;
+            } else if (mIstEd) {
+                note.innerHTML = `⚠️ M<sub>Ed</sub> = ${wert} kNm aus Modul 4 übernommen. Das ist ein <strong>Bemessungsmoment</strong> mit den Teilsicherheitsbeiwerten 1,35 und 1,5. ` +
+                    `Die <strong>zulässigen Spannungen</strong> (DIN 1052:1988, DIN 1050) enthalten die Sicherheit schon – mit M<sub>Ed</sub> wäre sie doppelt eingerechnet. ` +
+                    `Passend ist hier das Verfahren „Bemessungswerte nach Eurocode“.`;
             } else {
-                note.innerHTML = `➡️ M<sub>max</sub> = ${fmt(mParam, 2)} kNm aus Modul 4 übernommen.`;
+                note.innerHTML = `⚠️ M = ${wert} kNm aus Modul 4 übernommen. Es stammt aus <strong>charakteristischen Lasten</strong> (ohne Teilsicherheitsbeiwerte). ` +
+                    `Für den Nachweis mit Bemessungswerten in Modul 4 die Lasten als Bemessungswerte eingeben (Schalter „Lasten sind Bemessungswerte“, z. B. g<sub>d</sub> und q<sub>d</sub> aus Modul 3) und das Moment erneut übergeben – ` +
+                    `oder hier auf „Zulässige Spannungen“ umschalten.`;
             }
-            note.classList.remove('hidden');
         }
+        importHinweis();
 
         // Init
         update();
