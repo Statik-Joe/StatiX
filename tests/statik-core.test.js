@@ -22,7 +22,15 @@ const {
     istImWertebereich,
     momentParameterwert,
     erhoeheQuizPunktestand,
-    hebelVergleich
+    hebelVergleich,
+    addiereKraefte,
+    zerlegeSchraegeLast,
+    winkelAbstand,
+    hebelMomente,
+    erzeugeHebelAufgabe,
+    querschnittswerte,
+    biegespannung,
+    momenteEinfeldtraeger
 } = require('../statik-core.js');
 
 const nah = (ist, soll, tol = 0.02) =>
@@ -534,4 +542,123 @@ test('Hebelgesetz: Gleichgewicht nur bei m₁ · l₁ = m₂ · l₂, auch bei k
         for (let i = 5; i <= 50; i++) for (let j = 5; j <= 50; j++) {
             assert.equal(hebelVergleich(m1, i / 10, m2, j / 10) === 0, m1 * i === m2 * j, `${m1} kg · ${i / 10} m / ${m2} kg · ${j / 10} m`);
         }
+});
+
+// ---------- Modul 1: Kräfteaddition ----------
+
+test('Kräfteaddition: F₁ = 80 kN / 30°, F₂ = 100 kN / 120° → F_R = 128,06 kN, φ = 81,34° (Startwerte Modul 1)', () => {
+    const r = addiereKraefte(80, 30, 100, 120);
+    nah(r.f1x, 69.28, 0.005);   // 80 · cos 30°
+    nah(r.f1y, 40.00, 0.005);   // 80 · sin 30°
+    nah(r.f2x, -50.00, 0.005);  // 100 · cos 120°
+    nah(r.f2y, 86.60, 0.005);   // 100 · sin 120°
+    nah(r.frx, 19.28, 0.005);
+    nah(r.fry, 126.60, 0.005);
+    nah(r.fr, 128.06, 0.005);   // √(19,28² + 126,60²)
+    nah(r.ang, 81.34, 0.005);   // arctan(126,60 / 19,28)
+});
+
+test('Kräfteaddition: Winkel φ liegt immer zwischen 0° und 360° (alle Quadranten)', () => {
+    nah(addiereKraefte(10, 0, 0, 0).ang, 0, 1e-9);
+    nah(addiereKraefte(10, 180, 0, 0).ang, 180, 1e-9);
+    nah(addiereKraefte(10, 225, 0, 0).ang, 225, 1e-9);
+    nah(addiereKraefte(10, 330, 0, 0).ang, 330, 1e-9);
+    nah(addiereKraefte(50, 0, 50, 180).fr, 0, 1e-9);   // entgegengesetzt gleich groß: F_R = 0
+});
+
+test('Winkelabstand: 359,5° ≙ 0° (0,5° Abstand), −30° ≙ 330°, 10° und 350° liegen 20° auseinander', () => {
+    nah(winkelAbstand(359.5, 0), 0.5, 1e-9);
+    nah(winkelAbstand(0, 359.5), 0.5, 1e-9);
+    nah(winkelAbstand(-30, 330), 0, 1e-9);
+    nah(winkelAbstand(10, 350), 20, 1e-9);
+    nah(winkelAbstand(90, 270), 180, 1e-9);
+});
+
+test('Schräge Last auf Fläche: F = 20 kN, β = 25° → F_y = 18,13 kN, F_x = 8,45 kN; β = 0° und 90°', () => {
+    const r = zerlegeSchraegeLast(20, 25);
+    nah(r.Fy, 18.13, 0.005);   // 20 · cos 25°
+    nah(r.Fx, 8.45, 0.005);    // 20 · sin 25°
+    nah(zerlegeSchraegeLast(20, 0).Fx, 0, 1e-9);
+    nah(zerlegeSchraegeLast(20, 90).Fy, 0, 1e-9);
+});
+
+// ---------- Modul 2: Hebelgesetz ----------
+
+test('Hebelgesetz: 50 kg bei 3 m → F₁ = 0,4905 kN, M₁ = 1,4715 kNm; 30 kg bei 5 m → M₂ = 1,4715 kNm', () => {
+    const r = hebelMomente(50, 3, 30, 5);
+    nah(r.F1, 0.4905, 1e-9);   // 50 · 9,81 / 1000
+    nah(r.M1, 1.4715, 1e-9);
+    nah(r.F2, 0.2943, 1e-9);
+    nah(r.M2, 1.4715, 1e-9);
+});
+
+test('Hebel-Übung: 2000 Aufgaben liegen auf dem Raster der Regler und sind mit der Lösung exakt im Gleichgewicht', () => {
+    let seed = 7;
+    const rnd = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
+    for (let i = 0; i < 2000; i++) {
+        const a = erzeugeHebelAufgabe(rnd);
+        for (const m of [a.m1, a.m2]) assert.ok(m >= 10 && m <= 100 && m % 5 === 0, `Masse ${m} kg nicht auf dem Regler`);
+        for (const l of [a.l1, a.l2]) {
+            assert.ok(l >= 0.5 && l <= 5, `Hebelarm ${l} m außerhalb`);
+            nah(l * 10, Math.round(l * 10), 1e-9);
+        }
+        assert.notEqual(a.m1, a.m2);
+        assert.equal(hebelVergleich(a.m1, a.l1, a.m2, a.l2), 0, JSON.stringify(a));
+    }
+});
+
+// ---------- Modul 6: Querschnittswerte und Biegespannung ----------
+
+test('Rechteck b/h = 20/40 cm: I = 106 666,7 cm⁴, W = 5333,3 cm³; σ bei 10 kNm = 1,875 N/mm²', () => {
+    const r = querschnittswerte('rechteck', { b: 20, h: 40 });
+    nah(r.I, 20 * 40 ** 3 / 12, 1e-6);   // 106 666,67
+    nah(r.e, 20, 1e-12);
+    nah(r.W, 5333.33, 0.01);             // b · h² / 6
+    nah(biegespannung(10, r.W), 1.875, 1e-9);   // 10 · 10⁶ Nmm / 5 333 333 mm³
+});
+
+test('Kreis d = 20 cm: I = 7854,0 cm⁴, W = 785,4 cm³ (= π · d³ / 32)', () => {
+    const r = querschnittswerte('kreis', { d: 20 });
+    nah(r.I, 7853.98, 0.01);
+    nah(r.W, 785.40, 0.01);
+    nah(r.W, Math.PI * 20 ** 3 / 32, 1e-9);
+});
+
+test('I-Profil b = 15, h = 30, s = 1,0, t = 1,5 cm: I = (15 · 30³ − 14 · 27³) / 12 = 10 786,5 cm⁴, W = 719,1 cm³', () => {
+    const r = querschnittswerte('iprofil', { b: 15, h: 30, s: 1, t: 1.5 });
+    nah(r.I, 10786.5, 1e-9);
+    nah(r.W, 719.1, 1e-9);
+    // Ohne Aussparung (s = b) entspricht das I-Profil dem Rechteck
+    nah(querschnittswerte('iprofil', { b: 15, h: 30, s: 15, t: 1.5 }).I, querschnittswerte('rechteck', { b: 15, h: 30 }).I, 1e-9);
+    nah(biegespannung(5, 0), 0, 0);   // kein Querschnitt: keine Division durch null
+});
+
+// ---------- Modul 4: Feld- und Stützmomente mit Vorzeichen ----------
+
+test('Doppel-Kragarm (Szenario Modul 4): M_A = M_B = −46,875 kNm, Feldmoment −9,375 kNm bei x₀ = 5 m', () => {
+    // L = 10 m, Kragarme je 2,5 m, q = 3 kN/m über alles, F = 15 kN an beiden Kragarmenden
+    const t = berechneTraeger({ L: 10, pointLoads: [{ F: 15, x: -2.5 }, { F: 15, x: 12.5 }], udls: [{ q: 3, start: -2.5, end: 12.5 }] });
+    const m = momenteEinfeldtraeger(t, 10, -2.5, 12.5);
+    nah(m.MA, -(15 * 2.5 + 3 * 2.5 ** 2 / 2), 1e-9);   // −46,875
+    nah(m.MB, -46.875, 1e-9);
+    nah(m.feld.x0, 5, 1e-6);
+    nah(m.feld.M, -46.875 + 3 * 10 ** 2 / 8, 1e-9);    // Stützmoment + q · L² / 8 = −9,375
+    nah(Math.abs(m.maxAbs.M), 46.875, 1e-9);
+});
+
+test('Einfeldträger ohne Kragarm: Stützmomente null, Feldmoment = q · L² / 8 bei L / 2', () => {
+    const t = berechneTraeger({ L: 10, pointLoads: [], udls: [{ q: 4, start: 0, end: 10 }] });
+    const m = momenteEinfeldtraeger(t, 10, 0, 10);
+    assert.equal(m.MA, 0);
+    assert.equal(m.MB, 0);
+    nah(m.feld.x0, 5, 1e-6);
+    nah(m.feld.M, 50, 1e-9);
+});
+
+test('Nur Kragarm belastet: kein Nulldurchgang von V im Feld, Stützmoment M_A = −F · a', () => {
+    const t = berechneTraeger({ L: 6, pointLoads: [{ F: 10, x: -2 }], udls: [] });
+    const m = momenteEinfeldtraeger(t, 6, -2, 6);
+    assert.equal(m.feld, null);
+    nah(m.MA, -20, 1e-9);
+    assert.equal(m.MB, 0);
 });

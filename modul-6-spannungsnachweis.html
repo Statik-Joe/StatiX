@@ -4,8 +4,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modul 6: Spannungsnachweis | Bautechnik-Labor</title>
-    <link rel="stylesheet" href="tailwind.min.css?v=2026-11-06c">
-    <link rel="stylesheet" href="labor.css?v=2026-11-04d">
+    <script>
+        // Ladefehler sichtbar machen: Fehlt ein Skript oder bricht es ab (z. B. weil der Browser eine alte Datei aus
+        // dem Cache nimmt), bleiben sonst Zeichnungen und Ergebnisse kommentarlos leer („Script error“ am Handy).
+        // Bewusst einfache Schreibweise und eigene Stile, damit es auch ohne labor.js/labor.css und in alten Browsern läuft.
+        (function () {
+            var gezeigt = false;
+            function zeige() {
+                if (gezeigt) return;
+                gezeigt = true;
+                function einfuegen() {
+                    var box = document.createElement('div');
+                    box.className = 'lab-ladefehler';
+                    box.setAttribute('role', 'alert');
+                    box.style.cssText = 'margin:8px;padding:10px 14px;border:2px solid #f59e0b;border-radius:8px;background:#fffbeb;color:#78350f;font:15px/1.4 sans-serif;';
+                    box.textContent = '⚠️ Auf dieser Seite ist ein Fehler aufgetreten – Zeichnungen oder Ergebnisse können fehlen. Bitte die Seite neu laden. Hilft das nicht, die Browserdaten (Cache) für diese Seite löschen oder einen anderen Browser verwenden.';
+                    document.body.insertBefore(box, document.body.firstChild);
+                }
+                if (document.body) einfuegen(); else document.addEventListener('DOMContentLoaded', einfuegen);
+            }
+            window.addEventListener('error', function (e) {
+                if (e && e.message && /ResizeObserver/.test(e.message)) return;   // harmlose Meldung des Browsers
+                zeige();
+            }, true);   // true: auch nicht ladbare Skript- und Stildateien melden
+        })();
+    </script>
+    <link rel="stylesheet" href="tailwind.min.css?v=e7fffc10f7">
+    <link rel="stylesheet" href="labor.css?v=3c4268ad6b">
 </head>
 <body data-modul="6" class="bg-slate-50 min-h-screen p-4 md:p-6 font-sans text-slate-800">
     <div class="max-w-7xl mx-auto bg-white p-6 rounded-2xl shadow-xl border border-slate-100">
@@ -260,9 +285,9 @@
         </div>
     </div>
 
-    <script src="labor.js?v=2026-11-04d"></script>
-    <script src="version.js?v=3.7"></script>
-    <script src="statik-core.js?v=2026-11-11a"></script>
+    <script src="labor.js?v=c896ff32f6"></script>
+    <script src="version.js?v=3.8"></script>
+    <script src="statik-core.js?v=ca8549452e"></script>
     <script>
         const canvas = document.getElementById('qsCanvas');
         const ctx = canvas.getContext('2d');
@@ -314,24 +339,17 @@
         // Berechnet I [cm⁴], W [cm³] und e [cm] (Randfaserabstand) für den gewählten Querschnitt
         function getQuerschnittswerte() {
             const type = qsType.value;
+            // I, e und W aus dem gemeinsamen Rechenkern (statik-core.js)
             if (type === 'rechteck') {
-                const b = parseFloat(qs_b.value), h = parseFloat(qs_h.value);
-                const I = (b * h * h * h) / 12;
-                const e = h / 2;
-                return { type, b, h, I, e, W: I / e };
+                const m = { b: parseFloat(qs_b.value), h: parseFloat(qs_h.value) };
+                return { type, ...m, ...querschnittswerte(type, m) };
             } else if (type === 'kreis') {
-                const d = parseFloat(qs_d.value);
-                const I = (Math.PI * Math.pow(d, 4)) / 64;
-                const e = d / 2;
-                return { type, d, I, e, W: I / e };
+                const m = { d: parseFloat(qs_d.value) };
+                return { type, ...m, ...querschnittswerte(type, m) };
             } else {
                 limitIProfil();
-                const b = parseFloat(qs_ib.value), h = parseFloat(qs_ih.value);
-                const s = parseFloat(qs_is.value), t = parseFloat(qs_it.value);
-                const hi = h - 2 * t; // lichte Höhe zwischen den Flanschen
-                const I = (b * h * h * h - (b - s) * hi * hi * hi) / 12;
-                const e = h / 2;
-                return { type, b, h, s, t, hi, I, e, W: I / e };
+                const m = { b: parseFloat(qs_ib.value), h: parseFloat(qs_ih.value), s: parseFloat(qs_is.value), t: parseFloat(qs_it.value) };
+                return { type, ...m, hi: m.h - 2 * m.t, ...querschnittswerte(type, m) };   // hᵢ = lichte Höhe zwischen den Flanschen
             }
         }
 
@@ -355,7 +373,7 @@
             }
 
             // σ [N/mm²] = 1000 · M [kNm] / W [cm³]  (1 kNm = 10⁶ Nmm, 1 cm³ = 10³ mm³)
-            const sigma = qv.W > 0 ? (1000 * M) / qv.W : 0;
+            const sigma = biegespannung(M, qv.W);
             const ausnutzung = sigZul > 0 ? (sigma / sigZul) * 100 : 0;
 
             // Formeltext je nach Typ

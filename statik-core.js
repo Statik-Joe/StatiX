@@ -42,6 +42,46 @@ function erhoeheQuizPunktestand(punkte, versuche, richtig) {
     };
 }
 
+// ==========================================================================
+// Kräfteaddition (Modul 1)
+// ==========================================================================
+// Zwei Kräfte F₁, F₂ [kN] mit Winkeln α₁, α₂ [°], gemessen gegen den Uhrzeigersinn von der positiven
+// x-Achse (0° nach rechts, 90° nach oben – wie im Mathematikunterricht; anders als in Modul 4).
+// Liefert die Komponenten, die Resultierende F_R und ihren Winkel φ im Bereich 0° ≤ φ < 360°.
+function addiereKraefte(F1, alpha1, F2, alpha2) {
+    const rad = Math.PI / 180;
+    const f1x = F1 * Math.cos(alpha1 * rad), f1y = F1 * Math.sin(alpha1 * rad);
+    const f2x = F2 * Math.cos(alpha2 * rad), f2y = F2 * Math.sin(alpha2 * rad);
+    const frx = f1x + f2x, fry = f1y + f2y;
+    let ang = Math.atan2(fry, frx) / rad;
+    if (ang < 0) ang += 360;
+    return { f1x, f1y, f2x, f2y, frx, fry, fr: Math.hypot(frx, fry), ang };
+}
+
+// Schräge Last F [kN] auf einer waagerechten Fläche, β [°] = Winkel zur Flächennormalen (Senkrechten).
+// F_y = F · cos β (senkrecht auf die Fläche), F_x = F · sin β (waagerecht)
+function zerlegeSchraegeLast(F, beta) {
+    const b = beta * Math.PI / 180;
+    return { Fy: F * Math.cos(b), Fx: F * Math.sin(b) };
+}
+
+// Kleinster Abstand zweier Winkel in Grad (359,5° und 0° liegen 0,5° auseinander, −30° und 330° 0°)
+function winkelAbstand(a, b) {
+    const d = (((a - b) % 360) + 360) % 360;
+    return Math.min(d, 360 - d);
+}
+
+// ==========================================================================
+// Hebelgesetz (Modul 2)
+// ==========================================================================
+const ERDBESCHLEUNIGUNG = 9.81;   // m/s²
+
+// Gewichtskräfte F = m · g (m in kg → F in kN) und Drehmomente M = F · l [kNm]
+function hebelMomente(m1, l1, m2, l2) {
+    const F1 = m1 * ERDBESCHLEUNIGUNG / 1000, F2 = m2 * ERDBESCHLEUNIGUNG / 1000;
+    return { F1, F2, M1: F1 * l1, M2: F2 * l2 };
+}
+
 // Hebelgesetz (Modul 2): Gleichgewicht, wenn m₁ · l₁ = m₂ · l₂ (g kürzt sich heraus).
 // Verglichen wird relativ (nur Rechenungenauigkeit des Computers wird toleriert), nicht mit einer
 // festen Schwelle in kNm – sonst gelten kleine Massen mit verschiedenen Hebelarmen fälschlich als
@@ -51,6 +91,46 @@ function hebelVergleich(m1, l1, m2, l2) {
     const p1 = m1 * l1, p2 = m2 * l2;
     if (Math.abs(p2 - p1) <= 1e-9 * Math.max(Math.abs(p1), Math.abs(p2), 1e-12)) return 0;
     return p2 > p1 ? 1 : -1;
+}
+
+// Übungsaufgabe Modul 2: gegeben m₁, l₁, m₂ – gesucht l₂. Alle Werte liegen auf dem Raster der Regler
+// (Massen 10 … 100 kg in 5-kg-Schritten, Hebelarme 0,5 … 5,0 m in 0,1-m-Schritten), auch die Lösung l₂.
+// Dann steht die Wippe mit der richtigen Antwort exakt im Gleichgewicht. Gerechnet wird ganzzahlig
+// in 5 kg und 0,1 m, damit keine Rundung entsteht. rnd: Zufallsfunktion wie Math.random.
+function erzeugeHebelAufgabe(rnd = Math.random) {
+    const ganz = (min, max) => min + Math.floor(rnd() * (max - min + 1));
+    for (let versuch = 0; versuch < 1000; versuch++) {
+        const a = ganz(2, 20), b = ganz(2, 20);   // m₁ = 5a, m₂ = 5b
+        const i = ganz(5, 50);                    // l₁ = i / 10
+        if (a === b || (a * i) % b !== 0) continue;
+        const j = (a * i) / b;                    // l₂ = j / 10 aus a · i = b · j
+        if (j < 5 || j > 50) continue;
+        return { m1: 5 * a, l1: i / 10, m2: 5 * b, l2: j / 10 };
+    }
+    return { m1: 50, l1: 3, m2: 30, l2: 5 };
+}
+
+// ==========================================================================
+// Querschnittswerte und Biegespannung (Modul 6) – Maße in cm
+// ==========================================================================
+// typ 'rechteck' { b, h }, 'kreis' { d }, 'iprofil' { b, h, s, t } (s = Stegdicke, t = Flanschdicke).
+// Liefert I [cm⁴], e [cm] (Randabstand von der Schwerachse) und W = I / e [cm³].
+function querschnittswerte(typ, m) {
+    let I, e;
+    if (typ === 'rechteck') {
+        I = m.b * m.h ** 3 / 12; e = m.h / 2;
+    } else if (typ === 'kreis') {
+        I = Math.PI * m.d ** 4 / 64; e = m.d / 2;
+    } else {
+        const hi = m.h - 2 * m.t;   // lichte Höhe zwischen den Flanschen
+        I = (m.b * m.h ** 3 - (m.b - m.s) * hi ** 3) / 12; e = m.h / 2;
+    }
+    return { I, e, W: e > 0 ? I / e : 0 };
+}
+
+// σ [N/mm²] = M / W mit M in kNm und W in cm³: 1 kNm = 10⁶ Nmm, 1 cm³ = 10³ mm³ → σ = 1000 · M / W
+function biegespannung(M, W) {
+    return W > 0 ? 1000 * M / W : 0;
 }
 
 function berechneTraeger(system) {
@@ -432,6 +512,21 @@ function feldmomentBeiVNull(traeger, L) {
     return best;
 }
 
+// Momente für die Ergebnisanzeige in Modul 4 (Einfeldträger mit optionalen Kragarmen):
+//   feld:   Feldmoment an der Stelle x₀, an der V im Feld von + nach − wechselt (mit Vorzeichen), sonst null
+//   MA, MB: Stützmomente über den Auflagern (nur ≠ 0, wenn ein Kragarm belastet ist; negativ = Zug oben)
+//   maxAbs: betragsgrößtes Moment { M, x } über die ganze Trägerlänge (maßgebend für den Spannungsnachweis)
+function momenteEinfeldtraeger(traeger, L, xmin, xmax) {
+    const { maxM, xMaxM } = extremwerte(traeger, xmin, xmax, 0.01);
+    const runde = M => (Math.abs(M) < 1e-9 ? 0 : M);
+    return {
+        feld: feldmomentBeiVNull(traeger, L),
+        MA: runde(traeger.schnitt(0).M),
+        MB: runde(traeger.schnitt(L).M),
+        maxAbs: { M: maxM, x: xMaxM }
+    };
+}
+
 // Eingabe prüfen: richtig, wenn höchstens 2 % (mindestens absTol) vom richtigen Wert entfernt
 function pruefeWert(eingabe, soll, relTol = 0.02, absTol = 0.05) {
     const v = typeof eingabe === 'string' ? Number(eingabe.replace(',', '.')) : eingabe;
@@ -500,6 +595,15 @@ if (typeof module !== 'undefined' && module.exports) {
         istImWertebereich,
         momentParameterwert,
         erhoeheQuizPunktestand,
-        hebelVergleich
+        addiereKraefte,
+        zerlegeSchraegeLast,
+        winkelAbstand,
+        ERDBESCHLEUNIGUNG,
+        hebelMomente,
+        hebelVergleich,
+        erzeugeHebelAufgabe,
+        querschnittswerte,
+        biegespannung,
+        momenteEinfeldtraeger
     };
 }

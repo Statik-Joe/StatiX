@@ -14,14 +14,14 @@ To-do-Liste der Code-Prüfung (Rechenkern, Einheitlichkeit, Handy). Reihenfolge 
 
 ### Mittel
 
-- [ ] **4 · Modul 2, Übung:** Lösung l₂ wird auf 0,1 m gerundet, danach kippt die Wippe trotz „Richtig!“ (seit Befund 3 bei jeder Aufgabe, deren Lösung nicht im 0,1-m-Raster liegt) – nur Aufgaben mit Lösung im Raster erzeugen
-- [ ] **5 · Modul 4:** größtes Moment mit Vorzeichen zeigen, Stützmoment und Feldmoment getrennt nennen, Text „am Nulldurchgang der Querkraft“ anpassen – *Rückfrage offen: gewünschte Darstellung*
-- [ ] **6 · Modul 4:** roher Formelcode `$F_v = F \cdot \sin(\alpha)$` im Rechenweg durch HTML ersetzen
-- [ ] **7 · Modul 1 und 2:** „Prüfen“ nach dem Aufdecken der Lösung sperren (kein mehrfacher Protokolleintrag)
-- [ ] **8 · Modul 1:** Winkel φ modulo 360° prüfen (359,5° ≙ −0,5°, −30° ≙ 330°); φ bei F_R ≈ 0 nicht werten
-- [ ] **9 · Modul 1, 2, 6:** Rechnungen aus den HTML-Seiten nach `statik-core.js` verschieben und testen (Verhalten unverändert)
-- [ ] **10 · Handy:** `?.` in Modul 4 entfernen (alte Browser), verständliche Meldung statt leerer Zeichnung, wenn `labor.js` / `statik-core.js` fehlt – *Rückfrage offen: Verteilweg und älteste Geräte*
-- [ ] **11 · Modul 6:** σ_zul = 140 N/mm² für S235 mit Quelle belegen – *prüft die Lehrkraft im Tabellenbuch*
+- [x] **4 · Modul 2, Übung:** Wippe kippte trotz „Richtig!“ – Aufgaben liegen jetzt samt Lösung auf dem Raster der Regler (`erzeugeHebelAufgabe`, Massen in 5-kg-Schritten); dabei behoben: Nach dem Prüfen zeigte die Wippe den Stand von vor der Antwort – Modul 2 Version 1.11 / Labor 3.8
+- [x] **5 · Modul 4:** Feldmoment (bei V = 0) und Stützmomente M_A, M_B mit Vorzeichen im Ergebnis, im Rechenweg, in der Zeichnung, im Druckblatt und im PNG-Export (`momenteEinfeldtraeger`); an Modul 6 geht weiter das betragsgrößte Moment – Modul 4 Version 1.18 / Labor 3.8
+- [x] **6 · Modul 4:** roher Formelcode im Rechenweg durch F<sub>v</sub> = F · sin(α) ersetzt – Labor 3.8
+- [x] **7 · Modul 1 und 2:** „Prüfen“ nach dem Prüfen gesperrt bis zur nächsten Aufgabe; dabei behoben: In Modul 1 zeigte die Lösung nach „Neue Aufgabe“ im Übungsmodus nur „?“ – Labor 3.8
+- [x] **8 · Modul 1:** Winkel φ modulo 360° geprüft (`winkelAbstand`); bei F_R < 1,5 kN wird φ nicht gewertet – Modul 1 Version 1.12 / Labor 3.8
+- [x] **9 · Modul 1, 2, 6:** Rechnungen im Rechenkern (`addiereKraefte`, `zerlegeSchraegeLast`, `hebelMomente`, `querschnittswerte`, `biegespannung`) mit Referenzfällen getestet – Labor 3.8
+- [x] **10 · Handy (GitHub Pages):** `?.` entfernt; Cache-Schutz über Prüfsummen (`npm run cache`, von `npm test` geprüft), damit keine neue Seite mit alter Skriptdatei läuft; sichtbare Fehlermeldung statt leerer Zeichnung; Test gegen `?.`/`??` – alle Module / Labor 3.8
+- [ ] **11 · Modul 6:** zulässige Spannungen mit Quelle belegen bzw. klären, ob Modul 6 auf Bemessungswerte nach Eurocode umgestellt wird – *Rückfrage an die Lehrkraft*
 
 ### Niedrig
 
@@ -32,7 +32,7 @@ To-do-Liste der Code-Prüfung (Rechenkern, Einheitlichkeit, Handy). Reihenfolge 
 - [ ] **16 · Modul 4 und 5:** alte Bezeichnungen bereinigen („Q(x)“ in Teil B und im Protokoll, PNG-Dateiname `modul3_…`)
 - [ ] **17 · Modul 5:** V-Linie am rechten Kragarmende zur Nulllinie schließen
 - [ ] **18 · Modul 7:** Übungsprotokoll im Fortschritt speichern
-- [ ] **19 · Modul 2 / `fmt()`:** Zwischenwerte im Rechenweg stimmig runden, kaufmännische Rundung testen
+- [ ] **19 · Modul 2 / `fmt()`:** Zwischenwerte im Rechenweg stimmig runden, kaufmännische Rundung testen (Beispiel: Feldmoment −9,375 kNm wird als −9,37 statt −9,38 angezeigt)
 - [ ] **20 · Modul 4:** Anfang einer Streckenlast beim Ziehen nicht über ihr Ende hinaus
 
 ### Danach

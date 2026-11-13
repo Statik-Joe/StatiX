@@ -4,8 +4,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modul 1: Kräfteaddition & Vektoren | Bautechnik-Labor</title>
-    <link rel="stylesheet" href="tailwind.min.css?v=2026-11-06c">
-    <link rel="stylesheet" href="labor.css?v=2026-11-04d">
+    <script>
+        // Ladefehler sichtbar machen: Fehlt ein Skript oder bricht es ab (z. B. weil der Browser eine alte Datei aus
+        // dem Cache nimmt), bleiben sonst Zeichnungen und Ergebnisse kommentarlos leer („Script error“ am Handy).
+        // Bewusst einfache Schreibweise und eigene Stile, damit es auch ohne labor.js/labor.css und in alten Browsern läuft.
+        (function () {
+            var gezeigt = false;
+            function zeige() {
+                if (gezeigt) return;
+                gezeigt = true;
+                function einfuegen() {
+                    var box = document.createElement('div');
+                    box.className = 'lab-ladefehler';
+                    box.setAttribute('role', 'alert');
+                    box.style.cssText = 'margin:8px;padding:10px 14px;border:2px solid #f59e0b;border-radius:8px;background:#fffbeb;color:#78350f;font:15px/1.4 sans-serif;';
+                    box.textContent = '⚠️ Auf dieser Seite ist ein Fehler aufgetreten – Zeichnungen oder Ergebnisse können fehlen. Bitte die Seite neu laden. Hilft das nicht, die Browserdaten (Cache) für diese Seite löschen oder einen anderen Browser verwenden.';
+                    document.body.insertBefore(box, document.body.firstChild);
+                }
+                if (document.body) einfuegen(); else document.addEventListener('DOMContentLoaded', einfuegen);
+            }
+            window.addEventListener('error', function (e) {
+                if (e && e.message && /ResizeObserver/.test(e.message)) return;   // harmlose Meldung des Browsers
+                zeige();
+            }, true);   // true: auch nicht ladbare Skript- und Stildateien melden
+        })();
+    </script>
+    <link rel="stylesheet" href="tailwind.min.css?v=e7fffc10f7">
+    <link rel="stylesheet" href="labor.css?v=3c4268ad6b">
 </head>
 <body data-modul="1" class="bg-slate-50 min-h-screen p-4 md:p-6 font-sans text-slate-800">
     <div class="max-w-7xl mx-auto bg-white p-6 rounded-2xl shadow-xl border border-slate-100">
@@ -206,7 +231,7 @@
                             </div>
                         </div>
                         <p class="text-xs text-slate-500">Rundungstoleranz 3 %, mindestens 1,5 kN bzw. 1,5°.</p>
-                        <button id="btnCheck" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-lg transition-colors">
+                        <button id="btnCheck" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
                             Prüfen
                         </button>
                         <div id="checkResult" class="hidden text-center font-bold text-sm p-3 rounded-lg"></div>
@@ -299,8 +324,9 @@
         </div>
     </div>
 
-    <script src="labor.js?v=2026-11-04d"></script>
-    <script src="version.js?v=3.7"></script>
+    <script src="labor.js?v=c896ff32f6"></script>
+    <script src="version.js?v=3.8"></script>
+    <script src="statik-core.js?v=ca8549452e"></script>
     <script>
         const canvas = document.getElementById('vectorCanvas');
         const ctx = canvas.getContext('2d');
@@ -325,17 +351,9 @@
             document.getElementById('val_f2').innerText = fmt(F2) + " kN";
             document.getElementById('val_a2').innerText = f2_ang.value + "°";
 
-            // Zerlegung
-            const f1x = F1 * Math.cos(a1_rad);
-            const f1y = F1 * Math.sin(a1_rad);
-            const f2x = F2 * Math.cos(a2_rad);
-            const f2y = F2 * Math.sin(a2_rad);
-
-            const frx = f1x + f2x;
-            const fry = f1y + f2y;
-            const FR = Math.sqrt(frx*frx + fry*fry);
-            let FR_ang = Math.atan2(fry, frx) * 180 / Math.PI;
-            if (FR_ang < 0) FR_ang += 360;
+            // Zerlegung und Resultierende (statik-core.js)
+            const { f1x, f1y, f2x, f2y, frx, fry, fr: FR, ang: FR_ang } =
+                addiereKraefte(F1, parseFloat(f1_ang.value), F2, parseFloat(f2_ang.value));
 
             // Math Box updaten
             document.getElementById('math_f1x').innerText = fmt(f1x, 1);
@@ -348,7 +366,11 @@
             document.getElementById('math_fr_ang').innerText = fmt(FR_ang, 1);
 
             currentResult = { f1x, f1y, f2x, f2y, frx, fry, fr: FR, ang: FR_ang };
-            if (practiceMode) setSolutionVisible(false);
+            if (practiceMode) {
+                // Geänderte Kräfte = neue Aufgabe: Lösung verbergen, Prüfen wieder freigeben
+                setSolutionVisible(false);
+                document.getElementById('btnCheck').disabled = false;
+            }
 
             vektorWerte = [F1, a1_rad, F2, a2_rad, frx, fry];
             vektorZeichnung.zeichne();
@@ -445,7 +467,7 @@
             solutionSpanIds.forEach(id => {
                 const el = document.getElementById(id);
                 if (!visible) {
-                    el.dataset.real = el.innerText;
+                    if (el.innerText !== '?') el.dataset.real = el.innerText;   // schon verborgen: Lösung nicht mit „?“ überschreiben
                     el.innerText = '?';
                 } else if (el.dataset.real !== undefined) {
                     el.innerText = el.dataset.real;
@@ -462,6 +484,7 @@
                 form.classList.remove('hidden');
                 setSolutionVisible(false);
                 document.getElementById('checkResult').classList.add('hidden');
+                document.getElementById('btnCheck').disabled = false;
             } else {
                 btn.innerText = '✏️ Selbst berechnen';
                 form.classList.add('hidden');
@@ -479,10 +502,13 @@
             ['fb_f1x','fb_f1y','fb_f2x','fb_f2y','fb_frx','fb_fry','fb_fr','fb_ang'].forEach(id => document.getElementById(id).innerText = '');
             document.getElementById('checkResult').classList.add('hidden');
             if (practiceMode) setSolutionVisible(false);
+            document.getElementById('btnCheck').disabled = false;
         });
 
         document.getElementById('btnCheck').addEventListener('click', () => {
-            if (!currentResult) return;
+            if (!currentResult || document.getElementById('btnCheck').disabled) return;
+            // Bei F_R ≈ 0 ist der Winkel φ nicht bestimmt (jeder Wert wäre „richtig“) – dann wird er nicht gewertet
+            const winkelZaehlt = currentResult.fr >= 1.5;
             const checks = [
                 ['check_f1x', 'fb_f1x', currentResult.f1x, 'F1x', 'kN'],
                 ['check_f1y', 'fb_f1y', currentResult.f1y, 'F1y', 'kN'],
@@ -492,28 +518,35 @@
                 ['check_fry', 'fb_fry', currentResult.fry, 'FRy', 'kN'],
                 ['check_fr', 'fb_fr', currentResult.fr, 'FR', 'kN'],
                 ['check_ang', 'fb_ang', currentResult.ang, 'φ', '°'],
-            ];
+            ].filter(c => c[0] !== 'check_ang' || winkelZaehlt);
             let correctCount = 0;
             const detailLines = [];
             checks.forEach(([inputId, fbId, real, label, unit]) => {
                 const inputVal = parseFloat(document.getElementById(inputId).value);
                 const fb = document.getElementById(fbId);
                 const tolerance = Math.max(1.5, Math.abs(real) * 0.03);
-                const ok = !isNaN(inputVal) && Math.abs(inputVal - real) <= tolerance;
+                // Winkel: 359,5° und 0° bzw. −30° und 330° meinen dieselbe Richtung
+                const abweichung = unit === '°' ? winkelAbstand(inputVal, real) : Math.abs(inputVal - real);
+                const ok = !isNaN(inputVal) && abweichung <= tolerance;
                 fb.innerText = ok ? '✅' : '❌';
                 if (ok) correctCount++;
                 const sep = unit === '°' ? '' : ' '; // Winkelgrad ohne Leerzeichen
                 detailLines.push(`${label}: eingegeben ${isNaN(inputVal) ? '—' : fmt(inputVal) + sep + unit} / richtig ${fmt(real, 1)}${sep}${unit} ${ok ? '✅' : '❌'}`);
             });
+            if (!winkelZaehlt) {
+                document.getElementById('fb_ang').innerText = '–';
+                detailLines.push('φ: nicht gewertet, weil F_R ≈ 0 (Richtung nicht bestimmt)');
+            }
+            document.getElementById('btnCheck').disabled = true;   // gleiche Aufgabe nur einmal werten
             setSolutionVisible(true);
             const resultBox = document.getElementById('checkResult');
             resultBox.classList.remove('hidden', 'bg-emerald-50', 'text-emerald-800', 'bg-amber-50', 'text-amber-800');
             if (correctCount === checks.length) {
                 resultBox.classList.add('bg-emerald-50', 'text-emerald-800');
-                resultBox.innerText = `🎉 Alles richtig! (${correctCount}/${checks.length}) Lösung ist jetzt oben sichtbar.`;
+                resultBox.innerText = `🎉 Alles richtig! (${correctCount}/${checks.length}) Lösung ist jetzt oben sichtbar. Weiter mit „Neue Aufgabe“.`;
             } else {
                 resultBox.classList.add('bg-amber-50', 'text-amber-800');
-                resultBox.innerText = `${correctCount}/${checks.length} richtig. Vergleiche deine ❌-Werte mit der jetzt sichtbaren Lösung oben.`;
+                resultBox.innerText = `${correctCount}/${checks.length} richtig. Vergleiche deine ❌-Werte mit der jetzt sichtbaren Lösung oben. Weiter mit „Neue Aufgabe“.`;
             }
 
             // Sitzungsprotokoll für Export
@@ -573,8 +606,7 @@
             document.getElementById('val_sf').innerText = fmt(F) + ' kN';
             document.getElementById('val_sbeta').innerText = betaDeg + '°';
 
-            const F_y = F * Math.cos(beta);
-            const F_x = F * Math.sin(beta);
+            const { Fy: F_y, Fx: F_x } = zerlegeSchraegeLast(F, betaDeg);
             document.getElementById('s_math_fn').innerText = fmt(F_y, 1);
             document.getElementById('s_math_ft').innerText = fmt(F_x, 1);
             document.getElementById('s_math_f').innerText = fmt(F, 1);

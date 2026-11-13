@@ -43,9 +43,10 @@ Für Entwicklung werden Node.js und npm benötigt. Im Projektordner ausführen:
 npm ci
 npm test
 npm run build:css
+npm run cache
 ```
 
-Die Tests prüfen den gemeinsamen Statik-Rechenkern gegen bekannte Tabellenwerte, einschließlich der Kraftzerlegung schräger Lasten, Eingabegrenzen, Quiz-Punktestand und Momentenübergabe von Modul 4 an Modul 6. `npm run build:css` erzeugt `tailwind.min.css` aus den Klassen in den HTML- und JavaScript-Dateien. Die erzeugte Datei nicht von Hand bearbeiten.
+Die Tests prüfen den gemeinsamen Statik-Rechenkern gegen bekannte Tabellenwerte, einschließlich der Kraftzerlegung schräger Lasten, Eingabegrenzen, Quiz-Punktestand und Momentenübergabe von Modul 4 an Modul 6. `npm run cache` setzt nach Änderungen an `labor.js`, `labor.css`, `statik-core.js` oder `tailwind.min.css` die `?v=…`-Angaben in allen Seiten auf eine Prüfsumme des Dateiinhalts (Cache-Schutz, besonders wichtig für die Handynutzung über GitHub Pages); `npm test` meldet, wenn das vergessen wurde. Jede Modulseite zeigt außerdem eine Fehlermeldung, falls ein Skript nicht geladen werden kann, statt einfach leere Zeichnungen. `npm run build:css` erzeugt `tailwind.min.css` aus den Klassen in den HTML- und JavaScript-Dateien. Die erzeugte Datei nicht von Hand bearbeiten.
 
 ## Offline-Paket erstellen
 
@@ -63,12 +64,12 @@ Die Tests prüfen den gemeinsamen Statik-Rechenkern gegen bekannte Tabellenwerte
    - `labor.css` und `labor.js`
    - `statik-core.js`
    - `version.js`
-3. Den Ausgabeordner als ZIP komprimieren. `node_modules`, Git-Dateien, `src`, `tests` und Build-Konfigurationen werden für den Unterricht nicht benötigt.
+3. Den Ausgabeordner als ZIP komprimieren. `node_modules`, Git-Dateien, `src`, `tests`, `tools` und Build-Konfigurationen werden für den Unterricht nicht benötigt.
 4. Das ZIP testweise entpacken und `index.html` sowie jedes Modul öffnen. Prüfen, dass alle Seiten und Styles geladen werden und die gewünschten Browser lokale Fortschritte speichern können.
 
 Optional können die Weiterleitungsseiten `modul-3-statik-einfeldtraeger.html`, `modul-4-diagramme-zuordnen.html`, `modul-5-spannungsnachweis.html` und `modul-6-durchlauftraeger.html` mitkopiert werden. Sie leiten alte Lesezeichen aus Labor 2.x auf die neuen Modulnummern weiter.
 
-Alle oben aufgeführten Laufzeitdateien müssen im selben Verzeichnis liegen. Nach Änderungen an `labor.css`, `labor.js` oder `statik-core.js` die zugehörigen `?v=…`-Versionsparameter in den HTML-Dateien aktualisieren, damit Browser keine veralteten Dateien aus dem Cache laden. Bei Änderungen an Tailwind-Klassen `npm run build:css` ausführen und `tailwind.min.css` mit ins Paket aufnehmen.
+Alle oben aufgeführten Laufzeitdateien müssen im selben Verzeichnis liegen. Nach Änderungen an `labor.css`, `labor.js`, `statik-core.js` oder `tailwind.min.css` `npm run cache` ausführen, damit Browser keine veralteten Dateien aus dem Cache laden. Bei Änderungen an Tailwind-Klassen `npm run build:css` ausführen und `tailwind.min.css` mit ins Paket aufnehmen.
 
 ## Roadmap
 
@@ -89,11 +90,12 @@ Schema: kleine Verbesserungen und Fehlerbehebungen erhöhen die Unterversion (1.
 ## Gemeinsame Bausteine
 
 - `labor.css` und `labor.js` – Modulfarben, Präsentationsmodus, Vollbild für Zeichnungen, mitwachsende Zeichenflächen, Touch-Bedienung, Zahlenformatierung, Protokoll-Export und lokales Speichern des Lernfortschritts
-- `statik-core.js` – gemeinsamer Statik-Rechenkern für Modul 4, 5 und 7, Gleichgewichtsprüfung des Hebels für Modul 2 (Durchlaufträger über die Dreimomentengleichung, Übungsaufgaben und Feldmoment bei V = 0 für Modul 4), Lastannahme für Modul 3 (Baustoff-, Nutzlast- und Trennwandtabellen, `berechneDeckenlast`) sowie getestete Validierungs-, Quiz- und Übergabehelfer
+- `statik-core.js` – gemeinsamer Rechenkern: Kräfteaddition für Modul 1, Hebelgesetz und Übungsaufgaben für Modul 2, Einfeldträger mit Feld- und Stützmomenten für Modul 4 und 5, Querschnittswerte und Biegespannung für Modul 6, Durchlaufträger für Modul 7 (Durchlaufträger über die Dreimomentengleichung, Übungsaufgaben und Feldmoment bei V = 0 für Modul 4), Lastannahme für Modul 3 (Baustoff-, Nutzlast- und Trennwandtabellen, `berechneDeckenlast`) sowie getestete Validierungs-, Quiz- und Übergabehelfer
 - `src/tailwind.css`, `tailwind.config.js`, `package.json` und `package-lock.json` – CSS-Build-Konfiguration für die Entwicklung
 - `version.js` – Versionsnummern und Aktualisierungsdatum aller Module und der Startseite
 - `tests/statik-core.test.js` – automatisierte Tests des Statik-Rechenkerns (einschließlich Biegelinie und Momentennullpunkten für die Grafiken in Modul 7)
 - `tests/version.test.js` – prüft Versionsangaben und den Cache-Schutz von `version.js`
+- `tests/cache.test.js` und `tools/cache-version.js` – Cache-Schutz der übrigen CSS- und JS-Dateien über Prüfsummen, Fehlermeldung bei Ladefehlern, keine Syntax, die ältere Handy-Browser ablehnen
 
 ## Einheitliche Konventionen
 

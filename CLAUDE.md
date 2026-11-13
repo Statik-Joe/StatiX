@@ -32,5 +32,6 @@ Modulnummern ab Labor 3.0: 1 Kräfteaddition, 2 Hebelgesetz, 3 Lastannahme, 4 Sc
 ## Build, Cache und Tests
 
 - `tailwind.min.css` nie von Hand bearbeiten: nach neuen Tailwind-Klassen `npm ci` (falls nötig) und `npm run build:css`.
-- Nach Änderungen an CSS/JS die `?v=…`-Angaben in allen HTML-Dateien erhöhen (Cache-Schutz); `version.js?v=` = Gesamtversion.
+- Nach Änderungen an `labor.js`, `labor.css`, `statik-core.js` oder `tailwind.min.css`: `npm run cache` (setzt `?v=` auf eine Prüfsumme, `npm test` prüft das). `version.js?v=` = Gesamtversion. Die Schüler nutzen die App am Handy über GitHub Pages – ein vergessener Cache-Schutz führt dort zu „Script error“ und leeren Zeichnungen.
+- Kein `?.` und kein `??` in Skripten (ältere Handy-Browser lehnen sonst das ganze Skript ab; `npm test` prüft das).
 - Vor jedem Push: `npm test` muss grün sein. Zusätzlich die geänderten Seiten im Browser (Playwright, Chromium ist vorinstalliert) laden und auf JavaScript-Fehler prüfen, bei Zeichnungen Screenshots ansehen.
