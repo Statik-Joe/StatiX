@@ -228,9 +228,9 @@
         </div>
     </div>
 
-    <script src="labor.js?v=c896ff32f6"></script>
-    <script src="version.js?v=3.9"></script>
-    <script src="statik-core.js?v=e77eaedd41"></script>
+    <script src="labor.js?v=1b9d87a3d4"></script>
+    <script src="version.js?v=3.10"></script>
+    <script src="statik-core.js?v=0adcb7e01b"></script>
     <script>
         // ================= Physik: geschlossene Formeln pro Systemtyp =================
         // Konvention wie in Modul 4: Querkraft V positiv nach oben, M positiv nach unten (Zugseite) aufgetragen.
@@ -266,6 +266,9 @@
                 Qs.push({ x, y: s.Q });
                 Ms.push({ x, y: s.M });
             });
+            // Die Querkraftlinie schließt am rechten Trägerende zur Nulllinie (Sprung durch Auflager B bzw. die
+            // Spitzenlast am Kragarm) – wie am linken Ende und wie in Modul 4.
+            Qs.push({ x: xmax, y: 0 });
 
             return { xs, Qs, Ms, R_A, R_B, xmin, xmax };
         }
@@ -742,7 +745,7 @@
 
             sessionLog4.push({
                 zeit: new Date().toLocaleTimeString('de-DE'),
-                aufgabe: `[Teil A] L = ${fmt(currentTask.L)} m, ${describeSystem(currentTask)} → gesucht: ${currentTask.diagramType}(x)`,
+                aufgabe: `[Teil A] L = ${fmt(currentTask.L)} m, ${describeSystem(currentTask)} → gesucht: ${currentTask.diagramType === 'Q' ? 'V' : 'M'}(x)`,
                 details: [`Gewählt: ${explainKind(currentTask.options[idx].kind)}`],
                 richtig: isCorrect ? 1 : 0,
                 gesamt: 1
@@ -789,7 +792,7 @@
             const isGivenM = task.givenType === 'M';
             drawDiagram('givenCanvas', task.givenSeries, isGivenM, task.computed.xmin, task.computed.xmax, givenMax);
             document.getElementById('givenLabel').innerText =
-                isGivenM ? 'Gegeben: Momentenverlauf M(x)' : 'Gegeben: Querkraftverlauf Q(x)';
+                isGivenM ? 'Gegeben: Momentenverlauf M(x)' : 'Gegeben: Querkraftverlauf V(x)';
             document.getElementById('givenCanvas').setAttribute(
                 'aria-label',
                 `${isGivenM ? 'Momentenverlauf' : 'Querkraftverlauf'}. ${describeCurve(task.givenSeries)}`
@@ -860,7 +863,7 @@
 
             sessionLog4.push({
                 zeit: new Date().toLocaleTimeString('de-DE'),
-                aufgabe: `[Teil B] L = ${fmt(currentTaskB.params.L)} m, ${sysDetail} → gegeben: ${currentTaskB.givenType}(x), gesucht: ${currentTaskB.answerType}(x)`,
+                aufgabe: `[Teil B] L = ${fmt(currentTaskB.params.L)} m, ${sysDetail} → gegeben: ${currentTaskB.givenType === 'Q' ? 'V' : 'M'}(x), gesucht: ${currentTaskB.answerType === 'Q' ? 'V' : 'M'}(x)`,
                 details: [`Gewählt: ${explainKind(currentTaskB.options[idx].kind)}`],
                 richtig: isCorrect ? 1 : 0,
                 gesamt: 1

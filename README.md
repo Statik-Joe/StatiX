@@ -94,6 +94,8 @@ Schema: kleine Verbesserungen und Fehlerbehebungen erhöhen die Unterversion (1.
 - `src/tailwind.css`, `tailwind.config.js`, `package.json` und `package-lock.json` – CSS-Build-Konfiguration für die Entwicklung
 - `version.js` – Versionsnummern und Aktualisierungsdatum aller Module und der Startseite
 - `tests/statik-core.test.js` – automatisierte Tests des Statik-Rechenkerns (einschließlich Biegelinie und Momentennullpunkten für die Grafiken in Modul 7)
+- `tests/referenzfaelle.test.js` – Referenzfälle mit Handrechnung (Sonderfälle am Einfeldträger, Kette Modul 3 → 4 → 6, Rundung, Toleranz)
+- `DOKUMENTATION.md` – technische Dokumentation: Aufbau, Rechenlogik und Formeln je Modul, Vorzeichen und Einheiten, Kennwerte mit Quellen, bekannte Grenzen, Regeln für künftige Änderungen
 - `tests/version.test.js` – prüft Versionsangaben und den Cache-Schutz von `version.js`
 - `tests/cache.test.js` und `tools/cache-version.js` – Cache-Schutz der übrigen CSS- und JS-Dateien über Prüfsummen, Fehlermeldung bei Ladefehlern, keine Syntax, die ältere Handy-Browser ablehnen
 
@@ -101,6 +103,7 @@ Schema: kleine Verbesserungen und Fehlerbehebungen erhöhen die Unterversion (1.
 
 - Kräfte in kN, Momente in kNm, Streckenlasten in kN/m und Längen in m
 - Zahlen werden mit deutschem Dezimalkomma und Einheiten mit Leerzeichen dargestellt, zum Beispiel `2,5 kN`
+- In Modul 1 werden Winkel wie in der Mathematik gemessen: von der positiven x-Achse gegen den Uhrzeigersinn (90° nach oben)
 - In Modul 4 wird der Winkel schräger Einzelkräfte von der Trägerachse aus gemessen: 0° nach rechts, 90° nach unten, 180° nach links und 270° nach oben
 - In Modul 3 werden Schichtdicken in cm eingegeben und für die Rechnung in m umgerechnet; Wichten in kN/m³, Flächenlasten in kN/m², Streckenlasten in kN/m. Lastwerte als Richtwerte nach DIN EN 1991-1-1 mit NA, Gründachschichten wassergesättigt nach den FLL-Dachbegrünungsrichtlinien; dünne Lagen (Vlies, Abdichtung, Bewuchs) als Flächenlast in kN/m². Jede Wichte und Flächenlast lässt sich ändern. Die Schneelast ist nicht enthalten
 - Bemessungswerte nach Eurocode wie in der Abschlussprüfung: Modul 3 zeigt erst die charakteristischen Werte g_k und q_k, dann g_d = 1,35 · g_k, q_d = 1,5 · q_k und E_d = g_d + q_d
@@ -108,5 +111,5 @@ Schema: kleine Verbesserungen und Fehlerbehebungen erhöhen die Unterversion (1.
 - Die Querkraft heißt in allen Modulen V (wie in der Abschlussprüfung)
 - In Modul 2 werden Massen in kg eingegeben und die Gewichtskraft mit `F = m · g` berechnet
 - In Modul 6 werden Querschnittsmaße in cm, Querschnittswerte in cm³ und cm⁴ und Spannungen in N/mm² angegeben, wie in den Bautabellen
-- In jeder Übung mit Selbstkontrolle steht die Rundungstoleranz direkt über dem Prüfen-Knopf (Modul 1 und 2: 3 %, Modul 3, 4, 6 und 7: 2 %)
+- In jeder Übung mit Selbstkontrolle steht die Rundungstoleranz direkt über dem Prüfen-Knopf (einheitlich 2 %, mindestens 0,05; Winkel in Modul 1: 1°)
 - Hinweistexte nutzen deutsche Anführungszeichen („…“) und den Halbgeviertstrich (–)

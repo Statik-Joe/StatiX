@@ -6,9 +6,18 @@
 
 // Zahl mit deutschem Dezimalkomma formatieren.
 // fmt(3.14159, 2) -> "3,14"   |   fmt(2.5) -> "2,5" (ohne feste Nachkommastellen)
+// Gerundet wird kaufmännisch (5 wird vom Betrag her aufgerundet): 9,375 → 9,38 und −9,375 → −9,38.
+// toFixed allein rundet nach der internen Binärdarstellung und liefert z. B. 1,005 → 1,00.
+function rundeKaufmaennisch(num, digits) {
+    const f = Math.pow(10, digits);
+    const betrag = Math.round(Math.abs(num) * f * (1 + 1e-12) + 1e-12) / f;   // winziger Zuschlag gleicht Rechenungenauigkeit aus
+    return num < 0 ? -betrag : betrag;
+}
+
 function fmt(value, digits) {
     const num = Number(value);
-    let s = digits === undefined ? String(Math.round(num * 1000) / 1000) : num.toFixed(digits);
+    if (!Number.isFinite(num)) return String(num);
+    let s = digits === undefined ? String(rundeKaufmaennisch(num, 3)) : rundeKaufmaennisch(num, digits).toFixed(digits);
     if (/^-0(\.0*)?$/.test(s)) s = s.slice(1); // "-0,0" vermeiden
     return s.replace('.', ',');
 }
@@ -402,6 +411,7 @@ function responsiveCanvas(canvas, hoehe, zeichne, optionen = {}) {
 //    Zeichnung formatfüllend skaliert; Ziehen per Maus/Finger funktioniert weiter. Esc beendet.
 // ==========================================================================
 (function initUnterrichtsansicht() {
+    if (typeof document === 'undefined') return;   // unter Node.js (Tests) gibt es keine Seite
     const STORAGE_KEY = 'bautechnik-labor:praesentation';
     const root = document.documentElement;
 
@@ -485,3 +495,6 @@ function responsiveCanvas(canvas, hoehe, zeichne, optionen = {}) {
     document.addEventListener('fullscreenchange', onFsChange);
     document.addEventListener('webkitfullscreenchange', onFsChange);
 })();
+
+// Für die automatischen Tests unter Node.js exportieren (im Browser ohne Wirkung)
+if (typeof module !== 'undefined' && module.exports) module.exports = { fmt, rundeKaufmaennisch };

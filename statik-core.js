@@ -560,11 +560,26 @@ function momenteEinfeldtraeger(traeger, L, xmin, xmax) {
     };
 }
 
+// Nachweis „Spannung ≤ Grenzwert“ mit denselben zwei Nachkommastellen wie in der Anzeige.
+// Ohne Rundung könnte „140,00 N/mm² > 140,00 N/mm²“ erscheinen (140,004 gegen 140).
+function nachweisErfuellt(sigma, grenz) {
+    return Math.round(sigma * 100 * (1 + 1e-12)) <= Math.round(grenz * 100 * (1 + 1e-12));
+}
+
+// Winkel prüfen: richtig, wenn höchstens absTol Grad entfernt; 359,5° und 0° bzw. −30° und 330° sind dieselbe Richtung
+function pruefeWinkel(eingabe, soll, absTol = 1) {
+    const v = typeof eingabe === 'string' ? Number(eingabe.replace(',', '.')) : eingabe;
+    if (typeof v !== 'number' || !Number.isFinite(v) || (typeof eingabe === 'string' && eingabe.trim() === '')) return false;
+    return winkelAbstand(v, soll) <= absTol + 1e-9;
+}
+
+// Einheitliche Rundungstoleranz aller Übungen: 2 %, mindestens 0,05 (Winkel: 1°, siehe pruefeWinkel).
 // Eingabe prüfen: richtig, wenn höchstens 2 % (mindestens absTol) vom richtigen Wert entfernt
 function pruefeWert(eingabe, soll, relTol = 0.02, absTol = 0.05) {
+    if (typeof eingabe === 'string' && eingabe.trim() === '') return false;   // leeres Feld ist nicht „0“
     const v = typeof eingabe === 'string' ? Number(eingabe.replace(',', '.')) : eingabe;
     if (typeof v !== 'number' || !Number.isFinite(v)) return false;
-    return Math.abs(v - soll) <= Math.max(relTol * Math.abs(soll), absTol);
+    return Math.abs(v - soll) <= Math.max(relTol * Math.abs(soll), absTol) + 1e-9;
 }
 
 // Zufällige Übungsaufgabe. Lasten sind Bemessungswerte E_d (Streckenlast) bzw. F_d (Einzellast).
@@ -598,6 +613,8 @@ function erzeugeTraegerAufgabe(rnd = Math.random, art) {
             pointLoads.push({ F: Fd(), x: x1 }, { F: Fd(), x: x2 });
         }
         const traeger = berechneTraeger({ L, pointLoads, udls });
+        // Zwei Einzellasten: Ist V zwischen den Lasten genau null, ist das Moment dort konstant und x₀ nicht eindeutig
+        if (typ === 'zwei-einzellasten' && Math.abs(traeger.schnitt((pointLoads[0].x + pointLoads[1].x) / 2).Q) < 1e-6) continue;
         const feld = feldmomentBeiVNull(traeger, L);
         if (!feld || feld.M <= 0 || traeger.A <= 0 || traeger.B <= 0) continue;
         return { typ, L, L_kl, L_kr, udls, pointLoads, traeger, A: traeger.A, B: traeger.B, x0: feld.x0, MF: feld.M };
@@ -618,6 +635,8 @@ if (typeof module !== 'undefined' && module.exports) {
         berechneDeckenlast,
         feldmomentBeiVNull,
         pruefeWert,
+        pruefeWinkel,
+        nachweisErfuellt,
         erzeugeTraegerAufgabe,
         TRAEGER_AUFGABENARTEN,
         LAST_BAUSTOFFE,

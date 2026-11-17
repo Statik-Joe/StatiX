@@ -273,7 +273,7 @@
                         <span class="text-xs">kNm</span><span id="fb_MF" class="text-lg"></span>
                     </div>
                 </div>
-                <p class="text-xs text-slate-500 mt-2">Tipp: Das Stützmoment ist negativ – Minuszeichen nicht vergessen. Rundungstoleranz 2 %.</p>
+                <p class="text-xs text-slate-500 mt-2">Tipp: Das Stützmoment ist negativ – Minuszeichen nicht vergessen. Rundungstoleranz 2 %, mindestens 0,05.</p>
                 <button id="btnPruefen" class="w-full mt-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-lg transition-colors">Prüfen</button>
                 <div id="uebungErgebnis" class="hidden mt-4 text-sm p-3 rounded-lg"></div>
 
@@ -333,9 +333,9 @@
         </section>
     </div>
 
-    <script src="labor.js?v=c896ff32f6"></script>
-    <script src="version.js?v=3.9"></script>
-    <script src="statik-core.js?v=e77eaedd41"></script>
+    <script src="labor.js?v=1b9d87a3d4"></script>
+    <script src="version.js?v=3.10"></script>
+    <script src="statik-core.js?v=0adcb7e01b"></script>
     <script>
         const AUFLAGER = ['A', 'B', 'C', 'D', 'E'];
         const FARBE = {
@@ -933,7 +933,7 @@
             '3F': { name: 'Dreifeldträger, Einzellast F in jeder Feldmitte', felder: 3, last: 'F', A: 0.350, B: 1.15, MB: -0.150, MF: 0.175 }
         };
         let aufgabe = null;
-        const sessionLog6 = [];
+        let sessionLog6 = [];
         const zufall = (min, max, step) => Math.round((min + Math.random() * (max - min)) / step) * step;
 
         function neueAufgabe() {
@@ -977,7 +977,7 @@
             const rechenweg = [];
             pruefungen.forEach(([inputId, fbId, name, exakt, einheit, beiwert, basis]) => {
                 const v = parseFloat(document.getElementById(inputId).value);
-                const ok = !isNaN(v) && Math.abs(v - exakt) <= Math.max(0.02 * Math.abs(exakt), 0.05);
+                const ok = pruefeWert(document.getElementById(inputId).value, exakt);   // 2 %, mindestens 0,05
                 document.getElementById(fbId).textContent = ok ? '✅' : '❌';
                 if (ok) richtig++;
                 details.push(`${name}: eingegeben ${isNaN(v) ? '—' : fmt(v) + ' ' + einheit} / richtig ${fmt(exakt, 2)} ${einheit} ${ok ? '✅' : '❌'}`);
@@ -1002,6 +1002,7 @@
                 });
                 document.getElementById('logCount6').textContent = sessionLog6.length;
                 document.getElementById('btnExportLog6').disabled = false;
+                lernstand.save();
             }
         });
 
@@ -1122,13 +1123,17 @@
 
         // Lernfortschritt (optional, nur auf diesem Gerät)
         // Die Eingaben für Feld 3 entstehen erst bei „3 Felder“ – deshalb Feldwerte selbst sichern und wiederherstellen
-        initLearningProgress(7, {
+        const lernstand = initLearningProgress(7, {
             capture: () => {
                 const werte = {};
                 document.querySelectorAll('#feldEingaben input').forEach(i => { werte[i.id] = i.value; });
-                return { felder: felderSelect.value, werte };
+                return { felder: felderSelect.value, werte, sessionLog6 };
             },
             restore: data => {
+                // Übungsprotokoll wie in den anderen Modulen mit speichern
+                sessionLog6 = Array.isArray(data && data.sessionLog6) ? data.sessionLog6 : [];
+                document.getElementById('logCount6').textContent = sessionLog6.length;
+                document.getElementById('btnExportLog6').disabled = sessionLog6.length === 0;
                 if (!data || !data.felder) return;
                 felderSelect.value = data.felder;
                 baueFeldEingaben();

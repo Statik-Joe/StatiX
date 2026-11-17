@@ -1,6 +1,6 @@
 # CLAUDE.md – Hinweise für die Arbeit an diesem Repository
 
-Virtuelles Bautechnik-Labor: interaktive Statik-Lernmodule für die FOS 12 (Hessen). Statische HTML-, CSS- und JavaScript-Dateien, laufen offline ohne Server. Überblick und Modulliste: `README.md`, geplante Erweiterungen: `ROADMAP.md`.
+Virtuelles Bautechnik-Labor: interaktive Statik-Lernmodule für die FOS 12 (Hessen). Statische HTML-, CSS- und JavaScript-Dateien, laufen offline ohne Server. Überblick und Modulliste: `README.md`, geplante Erweiterungen: `ROADMAP.md`, Rechenlogik, Konventionen und Regeln für Änderungen: `DOKUMENTATION.md` (bei fachlichen Änderungen mitpflegen).
 
 Modulnummern ab Labor 3.0: 1 Kräfteaddition, 2 Hebelgesetz, 3 Lastannahme, 4 Schnittgrößen (Einfeldträger), 5 Diagramme zuordnen, 6 Spannungsnachweis, 7 Durchlaufträger. Die alten Dateinamen (z. B. `modul-3-statik-einfeldtraeger.html`) leiten nur noch auf die neuen Seiten weiter – nicht löschen und nicht für neue Arbeit verwenden.
 
@@ -17,6 +17,7 @@ Modulnummern ab Labor 3.0: 1 Kräfteaddition, 2 Hebelgesetz, 3 Lastannahme, 4 Sc
 - Einheiten: Kräfte in kN, Momente in kNm, Streckenlasten in kN/m, Längen in m. Modul 2: Massen in kg, F = m · g im Rechenweg in N und kN.
 - Zahlen mit deutschem Dezimalkomma und Leerzeichen vor der Einheit („2,5 kN“): `fmt()` aus `labor.js` verwenden.
 - Indizes tiefgestellt: im HTML `<sub>`, im Canvas `fillTextSub(ctx, 'M_{max} = …')`.
+- Übungen prüfen einheitlich mit `pruefeWert()` (2 %, mindestens 0,05) bzw. `pruefeWinkel()` (1°); `fmt()` rundet kaufmännisch.
 - Querkraft heißt **V** (wie in der Abschlussprüfung), nicht Q. Vorzeichen wie in Modul 4 (Schnittgrößen): V positiv nach oben, M positiv nach unten (Zugseite). Im Code heißt das Feld weiterhin `Q`. Querkraftsprünge senkrecht zeichnen – Diagramme über `diagrammStellen()` auswerten.
 - Bemessungswerte nach Eurocode (DIN EN 1990) wie in der Abschlussprüfung: erst charakteristisch g_k, q_k (DIN EN 1991-1-1 mit NA), dann g_d = 1,35 · g_k, q_d = 1,5 · q_k, E_d = g_d + q_d; Ergebnisse mit Index Ed (A_Ed,V, B_Ed,V, V_Ed, M_Ed). Modul 3 übergibt g_d und q_d an Modul 4.
 - Modul 6 (Spannungsnachweis) rechnet standardmäßig mit Bemessungswerten nach Eurocode wie in der Prüfung: σ_Ed = M_Ed / W ≤ f_d, Holz f_m,d = k_mod · f_m,k / γ_M (γ_M = 1,3), Stahl f_y,d = f_y,k / γ_M0 (γ_M0 = 1,0); Kennwerte mit Quellen in `statik-core.js` (`WERKSTOFFE_EC`, `KMOD`). Umschaltbar auf das alte Verfahren mit zulässigen Spannungen (DIN 1052:1988, DIN 1050), das zu charakteristischen Momenten gehört. Passt ein übergebenes Moment (`Ed=1` oder nicht) nicht zum gewählten Verfahren, zeigt Modul 6 einen Hinweis.

@@ -293,7 +293,7 @@
                                 <span id="fb_nachweis" class="text-lg"></span>
                             </div>
                         </div>
-                        <p class="text-xs text-slate-500">Rundungstoleranz 2 %.</p>
+                        <p class="text-xs text-slate-500">Rundungstoleranz 2 %, mindestens 0,05.</p>
                         <button id="btnCheck5" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-lg transition-colors">
                             Prüfen
                         </button>
@@ -312,9 +312,9 @@
         </div>
     </div>
 
-    <script src="labor.js?v=c896ff32f6"></script>
-    <script src="version.js?v=3.9"></script>
-    <script src="statik-core.js?v=e77eaedd41"></script>
+    <script src="labor.js?v=1b9d87a3d4"></script>
+    <script src="version.js?v=3.10"></script>
+    <script src="statik-core.js?v=0adcb7e01b"></script>
     <script>
         const canvas = document.getElementById('qsCanvas');
         const ctx = canvas.getContext('2d');
@@ -491,7 +491,7 @@
 
             // Nachweis-Box
             const box = document.getElementById('nachweisBox');
-            const erfuellt = sigma <= sigZul;
+            const erfuellt = nachweisErfuellt(sigma, sigZul);   // gerundet wie angezeigt (statik-core.js)
             box.className = 'p-5 rounded-2xl border-2 shadow-sm text-center ' + (erfuellt ? 'bg-emerald-50 border-emerald-300' : 'bg-rose-50 border-rose-300');
             document.getElementById('nachweisLabel').className = 'text-sm font-bold tracking-wide mb-1 ' + (erfuellt ? 'text-emerald-700' : 'text-rose-700');
             document.getElementById('nachweisLabel').innerHTML = `Nachweis ${b.sigma} ≤ ${b.grenz}`;
@@ -764,7 +764,10 @@
             // Moment so wählen, dass die Ausnutzung zwischen etwa 40 % und 160 % liegt (Nachweis mal erfüllt, mal nicht)
             const W = getQuerschnittswerte().W;
             const ratio = 0.4 + Math.random() * 1.2;
-            const M = Math.max(0.5, Math.round(ratio * grenz * W / 1000 * 2) / 2);
+            let M = Math.max(0.5, Math.round(ratio * grenz * W / 1000 * 2) / 2);
+            // Knappe Fälle (97 … 103 % Ausnutzung) vermeiden: Dort entscheidet schon die Rundung über „erfüllt“
+            const ausnutzung = m => 1000 * m / W / grenz;
+            while (ausnutzung(M) > 0.97 && ausnutzung(M) < 1.03) M += 0.5;
             setMoment(M);
             const note = document.getElementById('importNote');
             note.classList.add('hidden');
@@ -814,8 +817,7 @@
             const detailLines = [];
             numChecks.forEach(([inputId, fbId, real, label, unit, digits]) => {
                 const val = parseFloat(document.getElementById(inputId).value);
-                const tolerance = Math.max(Math.abs(real) * 0.02, 0.05); // 2 % Rundungstoleranz
-                const ok = !isNaN(val) && Math.abs(val - real) <= tolerance;
+                const ok = pruefeWert(document.getElementById(inputId).value, real);   // 2 %, mindestens 0,05
                 document.getElementById(fbId).innerText = ok ? '✅' : '❌';
                 if (ok) correctCount++;
                 detailLines.push(`${label}: eingegeben ${isNaN(val) ? '—' : fmt(val) + ' ' + unit} / richtig ${fmt(real, digits)} ${unit} ${ok ? '✅' : '❌'}`);

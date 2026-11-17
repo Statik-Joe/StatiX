@@ -46,6 +46,7 @@
                 </div>
                 <h1 class="text-3xl font-extrabold text-slate-800">Kräfteaddition & Vektoren</h1>
                 <p class="text-sm text-slate-500 mt-1">Verändere die Winkel und Beträge der Kräfte, um die Resultierende (grün) zu ermitteln.</p>
+                <p class="text-xs text-slate-400 mt-1">Winkel wie in der Mathematik: von der positiven x-Achse aus gegen den Uhrzeigersinn (0° nach rechts, 90° nach oben). In Modul 4 wird der Winkel einer Last dagegen von der Trägerachse aus im Uhrzeigersinn gemessen (90° nach unten).</p>
             </div>
         </header>
 
@@ -230,7 +231,7 @@
                                 </div>
                             </div>
                         </div>
-                        <p class="text-xs text-slate-500">Rundungstoleranz 3 %, mindestens 1,5 kN bzw. 1,5°.</p>
+                        <p class="text-xs text-slate-500">Rundungstoleranz 2 %, mindestens 0,05 kN; Winkel 1°.</p>
                         <button id="btnCheck" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
                             Prüfen
                         </button>
@@ -324,9 +325,9 @@
         </div>
     </div>
 
-    <script src="labor.js?v=c896ff32f6"></script>
-    <script src="version.js?v=3.9"></script>
-    <script src="statik-core.js?v=e77eaedd41"></script>
+    <script src="labor.js?v=1b9d87a3d4"></script>
+    <script src="version.js?v=3.10"></script>
+    <script src="statik-core.js?v=0adcb7e01b"></script>
     <script>
         const canvas = document.getElementById('vectorCanvas');
         const ctx = canvas.getContext('2d');
@@ -524,10 +525,10 @@
             checks.forEach(([inputId, fbId, real, label, unit]) => {
                 const inputVal = parseFloat(document.getElementById(inputId).value);
                 const fb = document.getElementById(fbId);
-                const tolerance = Math.max(1.5, Math.abs(real) * 0.03);
-                // Winkel: 359,5° und 0° bzw. −30° und 330° meinen dieselbe Richtung
-                const abweichung = unit === '°' ? winkelAbstand(inputVal, real) : Math.abs(inputVal - real);
-                const ok = !isNaN(inputVal) && abweichung <= tolerance;
+                // Einheitliche Toleranz (statik-core.js): Kräfte 2 %, mindestens 0,05 kN; Winkel 1°
+                // (359,5° und 0° bzw. −30° und 330° meinen dieselbe Richtung)
+                const roh = document.getElementById(inputId).value;
+                const ok = unit === '°' ? pruefeWinkel(roh, real) : pruefeWert(roh, real);
                 fb.innerText = ok ? '✅' : '❌';
                 if (ok) correctCount++;
                 const sep = unit === '°' ? '' : ' '; // Winkelgrad ohne Leerzeichen

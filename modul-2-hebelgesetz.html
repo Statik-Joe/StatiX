@@ -169,9 +169,9 @@
                             <p class="font-bold text-indigo-800 mb-2 border-b border-indigo-200 pb-1">Linksdrehendes Moment (M₁)</p>
                             <div class="space-y-1.5 text-indigo-900">
                                 <p>1. Kraft: F₁ = m₁ · g</p>
-                                <p class="pl-4 text-xs text-indigo-700">F₁ = <span id="rw_m1">50</span> kg · 9,81 m/s² = <span id="rw_f1n">490,5</span> N = <strong id="rw_f1">0,491</strong> kN</p>
+                                <p class="pl-4 text-xs text-indigo-700">F₁ = <span id="rw_m1">50</span> kg · 9,81 m/s² = <span id="rw_f1n">490,5</span> N = <strong id="rw_f1">0,4905</strong> kN</p>
                                 <p class="pt-2">2. Moment: M₁ = F₁ · l₁</p>
-                                <p class="pl-4 text-xs text-indigo-700">M₁ = <span id="rw_f1_copy">0,491</span> kN · <span id="rw_x1">3,0</span> m</p>
+                                <p class="pl-4 text-xs text-indigo-700">M₁ = <span id="rw_f1_copy">0,4905</span> kN · <span id="rw_x1">3,0</span> m</p>
                                 <p class="font-bold text-lg text-indigo-600 pt-1">M₁ = <span id="rw_mom1">1,472</span> kNm</p>
                             </div>
                         </div>
@@ -181,9 +181,9 @@
                             <p class="font-bold text-rose-800 mb-2 border-b border-rose-200 pb-1">Rechtsdrehendes Moment (M₂)</p>
                             <div class="space-y-1.5 text-rose-900">
                                 <p>1. Kraft: F₂ = m₂ · g</p>
-                                <p class="pl-4 text-xs text-rose-700">F₂ = <span id="rw_m2">30</span> kg · 9,81 m/s² = <span id="rw_f2n">294,3</span> N = <strong id="rw_f2">0,294</strong> kN</p>
+                                <p class="pl-4 text-xs text-rose-700">F₂ = <span id="rw_m2">30</span> kg · 9,81 m/s² = <span id="rw_f2n">294,3</span> N = <strong id="rw_f2">0,2943</strong> kN</p>
                                 <p class="pt-2">2. Moment: M₂ = F₂ · l₂</p>
-                                <p class="pl-4 text-xs text-rose-700">M₂ = <span id="rw_f2_copy">0,294</span> kN · <span id="rw_x2">5,0</span> m</p>
+                                <p class="pl-4 text-xs text-rose-700">M₂ = <span id="rw_f2_copy">0,2943</span> kN · <span id="rw_x2">5,0</span> m</p>
                                 <p class="font-bold text-lg text-rose-600 pt-1">M₂ = <span id="rw_mom2">1,472</span> kNm</p>
                             </div>
                         </div>
@@ -231,7 +231,7 @@
                         <button id="btnCheck2" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2 rounded-lg transition-colors text-sm disabled:opacity-40 disabled:cursor-not-allowed">
                             Prüfen
                         </button>
-                        <p class="basis-full text-xs text-slate-500">Rundungstoleranz 3 %, mindestens 0,15 m.</p>
+                        <p class="basis-full text-xs text-slate-500">Rundungstoleranz 2 %, mindestens 0,05 m.</p>
                     </div>
                     <div id="checkResult2" class="hidden mt-4 text-center font-bold text-sm p-3 rounded-lg"></div>
 
@@ -247,9 +247,9 @@
         </div>
     </div>
 
-    <script src="labor.js?v=c896ff32f6"></script>
-    <script src="version.js?v=3.9"></script>
-    <script src="statik-core.js?v=e77eaedd41"></script>
+    <script src="labor.js?v=1b9d87a3d4"></script>
+    <script src="version.js?v=3.10"></script>
+    <script src="statik-core.js?v=0adcb7e01b"></script>
     <script>
         // System Status
         const G = ERDBESCHLEUNIGUNG;   // 9,81 m/s² (statik-core.js)
@@ -393,8 +393,7 @@
             if (taskAnswer === null || document.getElementById('btnCheck2').disabled) return;
             document.getElementById('btnCheck2').disabled = true;   // gleiche Aufgabe nur einmal werten
             const userVal = parseFloat(document.getElementById('check_x2').value);
-            const tolerance = Math.max(0.15, taskAnswer * 0.03);
-            const isCorrect = !isNaN(userVal) && Math.abs(userVal - taskAnswer) <= tolerance;
+            const isCorrect = pruefeWert(document.getElementById('check_x2').value, taskAnswer);   // 2 %, mindestens 0,05 m
 
             // Sitzungsprotokoll für Export (vor dem Verändern von x1/m1/m2 durch die nächste Aufgabe)
             sessionLog2.push({
@@ -463,6 +462,10 @@
             updateMath();
         }
 
+        // Gewichtskraft in kN ungerundet anzeigen (höchstens 5 Nachkommastellen, z. B. 0,4905 kN):
+        // Wer mit dem gezeigten Wert weiterrechnet, erhält dann genau das gezeigte Moment.
+        const fmtKraft = F => String(Math.round(F * 1e5) / 1e5).replace('.', ',');
+
         function updateMath() {
             // Gewichtskräfte in kN (Masse in kg · g ergibt N, geteilt durch 1000 ergibt kN)
             // und Drehmomente in kNm (immer Beträge für die Anzeige), statik-core.js
@@ -494,15 +497,15 @@
             // UI Texte updaten
             document.getElementById('rw_m1').innerText = m1;
             document.getElementById('rw_f1n').innerText = fmt(F1 * 1000, 1);
-            document.getElementById('rw_f1').innerText = fmt(F1, 3);
-            document.getElementById('rw_f1_copy').innerText = fmt(F1, 3);
+            document.getElementById('rw_f1').innerText = fmtKraft(F1);
+            document.getElementById('rw_f1_copy').innerText = fmtKraft(F1);
             document.getElementById('rw_x1').innerText = fmt(x1, 1);
             document.getElementById('rw_mom1').innerText = fmt(M1, 3);
 
             document.getElementById('rw_m2').innerText = m2;
             document.getElementById('rw_f2n').innerText = fmt(F2 * 1000, 1);
-            document.getElementById('rw_f2').innerText = fmt(F2, 3);
-            document.getElementById('rw_f2_copy').innerText = fmt(F2, 3);
+            document.getElementById('rw_f2').innerText = fmtKraft(F2);
+            document.getElementById('rw_f2_copy').innerText = fmtKraft(F2);
             document.getElementById('rw_x2').innerText = fmt(x2, 1);
             document.getElementById('rw_mom2').innerText = fmt(M2, 3);
 

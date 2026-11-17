@@ -418,9 +418,9 @@
         </section>
     </div>
 
-    <script src="labor.js?v=c896ff32f6"></script>
-    <script src="version.js?v=3.9"></script>
-    <script src="statik-core.js?v=e77eaedd41"></script>
+    <script src="labor.js?v=1b9d87a3d4"></script>
+    <script src="version.js?v=3.10"></script>
+    <script src="statik-core.js?v=0adcb7e01b"></script>
     <script>
         const canvas = document.getElementById('statikCanvas');
         const ctx = canvas.getContext('2d');
@@ -871,6 +871,12 @@
                 let newX = minX + ((coords.x - dragOffsetX - paddingX) / drawWidth) * totalLength;
                 newX = Math.round(newX * 10) / 10;
                 newX = Math.max(minX, Math.min(maxX, newX));
+                // Streckenlast: Anfang bleibt links vom Ende (mindestens 0,1 m), sonst wäre die Eingabe ungültig
+                const qGriff = /^(q[12])_(start|end)$/.exec(activeDragId);
+                if (qGriff) {
+                    if (qGriff[2] === 'start') newX = Math.min(newX, Math.round((getVal(qGriff[1] + '_end') - 0.1) * 10) / 10);
+                    else newX = Math.max(newX, Math.round((getVal(qGriff[1] + '_start') + 0.1) * 10) / 10);
+                }
 
                 const inputEl = document.getElementById(activeDragId);
                 if (inputEl) {

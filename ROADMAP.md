@@ -25,20 +25,22 @@ To-do-Liste der Code-Prüfung (Rechenkern, Einheitlichkeit, Handy). Reihenfolge 
 
 ### Niedrig
 
-- [ ] **12 · Modul 4, Übung:** Aufgaben „zwei Einzellasten“ mit V = 0 zwischen den Lasten verwerfen (x₀ nicht eindeutig)
-- [ ] **13 · Modul 6:** Nachweis und Anzeige gleich runden; Zufallsaufgaben mit 97–103 % Ausnutzung vermeiden
-- [ ] **14 · alle Module:** Toleranzen vereinheitlichen und überall `pruefeWert()` verwenden – *Rückfrage offen: gewünschte Werte*
-- [ ] **15 · Modul 1 und 4:** unterschiedliche Winkeldefinition dokumentieren, Hinweis in Modul 1
-- [ ] **16 · Modul 4 und 5:** alte Bezeichnungen bereinigen („Q(x)“ in Teil B und im Protokoll, PNG-Dateiname `modul3_…`)
-- [ ] **17 · Modul 5:** V-Linie am rechten Kragarmende zur Nulllinie schließen
-- [ ] **18 · Modul 7:** Übungsprotokoll im Fortschritt speichern
-- [ ] **19 · Modul 2 / `fmt()`:** Zwischenwerte im Rechenweg stimmig runden, kaufmännische Rundung testen (Beispiel: Feldmoment −9,375 kNm wird als −9,37 statt −9,38 angezeigt)
-- [ ] **20 · Modul 4:** Anfang einer Streckenlast beim Ziehen nicht über ihr Ende hinaus
+- [x] **12 · Modul 4, Übung:** Aufgaben mit V = 0 zwischen den Lasten werden verworfen – Labor 3.10
+- [x] **13 · Modul 6:** Nachweis rundet wie die Anzeige (`nachweisErfuellt`), Zufallsaufgaben meiden 97–103 % Ausnutzung – Labor 3.10
+- [x] **14 · alle Module:** einheitlich 2 %, mindestens 0,05, über `pruefeWert()`; Winkel 1° über `pruefeWinkel()` – Labor 3.10
+- [x] **15 · Modul 1 und 4:** Hinweis in Modul 1, Tabelle in `DOKUMENTATION.md` – Labor 3.10
+- [x] **16 · Modul 4 und 5:** „V(x)“ in Teil B und im Protokoll, PNG-Dateiname `modul4_…` – Labor 3.10
+- [x] **17 · Modul 5:** V-Linie schließt am rechten Trägerende zur Nulllinie – Labor 3.10
+- [x] **18 · Modul 7:** Übungsprotokoll wird mit dem Fortschritt gespeichert – Labor 3.10
+- [x] **19 · Modul 2 / `fmt()`:** `fmt()` rundet kaufmännisch (−9,375 → −9,38); Modul 2 zeigt die Gewichtskraft ungerundet (0,4905 kN) – Labor 3.10
+- [x] **20 · Modul 4:** Anfang und Ende einer Streckenlast lassen sich nicht mehr übereinander ziehen – Labor 3.10
 
 ### Danach
 
-- [ ] **Testsuite** um die Referenzfälle der Prüfung ergänzen (Einfeldträger-Sonderfälle, Modul 1/2/6, Übergaben Modul 3 → 4 → 6)
-- [ ] **Technische Dokumentation** (Aufbau, Formeln je Modul, Vorzeichen und Einheiten, Build, Tests, bekannte Grenzen, Regeln für künftige Änderungen)
+- [ ] **Noch offen:** Eurocode-Kennwerte und σ_zul in Modul 6 im Tabellenbuch gegenprüfen (Lehrkraft); Modul 3 (Zufallsaufgaben), Modul 5 (Eindeutigkeit der falschen Antworten) und Modul 7 (Grafiken) wurden in der Prüfung nur gelesen, nicht nachgerechnet
+
+- [x] **Testsuite** um die Referenzfälle der Prüfung ergänzt: `tests/referenzfaelle.test.js` (Einfeldträger-Sonderfälle, Kette Modul 3 → 4 → 6, Rundung, Toleranz) – Labor 3.10
+- [x] **Technische Dokumentation**: `DOKUMENTATION.md` (Aufbau, Formeln je Modul, Vorzeichen und Einheiten, Kennwerte mit Quellen, Build, Tests, bekannte Grenzen, Regeln für künftige Änderungen) – Labor 3.10
 
 ## Geplant
 

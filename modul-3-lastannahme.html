@@ -342,7 +342,7 @@
                         <span class="text-xs">kN/m</span><span id="fb_qs" class="text-lg"></span>
                     </div>
                 </div>
-                <p class="text-xs text-slate-500 mt-2">Rundungstoleranz 2 %, mindestens 0,02. Dicken in Metern einsetzen!</p>
+                <p class="text-xs text-slate-500 mt-2">Rundungstoleranz 2 %, mindestens 0,05. Dicken in Metern einsetzen!</p>
                 <button id="btnPruefen" class="w-full mt-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-lg transition-colors">Prüfen</button>
                 <div id="uebungErgebnis" class="hidden mt-4 text-sm p-3 rounded-lg"></div>
 
@@ -356,9 +356,9 @@
         </section>
     </div>
 
-    <script src="labor.js?v=c896ff32f6"></script>
-    <script src="version.js?v=3.9"></script>
-    <script src="statik-core.js?v=e77eaedd41"></script>
+    <script src="labor.js?v=1b9d87a3d4"></script>
+    <script src="version.js?v=3.10"></script>
+    <script src="statik-core.js?v=0adcb7e01b"></script>
     <script>
         const baustoff = id => LAST_BAUSTOFFE.find(b => b.id === id) || LAST_BAUSTOFFE[LAST_BAUSTOFFE.length - 1];
         const nutzung = kat => NUTZLASTEN.find(n => n.kat === kat) || NUTZLASTEN[1];
@@ -1187,7 +1187,7 @@
             const details = [];
             pruefungen.forEach(([inputId, fbId, name, exakt, einheit]) => {
                 const v = parseFloat(document.getElementById(inputId).value);
-                const ok = !isNaN(v) && Math.abs(v - exakt) <= Math.max(0.02 * Math.abs(exakt), 0.02);
+                const ok = pruefeWert(document.getElementById(inputId).value, exakt);   // 2 %, mindestens 0,05
                 document.getElementById(fbId).textContent = ok ? '✅' : '❌';
                 if (ok) richtig++;
                 details.push(`${name}: eingegeben ${isNaN(v) ? '—' : fmt(v) + ' ' + einheit} / richtig ${fmt(exakt, 2)} ${einheit} ${ok ? '✅' : '❌'}`);
