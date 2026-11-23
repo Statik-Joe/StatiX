@@ -29,7 +29,7 @@
             }, true);   // true: auch nicht ladbare Skript- und Stildateien melden
         })();
     </script>
-    <link rel="stylesheet" href="tailwind.min.css?v=e7fffc10f7">
+    <link rel="stylesheet" href="tailwind.min.css?v=ca992f67d3">
     <link rel="stylesheet" href="labor.css?v=3c4268ad6b">
 </head>
 <body data-modul="4" class="bg-slate-50 min-h-screen p-4 md:p-6 font-sans text-slate-800">
@@ -132,145 +132,27 @@
                     </div>
                 </div>
                 
-                <!-- Streckenlasten -->
+                <!-- Streckenlasten: Karten werden per Skript erzeugt (renderLasten), beliebig viele bis MAX_LASTEN -->
                 <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 shadow-sm space-y-4">
                     <h3 class="text-lg font-bold text-slate-700 flex items-center gap-2">
                         <span class="lab-bar"></span>
                         Streckenlasten
                     </h3>
-                    
-                    <!-- q1 -->
-                    <div class="p-3 bg-white rounded-lg border border-slate-200">
-                        <div class="flex justify-between items-center mb-2 pb-2 border-b border-slate-100">
-                            <div class="flex items-center gap-2">
-                                <input type="checkbox" id="enable_q1" checked class="w-4 h-4 text-teal-600 border-slate-300 rounded focus:ring-teal-500">
-                                <span class="font-bold text-sm text-slate-700">Streckenlast q₁</span>
-                            </div>
-                            <select id="colorQ1" class="border border-slate-300 rounded p-1 text-xs bg-slate-50 font-medium">
-                                <option value="#0d9488" selected>Teal</option>
-                                <option value="#6366f1">Indigo</option>
-                                <option value="#10b981">Smaragd</option>
-                                <option value="#f43f5e">Rose</option>
-                                <option value="#f59e0b">Bernstein</option>
-                            </select>
-                        </div>
-                        <div id="q1_inputs_container" class="grid grid-cols-3 gap-2">
-                            <div>
-                                <label for="q1" class="block text-xs font-bold text-slate-500 mb-1">Wert [kN/m]</label>
-                                <input type="number" id="q1" value="5" min="0" step="0.5" class="w-full border rounded p-1.5 text-sm font-semibold">
-                            </div>
-                            <div>
-                                <label for="q1_start" class="block text-xs font-bold text-slate-500 mb-1">Start x [m]</label>
-                                <input type="number" id="q1_start" value="0" step="0.1" class="w-full border rounded p-1.5 text-sm">
-                            </div>
-                            <div>
-                                <label for="q1_end" class="block text-xs font-bold text-slate-500 mb-1">Ende x [m]</label>
-                                <input type="number" id="q1_end" value="5" step="0.1" class="w-full border rounded p-1.5 text-sm">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- q2 -->
-                    <div class="p-3 bg-white rounded-lg border border-slate-200">
-                        <div class="flex justify-between items-center mb-2 pb-2 border-b border-slate-100">
-                            <div class="flex items-center gap-2">
-                                <input type="checkbox" id="enable_q2" checked class="w-4 h-4 text-teal-600 border-slate-300 rounded focus:ring-teal-500">
-                                <span class="font-bold text-sm text-slate-700">Streckenlast q₂</span>
-                            </div>
-                            <select id="colorQ2" class="border border-slate-300 rounded p-1 text-xs bg-slate-50 font-medium">
-                                <option value="#0d9488">Teal</option>
-                                <option value="#6366f1" selected>Indigo</option>
-                                <option value="#10b981">Smaragd</option>
-                                <option value="#f43f5e">Rose</option>
-                                <option value="#f59e0b">Bernstein</option>
-                            </select>
-                        </div>
-                        <div id="q2_inputs_container" class="grid grid-cols-3 gap-2">
-                            <div>
-                                <label for="q2" class="block text-xs font-bold text-slate-500 mb-1">Wert [kN/m]</label>
-                                <input type="number" id="q2" value="3" min="0" step="0.5" class="w-full border rounded p-1.5 text-sm font-semibold">
-                            </div>
-                            <div>
-                                <label for="q2_start" class="block text-xs font-bold text-slate-500 mb-1">Start x [m]</label>
-                                <input type="number" id="q2_start" value="5" step="0.1" class="w-full border rounded p-1.5 text-sm">
-                            </div>
-                            <div>
-                                <label for="q2_end" class="block text-xs font-bold text-slate-500 mb-1">Ende x [m]</label>
-                                <input type="number" id="q2_end" value="10" step="0.1" class="w-full border rounded p-1.5 text-sm">
-                            </div>
-                        </div>
-                    </div>
+                    <div id="udlListe" class="space-y-4"></div>
+                    <p id="udlLeer" class="hidden text-xs text-slate-500">Keine Streckenlast. Mit „+ Streckenlast“ kannst du eine hinzufügen.</p>
+                    <button type="button" id="btnAddUdl" class="w-full border-2 border-dashed border-slate-300 hover:border-teal-500 hover:text-teal-700 text-slate-600 font-bold text-sm rounded-lg py-2 transition-colors">+ Streckenlast hinzufügen</button>
                 </div>
-                
-                <!-- Einzellasten -->
+
+                <!-- Einzellasten: Karten werden per Skript erzeugt (renderLasten) -->
                 <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 shadow-sm space-y-4">
                     <h3 class="text-lg font-bold text-slate-700 flex items-center gap-2">
                         <span class="lab-bar"></span>
                         Einzellasten
                     </h3>
-                    
-                    <!-- F1 -->
-                    <div class="p-3 bg-white rounded-lg border border-slate-200">
-                        <div class="flex justify-between items-center mb-2 pb-2 border-b border-slate-100">
-                            <div class="flex items-center gap-2">
-                                <input type="checkbox" id="enable_f1" checked class="w-4 h-4 text-teal-600 border-slate-300 rounded focus:ring-teal-500">
-                                <span class="font-bold text-sm text-slate-700">Einzellast F₁</span>
-                            </div>
-                            <select id="colorF1" class="border border-slate-300 rounded p-1 text-xs bg-slate-50 font-medium">
-                                <option value="#0d9488">Teal</option>
-                                <option value="#6366f1">Indigo</option>
-                                <option value="#10b981">Smaragd</option>
-                                <option value="#f43f5e" selected>Rose</option>
-                                <option value="#f59e0b">Bernstein</option>
-                            </select>
-                        </div>
-                        <div id="f1_inputs_container" class="grid grid-cols-3 gap-2">
-                            <div>
-                                <label for="f1" class="block text-xs font-bold text-slate-500 mb-1">Kraft [kN]</label>
-                                <input type="number" id="f1" value="15" min="0" step="1" class="w-full border rounded p-1.5 text-sm font-semibold">
-                            </div>
-                            <div>
-                                <label for="x1" class="block text-xs font-bold text-slate-500 mb-1">Position x [m]</label>
-                                <input type="number" id="x1" value="2" step="0.1" class="w-full border rounded p-1.5 text-sm">
-                            </div>
-                            <div>
-                                <label for="alpha1" class="block text-xs font-bold text-slate-500 mb-1">Winkel α [°]</label>
-                                <input type="number" id="alpha1" value="90" min="0" max="360" step="1" class="w-full border rounded p-1.5 text-sm">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- F2 -->
-                    <div class="p-3 bg-white rounded-lg border border-slate-200">
-                        <div class="flex justify-between items-center mb-2 pb-2 border-b border-slate-100">
-                            <div class="flex items-center gap-2">
-                                <input type="checkbox" id="enable_f2" checked class="w-4 h-4 text-teal-600 border-slate-300 rounded focus:ring-teal-500">
-                                <span class="font-bold text-sm text-slate-700">Einzellast F₂</span>
-                            </div>
-                            <select id="colorF2" class="border border-slate-300 rounded p-1 text-xs bg-slate-50 font-medium">
-                                <option value="#0d9488">Teal</option>
-                                <option value="#6366f1">Indigo</option>
-                                <option value="#10b981">Smaragd</option>
-                                <option value="#f43f5e">Rose</option>
-                                <option value="#f59e0b" selected>Bernstein</option>
-                            </select>
-                        </div>
-                        <div id="f2_inputs_container" class="grid grid-cols-3 gap-2">
-                            <div>
-                                <label for="f2" class="block text-xs font-bold text-slate-500 mb-1">Kraft [kN]</label>
-                                <input type="number" id="f2" value="10" min="0" step="1" class="w-full border rounded p-1.5 text-sm font-semibold">
-                            </div>
-                            <div>
-                                <label for="x2" class="block text-xs font-bold text-slate-500 mb-1">Position x [m]</label>
-                                <input type="number" id="x2" value="7" step="0.1" class="w-full border rounded p-1.5 text-sm">
-                            </div>
-                            <div>
-                                <label for="alpha2" class="block text-xs font-bold text-slate-500 mb-1">Winkel α [°]</label>
-                                <input type="number" id="alpha2" value="90" min="0" max="360" step="1" class="w-full border rounded p-1.5 text-sm">
-                            </div>
-                        </div>
-                        <p class="mt-2 text-[10px] text-slate-400">Winkel zur Trägerachse: 0° rechts, 90° unten, 180° links, 270° oben.</p>
-                    </div>
+                    <div id="punktListe" class="space-y-4"></div>
+                    <p id="punktLeer" class="hidden text-xs text-slate-500">Keine Einzellast. Mit „+ Einzellast“ kannst du eine hinzufügen.</p>
+                    <button type="button" id="btnAddPunkt" class="w-full border-2 border-dashed border-slate-300 hover:border-teal-500 hover:text-teal-700 text-slate-600 font-bold text-sm rounded-lg py-2 transition-colors">+ Einzellast hinzufügen</button>
+                    <p class="text-[10px] text-slate-400">Winkel zur Trägerachse: 0° rechts, 90° unten, 180° links, 270° oben.</p>
                 </div>
 
                 <!-- Skalierung & Darstellungsoptionen -->
@@ -419,7 +301,7 @@
     </div>
 
     <script src="labor.js?v=c896ff32f6"></script>
-    <script src="version.js?v=3.9"></script>
+    <script src="version.js?v=3.10"></script>
     <script src="statik-core.js?v=e77eaedd41"></script>
     <script>
         const canvas = document.getElementById('statikCanvas');
@@ -462,27 +344,199 @@
             return isNaN(val) ? 0 : val;
         }
 
-        // Steuert das Aus- und Einblenden der Inputbereiche je nach Toggle-Checkbox
+        // ================= Lastlisten: Streckenlasten q₁, q₂, … und Einzellasten F₁, F₂, … =================
+        // Die Karten im Eingabefeld werden aus einer Liste erzeugt; hinzufügen und löschen baut sie neu auf.
+        // Die Eingabefelder heißen weiterhin q1, q1_start, q1_end, enable_q1, colorQ1 bzw. f1, x1, alpha1, enable_f1, colorF1
+        // (Nummer = Position in der Liste), damit Ziehen, Prüfung und „Fortschritt speichern“ sie über die id finden.
+        const MAX_LASTEN = 6;
+        const LAST_FARBEN = [['#0d9488', 'Teal'], ['#6366f1', 'Indigo'], ['#10b981', 'Smaragd'], ['#f43f5e', 'Rose'], ['#f59e0b', 'Bernstein']];
+        const START_LASTEN = {
+            udls: [
+                { q: 5, start: 0, end: 5, color: '#0d9488', aktiv: true },
+                { q: 3, start: 5, end: 10, color: '#6366f1', aktiv: true }
+            ],
+            points: [
+                { F: 15, x: 2, alpha: 90, color: '#f43f5e', aktiv: true },
+                { F: 10, x: 7, alpha: 90, color: '#f59e0b', aktiv: true }
+            ]
+        };
+
+        // Index als tiefgestellte Ziffern (q₁, F₁₂)
+        function tief(n) {
+            return String(n).replace(/\d/g, d => '₀₁₂₃₄₅₆₇₈₉'.charAt(Number(d)));
+        }
+
+        function farbAuswahl(id, farbe, name) {
+            const optionen = LAST_FARBEN.map(([wert, text]) => `<option value="${wert}"${wert === farbe ? ' selected' : ''}>${text}</option>`).join('');
+            return `<select id="${id}" aria-label="Farbe ${name}" class="border border-slate-300 rounded p-1 text-xs bg-slate-50 font-medium">${optionen}</select>`;
+        }
+
+        function lastKarte(art, nr, last) {
+            const istQ = art === 'q';
+            const name = istQ ? `Streckenlast q${tief(nr)}` : `Einzellast F${tief(nr)}`;
+            const id = istQ ? `q${nr}` : `f${nr}`;
+            const felder = istQ
+                ? [[`q${nr}`, 'Wert [kN/m]', 'min="0" step="0.5"', true], [`q${nr}_start`, 'Start x [m]', 'step="0.1"'], [`q${nr}_end`, 'Ende x [m]', 'step="0.1"']]
+                : [[`f${nr}`, 'Kraft [kN]', 'min="0" step="1"', true], [`x${nr}`, 'Position x [m]', 'step="0.1"'], [`alpha${nr}`, 'Winkel α [°]', 'min="0" max="360" step="1"']];
+            return `
+                <div class="p-3 bg-white rounded-lg border border-slate-200" data-last="${art}" data-nr="${nr}">
+                    <div class="flex justify-between items-center gap-2 mb-2 pb-2 border-b border-slate-100">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" id="enable_${id}"${last.aktiv === false ? '' : ' checked'} class="w-4 h-4 text-teal-600 border-slate-300 rounded focus:ring-teal-500">
+                            <span class="font-bold text-sm text-slate-700">${name}</span>
+                        </label>
+                        <div class="flex items-center gap-2">
+                            ${farbAuswahl(istQ ? `colorQ${nr}` : `colorF${nr}`, last.color, name)}
+                            <button type="button" data-loeschen="${art}" data-nr="${nr}" aria-label="${name} löschen" title="${name} löschen"
+                                class="w-8 h-8 shrink-0 rounded border border-slate-300 text-slate-500 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-300 font-bold transition-colors">✕</button>
+                        </div>
+                    </div>
+                    <div id="${id}_inputs_container" class="grid grid-cols-3 gap-2">
+                        ${felder.map(([fid, text, attr, fett]) => `
+                        <div>
+                            <label for="${fid}" class="block text-xs font-bold text-slate-500 mb-1">${text}</label>
+                            <input type="number" id="${fid}" ${attr} class="w-full border rounded p-1.5 text-sm${fett ? ' font-semibold' : ''}">
+                        </div>`).join('')}
+                    </div>
+                </div>`;
+        }
+
+        // Liste der Lasten in die Karten schreiben. Werte dürfen Zahlen oder (bei unfertiger Eingabe) Texte sein.
+        function renderLasten(lasten) {
+            const udls = (lasten && Array.isArray(lasten.udls) ? lasten.udls : []).slice(0, MAX_LASTEN);
+            const points = (lasten && Array.isArray(lasten.points) ? lasten.points : []).slice(0, MAX_LASTEN);
+            const udlListe = document.getElementById('udlListe');
+            const punktListe = document.getElementById('punktListe');
+            udlListe.innerHTML = udls.map((u, i) => lastKarte('q', i + 1, u)).join('');
+            punktListe.innerHTML = points.map((p, i) => lastKarte('f', i + 1, p)).join('');
+            // Werte erst nach dem Einfügen setzen (auch als Startwert, damit „Zurücksetzen“ und Fortschritt sie kennen)
+            const setze = (id, wert) => {
+                const el = document.getElementById(id);
+                const text = wert === undefined || wert === null ? '' : String(wert);
+                el.value = text;
+                el.defaultValue = text;
+            };
+            udls.forEach((u, i) => { const n = i + 1; setze(`q${n}`, u.q); setze(`q${n}_start`, u.start); setze(`q${n}_end`, u.end); });
+            points.forEach((p, i) => { const n = i + 1; setze(`f${n}`, p.F); setze(`x${n}`, p.x); setze(`alpha${n}`, p.alpha === undefined ? 90 : p.alpha); });
+            document.getElementById('udlLeer').classList.toggle('hidden', udls.length > 0);
+            document.getElementById('punktLeer').classList.toggle('hidden', points.length > 0);
+            hinzufuegenKnoepfe();
+            updateInputVisualStates();
+        }
+
+        // „+ … hinzufügen“ ist gesperrt, wenn die Höchstzahl erreicht ist
+        function hinzufuegenKnoepfe() {
+            const nQ = document.querySelectorAll('#udlListe [data-last]').length;
+            const nF = document.querySelectorAll('#punktListe [data-last]').length;
+            const btnQ = document.getElementById('btnAddUdl'), btnF = document.getElementById('btnAddPunkt');
+            btnQ.disabled = nQ >= MAX_LASTEN;
+            btnF.disabled = nF >= MAX_LASTEN;
+            btnQ.textContent = btnQ.disabled ? `Höchstens ${MAX_LASTEN} Streckenlasten` : '+ Streckenlast hinzufügen';
+            btnF.textContent = btnF.disabled ? `Höchstens ${MAX_LASTEN} Einzellasten` : '+ Einzellast hinzufügen';
+            [btnQ, btnF].forEach(btn => btn.classList.toggle('opacity-50', btn.disabled));
+        }
+
+        // Aktuellen Stand der Karten lesen (Rohwerte, damit beim Löschen nichts von halbfertigen Eingaben verloren geht)
+        function leseLasten() {
+            const wert = id => document.getElementById(id).value;
+            const udls = [], points = [];
+            for (let n = 1; document.getElementById(`q${n}`); n++) {
+                udls.push({ q: wert(`q${n}`), start: wert(`q${n}_start`), end: wert(`q${n}_end`),
+                    color: wert(`colorQ${n}`), aktiv: document.getElementById(`enable_q${n}`).checked });
+            }
+            for (let n = 1; document.getElementById(`f${n}`); n++) {
+                points.push({ F: wert(`f${n}`), x: wert(`x${n}`), alpha: wert(`alpha${n}`),
+                    color: wert(`colorF${n}`), aktiv: document.getElementById(`enable_f${n}`).checked });
+            }
+            return { udls, points };
+        }
+
+        // Eingeschaltete Lasten als Zahlen für Rechnung und Zeichnung (nr = Nummer im Namen)
+        function aktiveLasten() {
+            const udls = [], points = [];
+            for (let n = 1; document.getElementById(`q${n}`); n++) {
+                if (!document.getElementById(`enable_q${n}`).checked) continue;
+                udls.push({ nr: n, q: getVal(`q${n}`), start: getVal(`q${n}_start`), end: getVal(`q${n}_end`), color: document.getElementById(`colorQ${n}`).value });
+            }
+            for (let n = 1; document.getElementById(`f${n}`); n++) {
+                if (!document.getElementById(`enable_f${n}`).checked) continue;
+                const F = getVal(`f${n}`), alpha = getVal(`alpha${n}`);
+                points.push({ nr: n, F, x: getVal(`x${n}`), alpha, color: document.getElementById(`colorF${n}`).value, komponenten: zerlegeKraft(F, alpha) });
+            }
+            return { udls, points };
+        }
+
+        // Neue Last bekommt die erste noch nicht vergebene Farbe
+        function freieFarbe(liste) {
+            const frei = LAST_FARBEN.find(([wert]) => !liste.some(l => l.color === wert));
+            return (frei || LAST_FARBEN[liste.length % LAST_FARBEN.length])[0];
+        }
+
+        function lastenGeaendert() {
+            document.getElementById('presetSelect').value = 'custom';
+            calculate();
+            learningProgress.save();
+        }
+
+        document.getElementById('btnAddUdl').addEventListener('click', () => {
+            const lasten = leseLasten();
+            if (lasten.udls.length >= MAX_LASTEN) return;
+            const alle = lasten.udls.concat(lasten.points);
+            lasten.udls.push({ q: 2, start: 0, end: getVal('length'), color: freieFarbe(alle), aktiv: true });
+            renderLasten(lasten);
+            lastenGeaendert();
+            document.getElementById(`q${lasten.udls.length}`).focus();
+        });
+
+        document.getElementById('btnAddPunkt').addEventListener('click', () => {
+            const lasten = leseLasten();
+            if (lasten.points.length >= MAX_LASTEN) return;
+            const alle = lasten.udls.concat(lasten.points);
+            lasten.points.push({ F: 10, x: Math.round(getVal('length') / 2 * 10) / 10, alpha: 90, color: freieFarbe(alle), aktiv: true });
+            renderLasten(lasten);
+            lastenGeaendert();
+            document.getElementById(`f${lasten.points.length}`).focus();
+        });
+
+        // Löschen, Schalter, Farben und Werte der Karten über einen gemeinsamen Listener (die Karten entstehen neu)
+        ['udlListe', 'punktListe'].forEach(listeId => {
+            const liste = document.getElementById(listeId);
+            liste.addEventListener('click', e => {
+                const btn = e.target.closest('[data-loeschen]');
+                if (!btn) return;
+                const lasten = leseLasten();
+                const art = btn.getAttribute('data-loeschen');
+                const index = Number(btn.getAttribute('data-nr')) - 1;
+                (art === 'q' ? lasten.udls : lasten.points).splice(index, 1);
+                renderLasten(lasten);
+                lastenGeaendert();
+                // Fokus auf eine sinnvolle Stelle setzen (nächste Karte oder den Hinzufügen-Knopf)
+                const rest = art === 'q' ? lasten.udls.length : lasten.points.length;
+                const ziel = rest > 0
+                    ? document.querySelector(`#${listeId} [data-loeschen][data-nr="${Math.min(index + 1, rest)}"]`)
+                    : document.getElementById(art === 'q' ? 'btnAddUdl' : 'btnAddPunkt');
+                if (ziel) ziel.focus();
+            });
+            liste.addEventListener('input', e => {
+                if (e.target.type === 'number') calculate();
+            });
+            liste.addEventListener('change', e => {
+                if (e.target.type === 'checkbox') updateInputVisualStates();
+                if (e.target.type === 'checkbox' || e.target.tagName === 'SELECT') calculate();
+            });
+        });
+
+        // Ausgeschaltete Lasten blass darstellen
         function updateInputVisualStates() {
-            const toggles = ['q1', 'q2', 'f1', 'f2'];
-            toggles.forEach(id => {
+            document.querySelectorAll('#udlListe [data-last], #punktListe [data-last]').forEach(karte => {
+                const id = (karte.getAttribute('data-last') === 'q' ? 'q' : 'f') + karte.getAttribute('data-nr');
                 const active = document.getElementById('enable_' + id).checked;
-                const container = document.getElementById(id + '_inputs_container');
-                if (active) {
-                    container.classList.remove('opacity-30', 'pointer-events-none');
-                } else {
-                    container.classList.add('opacity-30', 'pointer-events-none');
-                }
+                document.getElementById(id + '_inputs_container').classList.toggle('opacity-30', !active);
+                document.getElementById(id + '_inputs_container').classList.toggle('pointer-events-none', !active);
             });
         }
 
-        // Listener für Toggles
-        document.querySelectorAll('#enable_q1, #enable_q2, #enable_f1, #enable_f2').forEach(toggle => {
-            toggle.addEventListener('change', function() {
-                updateInputVisualStates();
-                calculate();
-            });
-        });
+        renderLasten(START_LASTEN);
 
         // Toggles für Kragarme anzeigen/ausblenden
         document.getElementById('enable_kl').addEventListener('change', function() {
@@ -524,12 +578,13 @@
         }
 
         // Inputs bei numerischer Änderung neu berechnen
+        // (Die Felder der Lastkarten haben einen eigenen Listener, siehe Lastlisten.)
         document.querySelectorAll('input[type="number"]').forEach(input => {
-            input.addEventListener('input', calculate);
+            if (!input.closest('#udlListe, #punktListe')) input.addEventListener('input', calculate);
         });
 
         function validateInputs(values) {
-            document.querySelectorAll('#f1_inputs_container input, #f2_inputs_container input, #q1_inputs_container input, #q2_inputs_container input, #kl_container input, #kr_container input, #length').forEach(input => {
+            document.querySelectorAll('#udlListe input[type="number"], #punktListe input[type="number"], #kl_container input, #kr_container input, #length').forEach(input => {
                 input.setAttribute('aria-invalid', 'false');
                 input.classList.remove('border-rose-500', 'ring-2', 'ring-rose-200');
             });
@@ -558,17 +613,16 @@
             if (values.kl_active) check('length_kl', 'Linke Kragarmlänge', 0.1, 10);
             if (values.kr_active) check('length_kr', 'Rechte Kragarmlänge', 0.1, 10);
 
-            [['f1', 'F₁', 'x1', 'α₁', values.f1_active], ['f2', 'F₂', 'x2', 'α₂', values.f2_active]].forEach(([forceId, forceLabel, positionId, angleLabel, active]) => {
-                if (!active) return;
-                check(forceId, `Kraft ${forceLabel}`, 0, 100000);
-                check(positionId, `Position ${positionId}`, minX, maxX);
-                check(`alpha${positionId.slice(1)}`, `Winkel ${angleLabel}`, 0, 360);
+            values.lasten.points.forEach(({ nr }) => {
+                check(`f${nr}`, `Kraft F${tief(nr)}`, 0, 100000);
+                check(`x${nr}`, `Position x von F${tief(nr)}`, minX, maxX);
+                check(`alpha${nr}`, `Winkel α von F${tief(nr)}`, 0, 360);
             });
 
-            [['q1', 'q1_start', 'q1_end', 'q₁', values.q1_active], ['q2', 'q2_start', 'q2_end', 'q₂', values.q2_active]].forEach(([forceId, startId, endId, label, active]) => {
-                if (!active) return;
-                check(forceId, `Streckenlast ${label}`, 0, 100000);
-                const start = check(startId, `Startposition ${label}`, minX, maxX);
+            values.lasten.udls.forEach(({ nr }) => {
+                const label = `q${tief(nr)}`, endId = `q${nr}_end`;
+                check(`q${nr}`, `Streckenlast ${label}`, 0, 100000);
+                const start = check(`q${nr}_start`, `Startposition ${label}`, minX, maxX);
                 const end = check(endId, `Endposition ${label}`, minX, maxX);
                 if (Number.isFinite(start) && Number.isFinite(end) && end <= start) {
                     errors.push(`Streckenlast ${label}: Die Endposition muss rechts von der Startposition liegen.`);
@@ -580,24 +634,36 @@
             return errors;
         }
 
+        // Unterrichtsszenarien: Systemwerte und Lastlisten (Farben in der Reihenfolge von LAST_FARBEN)
         const scenarios = {
             einfeld: {
-                values: { length: 10, f1: 20, x1: 5 },
-                toggles: { enable_q1: false, enable_q2: false, enable_f1: true, enable_f2: false }
+                values: { length: 10 },
+                lasten: { udls: [], points: [{ F: 20, x: 5 }] }
             },
             gleichlast: {
-                values: { length: 10, q1: 4, q1_start: 0, q1_end: 10 },
-                toggles: { enable_q1: true, enable_q2: false, enable_f1: false, enable_f2: false }
+                values: { length: 10 },
+                lasten: { udls: [{ q: 4, start: 0, end: 10 }], points: [] }
             },
             doppelkragarm: {
-                values: { length: 10, length_kl: 2.5, length_kr: 2.5, q1: 3, q1_start: -2.5, q1_end: 12.5, f1: 15, x1: -2.5, f2: 15, x2: 12.5 },
-                toggles: { enable_kl: true, enable_kr: true, enable_q1: true, enable_q2: false, enable_f1: true, enable_f2: true }
+                values: { length: 10, length_kl: 2.5, length_kr: 2.5 },
+                toggles: { enable_kl: true, enable_kr: true },
+                lasten: { udls: [{ q: 3, start: -2.5, end: 12.5 }], points: [{ F: 15, x: -2.5 }, { F: 15, x: 12.5 }] }
             },
             pruefung: {
-                values: { length: 12, length_kl: 2, q1: 5, q1_start: -2, q1_end: 4, q2: 2.5, q2_start: 4, q2_end: 12, f1: 12, x1: 2, f2: 8, x2: 9 },
-                toggles: { enable_kl: true, enable_kr: false, enable_q1: true, enable_q2: true, enable_f1: true, enable_f2: true }
+                values: { length: 12, length_kl: 2 },
+                toggles: { enable_kl: true },
+                lasten: { udls: [{ q: 5, start: -2, end: 4 }, { q: 2.5, start: 4, end: 12 }], points: [{ F: 12, x: 2 }, { F: 8, x: 9 }] }
             }
         };
+
+        // Lastliste mit Farben ergänzen (Streckenlasten vorn in der Farbreihe, Einzellasten ab Rose)
+        function mitFarben(lasten) {
+            const farbe = i => LAST_FARBEN[i % LAST_FARBEN.length][0];
+            return {
+                udls: lasten.udls.map((u, i) => Object.assign({ color: farbe(i), aktiv: true }, u)),
+                points: lasten.points.map((p, i) => Object.assign({ color: farbe(i + 3), aktiv: true, alpha: 90 }, p))
+            };
+        }
 
         function resetBeamInputs() {
             const panel = document.getElementById('controlPanel');
@@ -607,6 +673,7 @@
             panel.querySelectorAll('input[type="checkbox"]:not(#teacherShowSolution)').forEach(input => {
                 input.checked = input.defaultChecked;
             });
+            renderLasten(START_LASTEN);
         }
 
         function updateBeamInputVisibility() {
@@ -622,11 +689,10 @@
             Object.entries(scenario.values).forEach(([id, value]) => {
                 document.getElementById(id).value = value;
             });
-            Object.entries(scenario.toggles).forEach(([id, value]) => {
+            Object.entries(scenario.toggles || {}).forEach(([id, value]) => {
                 document.getElementById(id).checked = value;
             });
-            document.getElementById('alpha1').value = 90;
-            document.getElementById('alpha2').value = 90;
+            renderLasten(mitFarben(scenario.lasten));
             updateBeamInputVisibility();
             calculate();
         }
@@ -671,15 +737,12 @@
             const rows = [['Hauptfeldlänge', `${fmt(getVal('length'))} m`]];
             if (document.getElementById('enable_kl').checked) rows.push(['Linker Kragarm', `${fmt(getVal('length_kl'))} m`]);
             if (document.getElementById('enable_kr').checked) rows.push(['Rechter Kragarm', `${fmt(getVal('length_kr'))} m`]);
-            [['q1', 'q₁'], ['q2', 'q₂']].forEach(([id, label]) => {
-                if (document.getElementById(`enable_${id}`).checked) {
-                    rows.push([`Streckenlast ${label}`, `${fmt(getVal(id))} kN/m von x = ${fmt(getVal(`${id}_start`))} m bis ${fmt(getVal(`${id}_end`))} m`]);
-                }
+            const lasten = aktiveLasten();
+            lasten.udls.forEach(u => {
+                rows.push([`Streckenlast q${tief(u.nr)}`, `${fmt(u.q)} kN/m von x = ${fmt(u.start)} m bis ${fmt(u.end)} m`]);
             });
-            [['f1', 'F₁', 'alpha1'], ['f2', 'F₂', 'alpha2']].forEach(([id, label, angleId]) => {
-                if (document.getElementById(`enable_${id}`).checked) {
-                    rows.push([`Einzellast ${label}`, `${fmt(getVal(id))} kN bei x = ${fmt(getVal(`x${id.slice(1)}`))} m, α = ${fmt(getVal(angleId))}°`]);
-                }
+            lasten.points.forEach(p => {
+                rows.push([`Einzellast F${tief(p.nr)}`, `${fmt(p.F)} kN bei x = ${fmt(p.x)} m, α = ${fmt(p.alpha)}°`]);
             });
 
             const includeSolution = document.getElementById('teacherShowSolution').checked;
@@ -871,6 +934,12 @@
                 let newX = minX + ((coords.x - dragOffsetX - paddingX) / drawWidth) * totalLength;
                 newX = Math.round(newX * 10) / 10;
                 newX = Math.max(minX, Math.min(maxX, newX));
+                const qRand = /^(q\d+)_(start|end)$/.exec(activeDragId);
+                if (qRand) {
+                    const anderes = getVal(`${qRand[1]}_${qRand[2] === 'start' ? 'end' : 'start'}`);
+                    newX = qRand[2] === 'start' ? Math.min(newX, Math.round((anderes - 0.1) * 10) / 10)
+                                                : Math.max(newX, Math.round((anderes + 0.1) * 10) / 10);
+                }
 
                 const inputEl = document.getElementById(activeDragId);
                 if (inputEl) {
@@ -939,29 +1008,9 @@
             const L_kl = kl_active ? getVal('length_kl') : 0;
             const L_kr = kr_active ? getVal('length_kr') : 0;
 
-            const f1_active = document.getElementById('enable_f1').checked;
-            const F1 = f1_active ? getVal('f1') : 0;
-            const x1 = f1_active ? getVal('x1') : 0;
-            const alpha1 = getVal('alpha1');
-            const F1_components = zerlegeKraft(F1, alpha1);
+            const lasten = aktiveLasten();
 
-            const f2_active = document.getElementById('enable_f2').checked;
-            const F2 = f2_active ? getVal('f2') : 0;
-            const x2 = f2_active ? getVal('x2') : 0;
-            const alpha2 = getVal('alpha2');
-            const F2_components = zerlegeKraft(F2, alpha2);
-
-            const q1_active = document.getElementById('enable_q1').checked;
-            const q1_val = q1_active ? getVal('q1') : 0;
-            const q1_start = q1_active ? getVal('q1_start') : 0;
-            const q1_end = q1_active ? getVal('q1_end') : 0;
-
-            const q2_active = document.getElementById('enable_q2').checked;
-            const q2_val = q2_active ? getVal('q2') : 0;
-            const q2_start = q2_active ? getVal('q2_start') : 0;
-            const q2_end = q2_active ? getVal('q2_end') : 0;
-
-            const validationErrors = validateInputs({ L, L_kl, L_kr, kl_active, kr_active, f1_active, f2_active, q1_active, q2_active });
+            const validationErrors = validateInputs({ L, L_kl, L_kr, kl_active, kr_active, lasten });
             if (validationErrors.length) {
                 document.getElementById('output').innerHTML = `
                     <div class="lab-validation-error" role="alert">
@@ -977,17 +1026,13 @@
             }
 
             // Auflagerkräfte und Schnittgrößen aus dem gemeinsamen Rechenkern (statik-core.js, wie Modul 5)
-            const pointLoads = [];
-            if (f1_active) pointLoads.push({ F: F1_components.vertical, x: x1 });
-            if (f2_active) pointLoads.push({ F: F2_components.vertical, x: x2 });
-            const udls = [];
-            if (q1_active) udls.push({ q: q1_val, start: q1_start, end: q1_end });
-            if (q2_active) udls.push({ q: q2_val, start: q2_start, end: q2_end });
+            const pointLoads = lasten.points.map(p => ({ F: p.komponenten.vertical, x: p.x }));
+            const udls = lasten.udls.map(u => ({ q: u.q, start: u.start, end: u.end }));
             const traeger = berechneTraeger({ L, pointLoads, udls });
 
             A = traeger.A;
             B = traeger.B;
-            const A_h = -((f1_active ? F1_components.horizontal : 0) + (f2_active ? F2_components.horizontal : 0));
+            const A_h = -lasten.points.reduce((summe, p) => summe + p.komponenten.horizontal, 0);
             A_h_global = A_h;
 
             // Ausgabe runden
@@ -1040,7 +1085,7 @@
             L_global = L;
 
             // Didaktischen Rechenweg generieren
-            generateDidacticPathway(L, L_kl, L_kr, kl_active, kr_active, F1, x1, alpha1, f1_active, F2, x2, alpha2, f2_active, q1_val, q1_start, q1_end, q1_active, q2_val, q2_start, q2_end, q2_active, A_rnd, B_rnd, A_h, maxM, maxX0, momente);
+            generateDidacticPathway(kl_active, kr_active, A_rnd, B_rnd, A_h, maxM, maxX0, momente);
 
             // Übung läuft: Ergebnisse und Rechenweg verbergen, bis geprüft wurde
             if (uebungAktiv()) {
@@ -1051,11 +1096,11 @@
             // Canvas zeichnen
             // Stützstellen der Diagramme inkl. Punkten direkt neben jeder Sprungstelle (senkrechte Q-Sprünge)
             const diagrammX = diagrammStellen(traeger, -L_kl, L + L_kr, 0.05);
-            drawSystem(L, L_kl, L_kr, kl_active, kr_active, F1, x1, alpha1, f1_active, F2, x2, alpha2, f2_active, q1_val, q1_start, q1_end, q1_active, q2_val, q2_start, q2_end, q2_active, getSchnittgroessen, maxM, maxX0, diagrammX);
+            drawSystem(L, L_kl, L_kr, kl_active, kr_active, lasten, getSchnittgroessen, maxM, maxX0, diagrammX);
         }
 
         // Didaktischen Rechenweg generieren
-        function generateDidacticPathway(L, L_kl, L_kr, kl_active, kr_active, F1, x1, alpha1, f1_active, F2, x2, alpha2, f2_active, q1_val, q1_start, q1_end, q1_active, q2_val, q2_start, q2_end, q2_active, A_rnd, B_rnd, A_h, maxM, maxX0, momente) {
+        function generateDidacticPathway(kl_active, kr_active, A_rnd, B_rnd, A_h, maxM, maxX0, momente) {
             let pathHtml = "";
 
             // Schritt 1: Statische Bestimmtheit prüfen
@@ -1141,7 +1186,7 @@
 
         const BASE_CANVAS_HEIGHT = 900; // Höhe ohne zusätzlichen Platz für gestapelte Lasten
 
-        function drawSystem(L, L_kl, L_kr, kl_active, kr_active, F1, x1, alpha1, f1_active, F2, x2, alpha2, f2_active, q1_val, q1_start, q1_end, q1_active, q2_val, q2_start, q2_end, q2_active, getSchnittgroessen, maxM, maxX0, diagrammX) {
+        function drawSystem(L, L_kl, L_kr, kl_active, kr_active, lasten, getSchnittgroessen, maxM, maxX0, diagrammX) {
             const totalLength = L_kl + L + L_kr;
             const { W, paddingX, drawWidth } = zeichenRaster();
 
@@ -1153,16 +1198,19 @@
             // System-Trägerlinie auf Y = 160
             const beamY = 160;
 
-            // Lastenstapel vorab durchspielen (gleiche Reihenfolge wie beim Zeichnen: q1, q2, F1, F2).
+            // Lastenstapel vorab durchspielen (gleiche Reihenfolge wie beim Zeichnen: erst alle q, dann alle F).
             // Ragt er samt Beschriftung über den oberen Rand, wird die Zeichenfläche um genau diesen
             // Betrag höher und die ganze Zeichnung nach unten verschoben – so wird nichts abgeschnitten
             // (auch nicht im PNG-Export).
             const previewStack = createLoadStacker(beamY);
             let stackTop = beamY;
-            if (q1_active && q1_end > q1_start) stackTop = Math.min(stackTop, previewStack(getPixelX(q1_start), getPixelX(q1_end), 60).topY);
-            if (q2_active && q2_end > q2_start) stackTop = Math.min(stackTop, previewStack(getPixelX(q2_start), getPixelX(q2_end), 60).topY);
-            if (f1_active) stackTop = Math.min(stackTop, previewStack(getPixelX(x1) - 65 * Math.abs(Math.cos(alpha1 * Math.PI / 180)) - 10, getPixelX(x1) + 65 * Math.abs(Math.cos(alpha1 * Math.PI / 180)) + 10, 65 * Math.max(0, Math.sin(alpha1 * Math.PI / 180)) + 22).topY);
-            if (f2_active) stackTop = Math.min(stackTop, previewStack(getPixelX(x2) - 65 * Math.abs(Math.cos(alpha2 * Math.PI / 180)) - 10, getPixelX(x2) + 65 * Math.abs(Math.cos(alpha2 * Math.PI / 180)) + 10, 65 * Math.max(0, Math.sin(alpha2 * Math.PI / 180)) + 22).topY);
+            lasten.udls.forEach(u => {
+                if (u.end > u.start) stackTop = Math.min(stackTop, previewStack(getPixelX(u.start), getPixelX(u.end), 60).topY);
+            });
+            lasten.points.forEach(p => {
+                const dx = 65 * Math.abs(Math.cos(p.alpha * Math.PI / 180));
+                stackTop = Math.min(stackTop, previewStack(getPixelX(p.x) - dx - 10, getPixelX(p.x) + dx + 10, 65 * Math.max(0, Math.sin(p.alpha * Math.PI / 180)) + 22).topY);
+            });
             const topMargin = 12;
             const offsetY = Math.max(0, Math.ceil(topMargin - stackTop));
             const neededHeight = BASE_CANVAS_HEIGHT + offsetY;
@@ -1198,109 +1246,61 @@
             const getSafeY = createLoadStacker(beamY);
 
             // Streckenlasten zuerst zeichnen (unterste Etage, direkt am Träger)
-            if (q1_active && q1_end > q1_start) {
-                const qxStart = getPixelX(q1_start);
-                const qxEnd = getPixelX(q1_end);
-                const col = document.getElementById('colorQ1').value;
+            lasten.udls.forEach(u => {
+                if (!(u.end > u.start)) return;
+                const qxStart = getPixelX(u.start);
+                const qxEnd = getPixelX(u.end);
+                const col = u.color;
                 ctx.fillStyle = col + '22'; // Transparente Füllung
                 ctx.strokeStyle = col;
                 ctx.lineWidth = 2;
 
                 const qHeight = 40;
-                const { bottomY: q1BottomY } = getSafeY(qxStart, qxEnd, qHeight + 20);
-                const q1LineY = q1BottomY - qHeight;
-                ctx.fillRect(qxStart, q1LineY, qxEnd - qxStart, qHeight);
+                const { bottomY: qBottomY } = getSafeY(qxStart, qxEnd, qHeight + 20);
+                const qLineY = qBottomY - qHeight;
+                ctx.fillRect(qxStart, qLineY, qxEnd - qxStart, qHeight);
                 ctx.beginPath();
-                ctx.moveTo(qxStart, q1LineY);
-                ctx.lineTo(qxEnd, q1LineY);
+                ctx.moveTo(qxStart, qLineY);
+                ctx.lineTo(qxEnd, qLineY);
                 ctx.stroke();
 
                 // Kleine vertikale Begrenzungspfeile zeichnen
                 const arrowStep = Math.max(15, (qxEnd - qxStart) / 8);
                 for (let px = qxStart; px <= qxEnd + 1; px += arrowStep) {
                     ctx.beginPath();
-                    ctx.moveTo(px, q1LineY);
-                    ctx.lineTo(px, q1BottomY);
+                    ctx.moveTo(px, qLineY);
+                    ctx.lineTo(px, qBottomY);
                     ctx.stroke();
                     // Spitzen
                     ctx.beginPath();
-                    ctx.moveTo(px, q1BottomY);
-                    ctx.lineTo(px - 4, q1BottomY - 6);
-                    ctx.lineTo(px + 4, q1BottomY - 6);
+                    ctx.moveTo(px, qBottomY);
+                    ctx.lineTo(px - 4, qBottomY - 6);
+                    ctx.lineTo(px + 4, qBottomY - 6);
                     ctx.fill();
                 }
 
                 // Label
                 ctx.fillStyle = '#0f172a';
                 ctx.font = 'bold 12px sans-serif';
-                ctx.fillText(`q₁ = ${fmt(q1_val)} kN/m`, (qxStart + qxEnd)/2 - 40, q1LineY - 8);
+                ctx.fillText(`q${tief(u.nr)} = ${fmt(u.q)} kN/m`, (qxStart + qxEnd)/2 - 40, qLineY - 8);
 
-                // Drag handles für q1 Start/Ende
+                // Drag handles für Start/Ende
                 ctx.fillStyle = col;
                 ctx.beginPath();
-                ctx.arc(qxStart, q1LineY, 7, 0, Math.PI*2);
-                ctx.arc(qxEnd, q1LineY, 7, 0, Math.PI*2);
+                ctx.arc(qxStart, qLineY, 7, 0, Math.PI*2);
+                ctx.arc(qxEnd, qLineY, 7, 0, Math.PI*2);
                 ctx.fill();
                 ctx.strokeStyle = '#ffffff';
                 ctx.lineWidth = 2;
                 ctx.stroke();
 
-                dragElements.push({ id: 'q1_start', x: qxStart, y: q1LineY + offsetY });
-                dragElements.push({ id: 'q1_end', x: qxEnd, y: q1LineY + offsetY });
-            }
-
-            if (q2_active && q2_end > q2_start) {
-                const qxStart = getPixelX(q2_start);
-                const qxEnd = getPixelX(q2_end);
-                const col = document.getElementById('colorQ2').value;
-                ctx.fillStyle = col + '22';
-                ctx.strokeStyle = col;
-                ctx.lineWidth = 2;
-
-                const qHeight = 40;
-                const { bottomY: q2BottomY } = getSafeY(qxStart, qxEnd, qHeight + 20);
-                const q2LineY = q2BottomY - qHeight;
-                ctx.fillRect(qxStart, q2LineY, qxEnd - qxStart, qHeight);
-                ctx.beginPath();
-                ctx.moveTo(qxStart, q2LineY);
-                ctx.lineTo(qxEnd, q2LineY);
-                ctx.stroke();
-
-                const arrowStep = Math.max(15, (qxEnd - qxStart) / 8);
-                for (let px = qxStart; px <= qxEnd + 1; px += arrowStep) {
-                    ctx.beginPath();
-                    ctx.moveTo(px, q2LineY);
-                    ctx.lineTo(px, q2BottomY);
-                    ctx.stroke();
-                    ctx.beginPath();
-                    ctx.moveTo(px, q2BottomY);
-                    ctx.lineTo(px - 4, q2BottomY - 6);
-                    ctx.lineTo(px + 4, q2BottomY - 6);
-                    ctx.fill();
-                }
-
-                ctx.fillStyle = '#0f172a';
-                ctx.font = 'bold 12px sans-serif';
-                ctx.fillText(`q₂ = ${fmt(q2_val)} kN/m`, (qxStart + qxEnd)/2 - 40, q2LineY - 8);
-
-                // Drag handles
-                ctx.fillStyle = col;
-                ctx.beginPath();
-                ctx.arc(qxStart, q2LineY, 7, 0, Math.PI*2);
-                ctx.arc(qxEnd, q2LineY, 7, 0, Math.PI*2);
-                ctx.fill();
-                ctx.strokeStyle = '#ffffff';
-                ctx.lineWidth = 2;
-                ctx.stroke();
-
-                dragElements.push({ id: 'q2_start', x: qxStart, y: q2LineY + offsetY });
-                dragElements.push({ id: 'q2_end', x: qxEnd, y: q2LineY + offsetY });
-            }
+                dragElements.push({ id: `q${u.nr}_start`, x: qxStart, y: qLineY + offsetY });
+                dragElements.push({ id: `q${u.nr}_end`, x: qxEnd, y: qLineY + offsetY });
+            });
 
             // Einzellasten danach zeichnen (stapeln sich automatisch über etwaigen Streckenlasten)
-            function drawPointLoad(id, force, position, angle) {
+            function drawPointLoad(nr, color, force, position, angle) {
                 const forceX = getPixelX(position);
-                const color = document.getElementById(`color${id.toUpperCase()}`).value;
                 const radians = ((angle % 360) * Math.PI) / 180;
                 const directionX = Math.cos(radians);
                 const directionY = Math.sin(radians);
@@ -1335,7 +1335,7 @@
                 ctx.font = 'bold 12px sans-serif';
                 ctx.fillStyle = '#0f172a';
                 ctx.textAlign = 'center';
-                const lastText = `${id.toUpperCase()} = ${fmt(force)} kN (${fmt(angle)}°)`;
+                const lastText = `F${tief(nr)} = ${fmt(force)} kN (${fmt(angle)}°)`;
                 const lastBreite = ctx.measureText(lastText).width;
                 ctx.fillText(lastText, Math.min(Math.max(tailX, lastBreite / 2 + 4), W - lastBreite / 2 - 4), tailY - 14);
                 ctx.textAlign = 'left';
@@ -1348,14 +1348,13 @@
                 ctx.lineWidth = 2.5;
                 ctx.stroke();
 
-                dragElements.push({ id: `x${id.slice(1)}`, x: tailX, y: tailY + offsetY, offsetX: tailX - forceX });
+                dragElements.push({ id: `x${nr}`, x: tailX, y: tailY + offsetY, offsetX: tailX - forceX });
             }
 
-            if (f1_active) drawPointLoad('f1', F1, x1, alpha1);
-            if (f2_active) drawPointLoad('f2', F2, x2, alpha2);
+            lasten.points.forEach(p => drawPointLoad(p.nr, p.color, p.F, p.x, p.alpha));
 
             // Normgerechte automatische Bemaßungskette
-            drawDimensionChain(L, L_kl, L_kr, kl_active, kr_active, F1, x1, f1_active, F2, x2, f2_active, q1_start, q1_end, q1_active, q2_start, q2_end, q2_active, getPixelX, beamY);
+            drawDimensionChain(L, L_kl, L_kr, kl_active, kr_active, lasten, getPixelX, beamY);
 
             // Übung läuft: nur System und Lasten zeigen, keine Verläufe
             if (uebungAktiv()) {
@@ -1561,23 +1560,15 @@
         }
 
         // Zeichnen der normgerechten Maßkette
-        function drawDimensionChain(L, L_kl, L_kr, kl_active, kr_active, F1, x1, f1_active, F2, x2, f2_active, q1_start, q1_end, q1_active, q2_start, q2_end, q2_active, getPixelX, beamY) {
+        function drawDimensionChain(L, L_kl, L_kr, kl_active, kr_active, lasten, getPixelX, beamY) {
             const chainY = 240;
 
             // Markante Punkte sammeln
             let points = [0, L];
             if (kl_active) points.push(-L_kl);
             if (kr_active) points.push(L + L_kr);
-            if (f1_active) points.push(x1);
-            if (f2_active) points.push(x2);
-            if (q1_active) {
-                points.push(q1_start);
-                points.push(q1_end);
-            }
-            if (q2_active) {
-                points.push(q2_start);
-                points.push(q2_end);
-            }
+            lasten.points.forEach(p => points.push(p.x));
+            lasten.udls.forEach(u => points.push(u.start, u.end));
 
             // Duplikate filtern und sortieren
             points = [...new Set(points)].sort((a, b) => a - b);
@@ -1631,6 +1622,7 @@
         function sperreEingaben(an) {
             document.querySelectorAll('#controlPanel input, #controlPanel select, #controlPanel textarea, #controlPanel button')
                 .forEach(el => { el.disabled = an; });
+            if (!an) hinzufuegenKnoepfe();
             const m6 = document.getElementById('btnToModul6');
             m6.classList.toggle('pointer-events-none', an);
             m6.classList.toggle('opacity-40', an);
@@ -1660,15 +1652,10 @@
             setze('length', a.L);
             schalte('enable_kl', a.L_kl > 0); if (a.L_kl > 0) setze('length_kl', a.L_kl);
             schalte('enable_kr', a.L_kr > 0); if (a.L_kr > 0) setze('length_kr', a.L_kr);
-            const u = a.udls[0];
-            schalte('enable_q1', !!u);
-            if (u) { setze('q1', u.q); setze('q1_start', u.start); setze('q1_end', u.end); }
-            schalte('enable_q2', false);
-            ['f1', 'f2'].forEach((id, i) => {
-                const p = a.pointLoads[i];
-                schalte(`enable_${id}`, !!p);
-                if (p) { setze(id, p.F); setze(`x${i + 1}`, p.x); setze(`alpha${i + 1}`, 90); }
-            });
+            renderLasten(mitFarben({
+                udls: a.udls.map(u => ({ q: u.q, start: u.start, end: u.end })),
+                points: a.pointLoads.map(p => ({ F: p.F, x: p.x, alpha: 90 }))
+            }));
             schalte('bemessung_ed', true);
             document.getElementById('presetSelect').value = 'custom';
             updateBeamInputVisibility();
@@ -1781,8 +1768,12 @@
         });
 
         const learningProgress = initLearningProgress(4, {
-            capture: () => ({ sessionLog4 }),
+            capture: () => ({ sessionLog4, lasten: leseLasten() }),
             restore: data => {
+                // Anzahl und Werte der Lasten (ältere Stände ohne „lasten“ füllen nur die beiden Startkarten)
+                if (data && data.lasten && Array.isArray(data.lasten.udls) && Array.isArray(data.lasten.points)) {
+                    renderLasten(data.lasten);
+                }
                 sessionLog4 = Array.isArray(data && data.sessionLog4) ? data.sessionLog4 : [];
                 document.getElementById('logCount4').textContent = sessionLog4.length;
                 document.getElementById('btnExportLog4').disabled = sessionLog4.length === 0;
@@ -1805,11 +1796,10 @@
             const setze = (id, wert) => { document.getElementById(id).value = wert; };
             const schalte = (id, an) => { document.getElementById(id).checked = an; };
             setze('length', L);
-            ['enable_kl', 'enable_kr', 'enable_f1', 'enable_f2'].forEach(id => schalte(id, false));
-            schalte('enable_q1', true);
-            setze('q1', g); setze('q1_start', 0); setze('q1_end', L);
-            schalte('enable_q2', q > 0);
-            setze('q2', q); setze('q2_start', 0); setze('q2_end', L);
+            ['enable_kl', 'enable_kr'].forEach(id => schalte(id, false));
+            const udls = [{ q: g, start: 0, end: L }];
+            if (q > 0) udls.push({ q, start: 0, end: L });
+            renderLasten(mitFarben({ udls, points: [] }));
             document.getElementById('presetSelect').value = 'custom';
             const bem = p.get('bem') === '1';
             schalte('bemessung_ed', bem);
