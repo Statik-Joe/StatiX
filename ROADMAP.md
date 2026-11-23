@@ -33,7 +33,7 @@ To-do-Liste der Code-Prüfung (Rechenkern, Einheitlichkeit, Handy). Reihenfolge 
 - [ ] **17 · Modul 5:** V-Linie am rechten Kragarmende zur Nulllinie schließen
 - [ ] **18 · Modul 7:** Übungsprotokoll im Fortschritt speichern
 - [ ] **19 · Modul 2 / `fmt()`:** Zwischenwerte im Rechenweg stimmig runden, kaufmännische Rundung testen (Beispiel: Feldmoment −9,375 kNm wird als −9,37 statt −9,38 angezeigt)
-- [ ] **20 · Modul 4:** Anfang einer Streckenlast beim Ziehen nicht über ihr Ende hinaus
+- [x] **20 · Modul 4:** Anfang einer Streckenlast beim Ziehen nicht über ihr Ende hinaus (und Ende nicht vor den Anfang) – Modul 4 Version 1.19 / Labor 3.10
 
 ### Danach
 
@@ -55,6 +55,7 @@ To-do-Liste der Code-Prüfung (Rechenkern, Einheitlichkeit, Handy). Reihenfolge 
 
 ## Erledigt
 
+- [x] **Modul 4: Lasten hinzufügen und löschen** – Streckenlasten q₁, q₂, … und Einzellasten F₁, F₂, … frei hinzufügen (je bis zu 6) und mit ✕ löschen, die übrigen werden neu durchnummeriert; Unterrichtsszenarien, Übung, Übernahme aus Modul 3, Druckblatt und „Fortschritt speichern“ arbeiten mit der Lastliste – Modul 4 Version 1.19 / Labor 3.10
 - [x] **Momentenlinie der Kachel Modul 4 korrigiert** – exakte Parabeln für Gleichstreckenlast: Feldmoment, steiler Anstieg zum Stützmoment über B, Knick am Auflager, waagerechtes Auslaufen am freien Kragarmende – Labor 3.6
 - [x] **Isometrische Grafiken auf der Startseite** – jede Modulkachel zeigt das Thema als isometrisches Bauteil in der Modulfarbe (Modul 4 mit Kragarm und Momentenlinie über Feld und Kragarm); reines SVG, offline und auf jeder Bildschirmgröße scharf. Modul 4: Eingabespalte auf dem Desktop so hoch wie die Zeichnung – Labor 3.5
 - [x] **Übungsmodus in Modul 4** – zufällige Träger im Stil der Abschlussprüfung (Gleichlast, mit Einzellast, mit Kragarm links oder rechts, zwei Einzellasten) mit Bemessungslasten; A_Ed,V, B_Ed,V, x₀ (V = 0) und M_Ed,F selbst berechnen; Ergebnisse, Verläufe und Rechenweg bleiben bis zum Prüfen verborgen, danach Rechenweg mit Zahlen Schritt für Schritt; Protokoll-Export – Modul 4 Version 1.16 / Labor 3.4
