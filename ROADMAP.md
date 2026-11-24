@@ -55,6 +55,7 @@ To-do-Liste der Code-Prüfung (Rechenkern, Einheitlichkeit, Handy). Reihenfolge 
 
 ## Erledigt
 
+- [x] **Modul 7, Schritt 6 ausgebaut** – Handrechnung am Beispiel aus Schritt 4: Querkraft an den markanten Stellen (Sprung = Auflagerkraft), x₀ und max M_F aus V = 0, Kontrolle von M_B mit dem Schnitt links von B, Momentennullpunkt, Flächenregel V ↔ M, Merkkasten „maßgebendes Moment“ und Selbstkontrolle mit Lösung; Zahlen per Test gegen den Rechenkern geprüft – Modul 7 Version 1.6 / Labor 3.11
 - [x] **Modul 4: Lasten hinzufügen und löschen** – Streckenlasten q₁, q₂, … und Einzellasten F₁, F₂, … frei hinzufügen (je bis zu 6) und mit ✕ löschen, die übrigen werden neu durchnummeriert; Unterrichtsszenarien, Übung, Übernahme aus Modul 3, Druckblatt und „Fortschritt speichern“ arbeiten mit der Lastliste – Modul 4 Version 1.19 / Labor 3.10
 - [x] **Momentenlinie der Kachel Modul 4 korrigiert** – exakte Parabeln für Gleichstreckenlast: Feldmoment, steiler Anstieg zum Stützmoment über B, Knick am Auflager, waagerechtes Auslaufen am freien Kragarmende – Labor 3.6
 - [x] **Isometrische Grafiken auf der Startseite** – jede Modulkachel zeigt das Thema als isometrisches Bauteil in der Modulfarbe (Modul 4 mit Kragarm und Momentenlinie über Feld und Kragarm); reines SVG, offline und auf jeder Bildschirmgröße scharf. Modul 4: Eingabespalte auf dem Desktop so hoch wie die Zeichnung – Labor 3.5

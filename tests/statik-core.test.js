@@ -313,6 +313,27 @@ test('Momentennullpunkte Zweifeldträger mit Gleichlast bei 0,75 · L und 1,25 �
     nah(p[1], 1.25 * L, 0.01);
 });
 
+test('Modul 7, Schritt 6: Zahlen der Handrechnung (Zweifeldträger L = 5 m, q = 10 kN/m und Selbstkontrolle L = 4 m, q = 12 kN/m)', () => {
+    [[5, 10, { A: 18.75, x0: 1.875, MF: 17.578, MB: -31.25, null0: 3.75 }],
+     [4, 12, { A: 18, x0: 1.5, MF: 13.5, MB: -24, null0: 3 }]].forEach(([L, q, soll]) => {
+        const t = berechneDurchlauftraeger({ spans: [L, L], loads: [{ q }, { q }] });
+        const A = t.auflager[0];
+        nah(A, soll.A);
+        nah(A / q, soll.x0);                                   // V(x₀) = A − q · x₀ = 0
+        nah(t.schnitt(soll.x0).Q, 0);
+        nah(t.schnitt(soll.x0).M, soll.MF, 0.001);
+        nah(A * L - q * L * L / 2, soll.MB);                   // Schnitt links von B
+        nah(t.stuetzmomente[1], soll.MB);
+        nah(momentenNullpunkte(t)[0], soll.null0, 0.01);
+        // Querkraft links und rechts von B, links von C; Sprung bei B = Auflagerkraft B
+        nah(t.schnitt(L - 1e-6).Q, A - q * L, 1e-3);
+        nah(t.schnitt(L + 1e-6).Q, A - q * L + t.auflager[1], 1e-3);
+        nah(t.schnitt(2 * L - 1e-6).Q, -A, 1e-3);
+        // Flächenregel: Fläche unter V von x₀ bis B = M_B − max M_F
+        nah(0.5 * (A - q * L) * (L - soll.x0), soll.MB - soll.MF, 0.001);
+    });
+});
+
 // ---------- Lastannahme für Decken (Modul 3) ----------
 test('Stahlbetondecke: g_k = Σ d · γ, q_k = Nutzlast + Trennwandzuschlag, 1-m-Streifen und q_d = 1,35 g + 1,5 q', () => {
     const r = berechneDeckenlast({

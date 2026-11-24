@@ -197,7 +197,7 @@
 
             <details class="dlt-step bg-slate-50 border border-slate-200 rounded-xl p-4">
                 <summary class="font-bold text-slate-800 flex items-center gap-2"><span class="dlt-chevron">▶</span> Schritt 6: Querkraft- und Momentenverlauf verstehen</summary>
-                <div class="mt-3 text-sm text-slate-700 space-y-2">
+                <div class="mt-3 text-sm text-slate-700 space-y-3">
                     <ul class="list-disc pl-5 space-y-1">
                         <li>Die <strong>Querkraft</strong> springt an jedem Auflager um die Auflagerkraft. Wo V = 0 ist, hat das Feld sein größtes Moment – beim Zweifeldträger mit Gleichlast bei x = 0,375 · L vom Endauflager.</li>
                         <li>Über dem Zwischenauflager ist das Moment <strong>negativ</strong> (Stützmoment). Der Träger hat dort Zug an der <strong>Oberseite</strong> – im Stahlbetonbau liegt die Bewehrung deshalb über der Stütze oben.</li>
@@ -207,10 +207,95 @@
                         <div><canvas id="beispielCanvas" width="900" height="580" data-responsive="1" role="img" aria-label="Zweifeldträger mit Gleichlast: Querkraftverlauf und Biegemomentenverlauf. Querkraft-Nullpunkte bei 0,375 L vom Endauflager, Momentennullpunkte bei 0,75 L, Stützmoment über B negativ."></canvas></div>
                         <figcaption>Positive Momente werden wie in Modul 4 nach unten (Zugseite) aufgetragen, das negative Stützmoment also nach oben. Gestrichelt: Querkraft-Nullpunkte (dort liegt max M<sub>F</sub>) und Momentennullpunkte.</figcaption>
                     </figure>
+
+                    <h4 class="font-bold text-slate-800 pt-2">Am Beispiel nachgerechnet</h4>
+                    <p>Du rechnest den Träger aus Schritt 4 (L = 5,0 m, q = 10 kN/m) von links nach rechts durch, genau wie einen Einfeldträger in Modul 4. Der Unterschied: Die Auflagerkräfte A = 18,75 kN, B = 62,50 kN und C = 18,75 kN kommen aus der Tabelle, nicht aus ΣM = 0. Wegen der Symmetrie reicht es, Feld 1 genau anzusehen.</p>
+
+                    <div class="bg-white border border-slate-200 rounded-lg p-3 space-y-2">
+                        <p class="font-bold text-slate-800">a) Querkraft an den markanten Stellen</p>
+                        <p>Von links kommend: Auflagerkräfte nach oben zählen plus, Lasten nach unten minus. Die Gleichlast verringert V auf jedem Meter um q = 10 kN.</p>
+                        <div class="overflow-x-auto">
+                            <table class="dlt-table">
+                                <thead><tr><th>Stelle</th><th>Rechnung</th><th>V</th></tr></thead>
+                                <tbody>
+                                    <tr><td>rechts von A (x = 0)</td><td>V = A</td><td class="whitespace-nowrap"><strong>+18,75 kN</strong></td></tr>
+                                    <tr><td>links von B (x = 5,0 m)</td><td>18,75 − 10 · 5,0</td><td class="whitespace-nowrap"><strong>−31,25 kN</strong></td></tr>
+                                    <tr><td>rechts von B</td><td>−31,25 + B = −31,25 + 62,50</td><td class="whitespace-nowrap"><strong>+31,25 kN</strong></td></tr>
+                                    <tr><td>links von C (x = 10,0 m)</td><td>31,25 − 10 · 5,0</td><td class="whitespace-nowrap"><strong>−18,75 kN</strong></td></tr>
+                                    <tr><td>rechts von C</td><td>−18,75 + C = −18,75 + 18,75</td><td class="whitespace-nowrap"><strong>0 kN</strong> ✓</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <p class="text-xs text-slate-500">Der Sprung bei B ist genau so groß wie die Auflagerkraft B: von −31,25 kN auf +31,25 kN, also 62,50 kN. Am Ende muss V wieder auf null kommen – sonst stimmt eine Auflagerkraft nicht.</p>
+                    </div>
+
+                    <div class="bg-white border border-slate-200 rounded-lg p-3 space-y-2">
+                        <p class="font-bold text-slate-800">b) Stelle V = 0 und größtes Feldmoment</p>
+                        <p>Im Feld 1 gilt V(x) = A − q · x. Wo V null wird, ist das Feldmoment am größten:</p>
+                        <div class="bg-slate-50 rounded p-2 font-mono text-xs sm:text-sm space-y-1">
+                            <p>V(x₀) = 18,75 − 10 · x₀ = 0 → x₀ = 18,75 / 10 = <strong>1,875 m</strong> <span class="text-slate-400">(= 0,375 · L)</span></p>
+                            <p>max M<sub>F</sub> = A · x₀ − q · x₀² / 2</p>
+                            <p class="pl-4">= 18,75 · 1,875 − 10 · 1,875² / 2</p>
+                            <p class="pl-4">= 35,16 − 17,58 = <strong>17,58 kNm</strong></p>
+                        </div>
+                        <p class="text-xs text-slate-500">Das ist der genaue Wert. Mit dem gerundeten Tabellenbeiwert 0,070 erhältst du 17,50 kNm (Schritt 4) – beides ist richtig.</p>
+                    </div>
+
+                    <div class="bg-white border border-slate-200 rounded-lg p-3 space-y-2">
+                        <p class="font-bold text-slate-800">c) Stützmoment über B kontrollieren</p>
+                        <p>Schneide den Träger direkt links von B und bilde die Momente aller Kräfte links vom Schnitt. Die Gleichlast auf Feld 1 hat die Resultierende q · L = 50 kN im Abstand L / 2 = 2,5 m:</p>
+                        <div class="bg-slate-50 rounded p-2 font-mono text-xs sm:text-sm space-y-1">
+                            <p>M<sub>B</sub> = A · L − q · L² / 2</p>
+                            <p class="pl-4">= 18,75 · 5,0 − 10 · 5,0² / 2</p>
+                            <p class="pl-4">= 93,75 − 125,00 = <strong>−31,25 kNm</strong> ✓ <span class="text-slate-400">(wie mit Beiwert −0,125)</span></p>
+                        </div>
+                        <p class="text-xs text-slate-500">Das Minuszeichen heißt: Zug oben. Die Last „zieht“ den Träger stärker nach unten, als A ihn bis zur Stütze anheben kann.</p>
+                    </div>
+
+                    <div class="bg-white border border-slate-200 rounded-lg p-3 space-y-2">
+                        <p class="font-bold text-slate-800">d) Momentennullpunkt</p>
+                        <p>Zwischen dem positiven Feldmoment und dem negativen Stützmoment gibt es eine Stelle mit M = 0:</p>
+                        <div class="bg-slate-50 rounded p-2 font-mono text-xs sm:text-sm space-y-1">
+                            <p>M(x) = A · x − q · x² / 2 = x · (A − q · x / 2) = 0</p>
+                            <p>→ x = 2 · A / q = 2 · 18,75 / 10 = <strong>3,75 m</strong> <span class="text-slate-400">(= 0,75 · L)</span></p>
+                        </div>
+                        <p class="text-xs text-slate-500">Links davon ist der Träger unten gezogen, rechts davon oben. Im Feld 2 liegt der Nullpunkt spiegelbildlich bei x = 6,25 m.</p>
+                    </div>
+
+                    <div class="bg-white border border-slate-200 rounded-lg p-3 space-y-2">
+                        <p class="font-bold text-slate-800">e) Zusammenhang zwischen V und M (Flächenregel)</p>
+                        <p>Die <strong>Fläche unter der Querkraftlinie</strong> zwischen zwei Stellen ist gleich der <strong>Änderung des Moments</strong> dazwischen. Ist V positiv, steigt M; ist V negativ, fällt M; bei V = 0 hat M einen Höchst- oder Tiefpunkt.</p>
+                        <div class="bg-slate-50 rounded p-2 font-mono text-xs sm:text-sm space-y-1">
+                            <p>A bis x₀: Dreieck ½ · 18,75 · 1,875 = +17,58 → M = 0 + 17,58 = <strong>17,58 kNm</strong> = max M<sub>F</sub></p>
+                            <p>x₀ bis B: Dreieck ½ · (−31,25) · 3,125 = −48,83 → M = 17,58 − 48,83 = <strong>−31,25 kNm</strong> = M<sub>B</sub> ✓</p>
+                        </div>
+                        <p class="text-xs text-slate-500">So kannst du jedes Ergebnis ein zweites Mal kontrollieren, ohne neu zu rechnen.</p>
+                    </div>
+
+                    <div class="bg-rose-50 border border-rose-100 rounded-lg p-3 space-y-1">
+                        <p class="font-bold text-rose-900">Merke: Welches Moment ist maßgebend?</p>
+                        <p>Beim Durchlaufträger mit Gleichlast ist das <strong>Stützmoment</strong> betragsmäßig am größten: |M<sub>B</sub>| = 31,25 kNm, das Feldmoment nur 17,58 kNm. Für den Spannungsnachweis (Modul 6) gehört deshalb |M<sub>B</sub>| in die Rechnung. Zum Vergleich: Zwei einzelne Einfeldträger hätten je max M = 0,125 · q · L² = 31,25 kNm im Feld – der Durchlaufträger verschiebt das große Moment also vom Feld auf die Stütze und biegt sich weniger durch (Schritt 1).</p>
+                    </div>
+
                     <figure class="dlt-figur">
                         <div><canvas id="figZugseite" width="900" height="250" data-responsive="1" role="img" aria-label="Oben die Biegelinie des Zweifeldträgers mit markierter Zugseite: im Feld unten, über der Stütze B oben. Unten ein Stahlbetonbalken mit unterer Bewehrung im Feld und oberer Bewehrung über der Stütze."></canvas></div>
                         <figcaption>Rot markiert ist die Zugseite. Sie wechselt an den Momentennullpunkten. Im Stahlbetonbau liegt die Bewehrung immer auf der Zugseite, also im Feld unten und über der Stütze oben (vereinfachtes Prinzip ohne Verankerungslängen).</figcaption>
                     </figure>
+
+                    <div class="bg-amber-50 border border-amber-100 rounded-lg p-3 space-y-2">
+                        <p class="font-bold text-amber-900">Selbstkontrolle</p>
+                        <p>Zweifeldträger mit L = 4,0 m und q = 12 kN/m auf beiden Feldern. Berechne A, x₀, max M<sub>F</sub>, M<sub>B</sub> und den Momentennullpunkt in Feld 1.</p>
+                        <details class="text-sm">
+                            <summary class="cursor-pointer font-semibold text-amber-900">Lösung anzeigen</summary>
+                            <div class="mt-2 font-mono text-xs sm:text-sm space-y-1">
+                                <p>A = 0,375 · 12 · 4,0 = <strong>18,00 kN</strong></p>
+                                <p>x₀ = A / q = 18,00 / 12 = <strong>1,50 m</strong></p>
+                                <p>max M<sub>F</sub> = 18,00 · 1,50 − 12 · 1,50² / 2 = 27,00 − 13,50 = <strong>13,50 kNm</strong></p>
+                                <p>M<sub>B</sub> = 18,00 · 4,0 − 12 · 4,0² / 2 = 72,00 − 96,00 = <strong>−24,00 kNm</strong> <span class="text-slate-400">(−0,125 · 12 · 16 ✓)</span></p>
+                                <p>Momentennullpunkt: x = 2 · 18,00 / 12 = <strong>3,00 m</strong></p>
+                            </div>
+                        </details>
+                    </div>
                 </div>
             </details>
 
@@ -334,7 +419,7 @@
     </div>
 
     <script src="labor.js?v=c896ff32f6"></script>
-    <script src="version.js?v=3.10"></script>
+    <script src="version.js?v=3.11"></script>
     <script src="statik-core.js?v=e77eaedd41"></script>
     <script>
         const AUFLAGER = ['A', 'B', 'C', 'D', 'E'];
